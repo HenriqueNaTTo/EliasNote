@@ -1,0 +1,69 @@
+{
+  "nodes": [
+    {
+      "id": "ideia",
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 280,
+      "height": 160,
+      "color": "3",
+      "text": "# Ideia central\nOrganizar o projeto em um canvas visual."
+    },
+    {
+      "id": "nota-a",
+      "type": "file",
+      "x": 340,
+      "y": 0,
+      "width": 280,
+      "height": 160,
+      "file": "Projeto/Nota A.md"
+    },
+    {
+      "id": "imagem",
+      "type": "file",
+      "x": 0,
+      "y": 220,
+      "width": 280,
+      "height": 180,
+      "file": "Projeto/imagens/ideia.svg"
+    },
+    {
+      "id": "site",
+      "type": "link",
+      "x": 680,
+      "y": 0,
+      "width": 260,
+      "height": 140,
+      "url": "https://example.com",
+      "label": "Referência externa"
+    },
+    {
+      "id": "grupo",
+      "type": "group",
+      "x": -40,
+      "y": -40,
+      "width": 720,
+      "height": 460,
+      "label": "Protótipo",
+      "color": "5"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "fromNode": "ideia",
+      "toNode": "nota-a",
+      "label": "detalha",
+      "color": "4",
+      "toEnd": "arrow"
+    },
+    {
+      "id": "e2",
+      "fromNode": "nota-a",
+      "toNode": "site",
+      "label": "referencia",
+      "toEnd": "arrow"
+    }
+  ]
+}

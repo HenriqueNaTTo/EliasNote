@@ -1,0 +1,29 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.DS_Store
+Thumbs.db
+
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/schemas/
+src-tauri/.cargo/
+!src-tauri/icons/
+
+# Assets gerados (fontes do Excalidraw)
+public/excalidraw-assets/
+
+# Dados locais e segredos
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
