@@ -10,7 +10,8 @@ declare global {
     EXCALIDRAW_ASSET_PATH?: string;
   }
 }
-window.EXCALIDRAW_ASSET_PATH = "excalidraw-assets/";
+// Caminho absoluto: no WebView2/Tauri o base URL relativo não é aceito pelo Excalidraw.
+window.EXCALIDRAW_ASSET_PATH = new URL("excalidraw-assets/", window.location.href).href;
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Elemento raiz não encontrado");

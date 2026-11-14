@@ -7,10 +7,13 @@ import {
   Plus,
   Trash2,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAppStore } from "@/core/store";
 import { activeBoard } from "@/core/store/helpers";
 import { boardStats } from "@/core/domain/tree";
+import { nodesBounds } from "@/core/domain/layout";
+import { importFiles } from "@/core/media/attachments";
 import { nodeDisplayTitle } from "@/core/search/search";
 import { cn, timeAgo, truncate } from "@/lib/utils";
 import {
@@ -146,6 +149,7 @@ export function BoardNode({ node, editing }: NodeProps) {
   const childBoard = useAppStore((state) => (node.childBoardId ? state.boards[node.childBoardId] : undefined));
   const updateNode = useAppStore((state) => state.updateNode);
   const openBoard = useAppStore((state) => state.openBoard);
+  const [dropActive, setDropActive] = useState(false);
 
   const preview = useMemo(() => {
     if (!childBoard) return [];
@@ -156,8 +160,70 @@ export function BoardNode({ node, editing }: NodeProps) {
 
   const stats = childBoard ? boardStats(childBoard) : { nodes: 0, tasks: 0, tasksDone: 0, boards: 0 };
 
+  const attachFiles = async (files: File[]) => {
+    if (!childBoard) return;
+    const bounds = nodesBounds(Object.values(childBoard.nodes));
+    const position = bounds
+      ? { x: Math.round(bounds.x + bounds.w + 40), y: Math.round(bounds.y) }
+      : { x: 140, y: 140 };
+    try {
+      const store = useAppStore.getState();
+      store.beginTransaction("Adicionar imagens ao quadro");
+      let ids: string[] = [];
+      try {
+        ids = await importFiles(files, position, { boardId: childBoard.id });
+        store.endTransaction();
+      } catch (error) {
+        store.cancelTransaction();
+        throw error;
+      }
+      if (ids.length === 0) {
+        toast.error("Nenhum arquivo pôde ser adicionado.");
+        return;
+      }
+      toast.success(
+        ids.length === 1
+          ? `Anexo adicionado ao quadro "${childBoard.title}"`
+          : `${ids.length} anexos adicionados ao quadro "${childBoard.title}"`,
+        { description: "Abra o quadro para ver e organizar os itens." },
+      );
+    } catch (error) {
+      toast.error("Falha ao adicionar ao quadro", {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
+  };
+
+  const isFileDrag = (event: React.DragEvent<HTMLDivElement>) =>
+    event.dataTransfer.types.includes("Files");
+
   return (
-    <div className="node-surface flex h-full flex-col overflow-hidden rounded-xl border border-[var(--node-border)]">
+    <div
+      className={cn(
+        "node-surface relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--node-border)]",
+        dropActive && "ring-2 ring-primary ring-offset-1",
+      )}
+      data-drop-target="board"
+      onDragOver={(event) => {
+        if (!isFileDrag(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.dataTransfer.dropEffect = "copy";
+        setDropActive(true);
+      }}
+      onDragLeave={(event) => {
+        if (event.currentTarget.contains(event.relatedTarget as Node)) return;
+        setDropActive(false);
+      }}
+      onDrop={(event) => {
+        if (!isFileDrag(event)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        setDropActive(false);
+        const files = Array.from(event.dataTransfer.files);
+        if (files.length > 0) void attachFiles(files);
+      }}
+    >
       <div className="flex items-center gap-1.5 border-b border-current/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.09em] opacity-60">
         <LayoutDashboard className="h-3.5 w-3.5" />
         <span>Quadro aninhado</span>
@@ -207,6 +273,14 @@ export function BoardNode({ node, editing }: NodeProps) {
           )}
         </div>
       </div>
+
+      {dropActive ? (
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl bg-primary/10 ring-2 ring-primary/60">
+          <span className="rounded-md bg-popover px-2 py-1 text-[10px] font-semibold shadow">
+            Solte para adicionar ao quadro
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -100,10 +100,19 @@ async function measureImage(file: File): Promise<{ width: number; height: number
 }
 
 /**
- * Salva arquivos como anexos e cria os elementos correspondentes no quadro ativo.
- * Retorna os ids dos nós criados.
+ * Salva arquivos como anexos e cria os elementos correspondentes.
+ * Retorna os ids dos nós criados (não os ids dos anexos).
  */
-export async function importFiles(files: File[], position: Point): Promise<ID[]> {
+export interface ImportFilesOptions {
+  boardId?: string;
+  parentId?: string | null;
+}
+
+export async function importFiles(
+  files: File[],
+  position: Point,
+  options: ImportFilesOptions = {},
+): Promise<ID[]> {
   const created: ID[] = [];
   let index = 0;
   for (const file of files) {
@@ -118,10 +127,12 @@ export async function importFiles(files: File[], position: Point): Promise<ID[]>
       width = targetWidth;
       height = size ? Math.max(140, Math.min(460, Math.round((targetWidth * size.height) / size.width))) : 240;
     }
-    useAppStore.getState().addNode(
+    const nodeId = useAppStore.getState().addNode(
       kind,
       { x: position.x + offset, y: position.y + offset },
       {
+        boardId: options.boardId,
+        parentId: options.parentId,
         attachmentId: meta.id,
         name: file.name,
         mime: meta.mime,
@@ -129,10 +140,9 @@ export async function importFiles(files: File[], position: Point): Promise<ID[]>
         title: file.name,
         w: width,
         h: height,
-        color: kind === "file" ? "none" : "none",
       },
     );
-    created.push(meta.id);
+    if (nodeId) created.push(nodeId);
     index += 1;
   }
   useAppStore.getState().bumpAttachments();

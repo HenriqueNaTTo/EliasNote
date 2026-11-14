@@ -21,6 +21,7 @@ import {
 } from "@/core/domain/factories";
 import {
   activeBoard,
+  activeBoardId,
   locateNode,
   relayoutColumn,
 } from "./helpers";
@@ -59,8 +60,11 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
 
   addNode: (type, position, options: AddNodeOptions = {}) => {
     const state = get();
-    const board = activeBoard(state);
+    const board = options.boardId
+      ? state.boards[options.boardId]
+      : activeBoard(state);
     if (!board) return null;
+    const isActiveBoard = activeBoardId(state) === board.id;
 
     const size = defaultSize(type);
     const parentColumn =
@@ -97,9 +101,11 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
       target.nodes[node.id] = node;
       target.updatedAt = Date.now();
       if (parentColumn) relayoutColumn(draft, board.id, parentColumn.id);
-      draft.selection = [node.id];
-      draft.selectedConnectors = [];
-      draft.editingNodeId = null;
+      if (isActiveBoard) {
+        draft.selection = [node.id];
+        draft.selectedConnectors = [];
+        draft.editingNodeId = null;
+      }
     });
     return node.id;
   },

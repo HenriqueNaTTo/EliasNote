@@ -391,6 +391,12 @@ export function Canvas() {
       style={backgroundStyle}
       onPointerDown={handleSurfacePointerDown}
       onDoubleClick={handleDoubleClick}
+      onDragOverCapture={(event) => {
+        const target = event.target;
+        if (target instanceof Element && target.closest("[data-drop-target]")) {
+          setDropActive(false);
+        }
+      }}
       onDragOver={(event) => {
         if (!event.dataTransfer.types.includes("Files")) return;
         event.preventDefault();

@@ -50,6 +50,8 @@ O script `scripts/copy-excalidraw-assets.mjs` copia as fontes/dados do Excalidra
 - `src/core/import/obsidianExample.test.ts` — validade do cofre de exemplo do repositório.
 - `src/core/import/importVault.test.ts` — importação no store, referências e undo.
 - `src/features/import/ObsidianImportDialog.test.tsx` — fluxo completo: pasta, resumo, importação e workspace.
+- `src/features/nodes/drops.test.tsx` — drop de imagens em notas e quadros aninhados.
+- `src/features/drawing/sceneMerge.test.ts` — remapeamento e mesclagem de cenas Excalidraw.
 - `src-tauri/src/vault.rs` — teste Rust de leitura recursiva do cofre (`cargo test`).
 - `src/core/persistence/persistence.test.ts` — migrações, snapshot, autosave e backups.
 - `src/features/nodes/nodes.test.tsx` — interação real com tarefa, checklist e nota.

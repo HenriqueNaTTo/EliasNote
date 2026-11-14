@@ -11,6 +11,8 @@ O EliasNote importa um cofre (vault) do Obsidian como um **workspace novo**, sem
 
 Há um cofre de exemplo em [`examples/obsidian-vault`](../examples/obsidian-vault) para testar o fluxo.
 
+Depois de importar um `.excalidraw` do cofre, ele vira um nó de desenho. Para reaproveitar essa cena em outro desenho, abra o desenho de destino, use **Cena → Mesclar desenho do workspace** e escolha o desenho importado. Também é possível usar **Cena → Colar cena do clipboard** ou importar o arquivo `.excalidraw` diretamente no editor.
+
 A importação é uma única operação no histórico: `Ctrl/Cmd + Z` desfaz o workspace inteiro. O cofre no disco não é modificado.
 
 ## O que é convertido

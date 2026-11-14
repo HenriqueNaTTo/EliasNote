@@ -9,8 +9,9 @@ Aplicativo desktop **local-first** de organização visual inspirado no Milanote
 - **Canvas infinito** com zoom/pan por mouse, trackpad e barra de espaço, culling de elementos visíveis, minimapa, encaixe em grade e seleção múltipla com caixa.
 - **Elementos**: nota Markdown, cartão, tarefa, checklist com progresso, imagem, vídeo, arquivo, link, quadro aninhado, coluna, comentário local e desenho Excalidraw.
 - **Colunas inteligentes**: arraste elementos para dentro, reordene, recolha, redimensione e mova a coluna inteira com os filhos.
+- **Imagens por arraste**: solte arquivos sobre uma nota para anexá-los com miniatura dentro do cartão ou sobre um quadro aninhado para enviá-los ao quadro filho.
 - **Conectores e setas**: curva, reta ou cotovelo; rótulos, cores, tracejado e setas nas pontas.
-- **Excalidraw integrado**: editor em tela cheia com salvamento automático, miniaturas no canvas, biblioteca local de elementos, importação `.excalidraw` e exportação PNG/SVG/PDF.
+- **Excalidraw integrado**: editor em tela cheia com salvamento automático, miniaturas no canvas, biblioteca local, importação `.excalidraw` e exportação PNG/SVG/PDF. O menu **Cena** mescla outra cena (clipboard, arquivo ou outro desenho do workspace) preservando bindings e imagens.
 - **Workspaces e abas** com árvore de quadros arrastável, subquadros recursivos, duplicação e ordenação.
 - **Busca global** (Ctrl/Cmd+K) em títulos, notas, tarefas, checklists, links, comentários, etiquetas e quadros.
 - **Referências bidirecionais** entre quadros e elementos, com painel de backlinks.
@@ -32,7 +33,7 @@ Pré-requisitos:
 ```bash
 npm install
 npm run dev        # frontend no navegador (IndexedDB)
-npm test           # 65 testes unitários, de componentes e de integração
+npm test           # 70 testes unitários, de componentes e de integração
 npm run build      # typecheck + build de produção
 npm run tauri dev  # aplicativo desktop com SQLite
 npm run tauri build -- --bundles nsis

@@ -68,6 +68,8 @@ export interface AddNodeOptions {
   w?: number;
   h?: number;
   parentId?: ID | null;
+  /** Quadro de destino; padrão é o quadro ativo. */
+  boardId?: ID;
   attachmentId?: ID;
   src?: string;
   name?: string;

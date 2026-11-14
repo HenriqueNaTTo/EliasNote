@@ -7,13 +7,13 @@ import {
   Maximize2,
   Upload,
   Video,
-  X,
 } from "lucide-react";
 import { useAppStore } from "@/core/store";
 import { cn, formatBytes, truncate } from "@/lib/utils";
 import { hostnameOf, openExternal } from "@/lib/platform";
 import { saveAttachment, useAttachmentUrl } from "@/core/media/attachments";
 import { Button } from "@/components/ui/button";
+import { ImageLightbox } from "./ImageLightbox";
 import { stopDrag } from "./nodeUi";
 import type { NodeProps } from "./types";
 
@@ -100,25 +100,11 @@ export function ImageNode({ node }: NodeProps) {
       ) : null}
 
       {lightbox && source ? (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 p-6"
-          onPointerDown={(event) => {
-            event.stopPropagation();
-            setLightbox(false);
-          }}
-        >
-          <button
-            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
-            aria-label="Fechar"
-          >
-            <X className="h-5 w-5" />
-          </button>
-          <img
-            src={source}
-            alt={node.caption || node.name || "Imagem"}
-            className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
-          />
-        </div>
+        <ImageLightbox
+          src={source}
+          alt={node.caption || node.name || "Imagem"}
+          onClose={() => setLightbox(false)}
+        />
       ) : null}
       {picker.element}
     </div>

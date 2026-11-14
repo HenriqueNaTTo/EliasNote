@@ -10,6 +10,8 @@
 - Duplicar, trazer para frente, enviar para trás, bloquear, ocultar e excluir com desfazer.
 - Duplo clique em área vazia cria uma nota; duplo clique em um elemento abre o editor correspondente.
 - Arraste arquivos do sistema para o canvas: imagens, vídeos, arquivos, Markdown (vira nota), `.excalidraw` (vira desenho) e JSON (importa elementos).
+- Arraste imagens/arquivos para uma **nota**: o anexo é salvo localmente, a miniatura aparece dentro do cartão e o elemento fica ao lado com referência bidirecional.
+- Arraste arquivos para um **quadro aninhado**: eles entram diretamente no quadro filho (com aviso), sem duplicar no quadro atual.
 
 ## Elementos
 
@@ -37,6 +39,8 @@
 - Biblioteca de elementos persistida localmente e importável/exportável em `.excalidrawlib` pela própria biblioteca.
 - Exportação do desenho em PNG, SVG e PDF.
 - Importação de arquivos `.excalidraw` por arraste ou pelo diálogo de importação.
+- **Mesclagem de cenas** pelo menu **Cena**: colar do clipboard, importar um `.excalidraw` ou mesclar outro desenho do workspace (inclusive importado do Obsidian).
+- A mesclagem gera novos IDs, remapeia textos/containers, setas/bindings, grupos e imagens, e desloca a cena para não sobrepor o conteúdo existente.
 
 ## Quadros, workspaces e abas
 

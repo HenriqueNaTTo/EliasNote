@@ -47,6 +47,8 @@ O store usa Zustand 5 + middleware Immer e é dividido em slices:
 - `visibleNodes` faz culling por interseção com o viewport + margem. Com 5.000 elementos, apenas algumas dezenas são montadas (teste dedicado).
 - `CanvasNodeView` é memoizado e só recebe `node`, `zoom` e flags; arraste/resize usam listeners globais com transação, sem re-render extra por frame além do necessário.
 - Nós de desenho não montam o Excalidraw: usam a miniatura PNG armazenada na cena; o editor completo é carregado sob demanda (`React.lazy`).
+- Drops de arquivos são roteados por alvo: notas criam anexos e referências; quadros aninhados usam `addNode` com `boardId` e recebem os elementos no quadro filho.
+- O editor Excalidraw expõe o menu `Cena`, que usa `mergeExcalidrawScenes` para remapear elementos, bindings, grupos e arquivos antes de `updateScene`/`addFiles`.
 
 ## Importação externa (`core/import`)
 
