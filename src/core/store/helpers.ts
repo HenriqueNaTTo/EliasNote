@@ -1,9 +1,7 @@
 import type { Draft } from "immer";
-import type { Board, CanvasNode, ID } from "@/core/domain/types";
-import {
-  columnContentHeight,
-  layoutColumnNodes,
-} from "@/core/domain/factories";
+import { uid } from "@/lib/utils";
+import type { Board, CanvasNode, Connector, ID } from "@/core/domain/types";
+import { cloneNode, columnContentHeight, createBoard, layoutColumnNodes } from "@/core/domain/factories";
 import type { AppState } from "./types";
 
 export function boardById(state: Pick<AppState, "boards">, boardId: ID | null | undefined): Board | undefined {
@@ -143,4 +141,101 @@ export function openBoardInDraft(draft: Draft<AppState>, boardId: ID): void {
   draft.selectedConnectors = [];
   draft.editingNodeId = null;
   draft.activeTool = "select";
+}
+
+/** Inclui os filhos das colunas selecionadas (a coluna leva os itens junto). */
+export function collectWithColumnChildren(
+  board: { nodes: Record<ID, CanvasNode> },
+  ids: ID[],
+): ID[] {
+  const result = new Set(ids);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const node of Object.values(board.nodes)) {
+      if (node.parentId && result.has(node.parentId) && !result.has(node.id)) {
+        result.add(node.id);
+        changed = true;
+      }
+    }
+  }
+  return Array.from(result);
+}
+
+/**
+ * Duplica um quadro (com subquadros aninhados, elementos e conectores) dentro do draft.
+ * O quadro criado ainda não é vinculado à ordem de filhos do pai — quem chama decide.
+ */
+export function duplicateBoardInDraft(
+  draft: Draft<AppState>,
+  sourceId: ID,
+  parentId: ID | null,
+  options: { titleSuffix?: string; offset?: number } = {},
+): ID | null {
+  const source = draft.boards[sourceId];
+  if (!source) return null;
+  const rootOffset = options.offset ?? 0;
+  const visited = new Set<ID>();
+
+  const duplicate = (board: Board, nextParentId: ID | null, isRoot: boolean): Board => {
+    visited.add(board.id);
+    const copy = createBoard({
+      workspaceId: board.workspaceId,
+      parentId: nextParentId,
+      title: isRoot && options.titleSuffix ? `${board.title}${options.titleSuffix}` : board.title,
+      color: board.color,
+      icon: board.icon,
+    });
+    copy.description = board.description;
+    const idMap = new Map<ID, ID>();
+    const offset = isRoot ? rootOffset : 0;
+
+    for (const node of Object.values(board.nodes).sort((a, b) => a.createdAt - b.createdAt)) {
+      const cloned = cloneNode(node, {
+        parentId: null,
+        order: node.order,
+        x: node.x + offset,
+        y: node.y + offset,
+      });
+      idMap.set(node.id, cloned.id);
+      copy.nodes[cloned.id] = cloned;
+    }
+
+    for (const node of Object.values(board.nodes)) {
+      const cloned = copy.nodes[idMap.get(node.id) ?? ""];
+      if (!cloned) continue;
+      if (node.parentId && idMap.has(node.parentId)) cloned.parentId = idMap.get(node.parentId) ?? null;
+      if (node.type === "board" && node.childBoardId) {
+        const nested = draft.boards[node.childBoardId];
+        if (!nested || visited.has(nested.id)) continue;
+        const childCopy = duplicate(nested, copy.id, false);
+        copy.childOrder.push(childCopy.id);
+        cloned.childBoardId = childCopy.id;
+      }
+    }
+
+    for (const connector of Object.values(board.connectors)) {
+      const clonedConnector: Connector = {
+        ...connector,
+        id: uid("conn"),
+        boardId: copy.id,
+        from: { ...connector.from },
+        to: { ...connector.to },
+      };
+      if (clonedConnector.from.nodeId && idMap.has(clonedConnector.from.nodeId)) {
+        clonedConnector.from.nodeId = idMap.get(clonedConnector.from.nodeId) ?? null;
+      }
+      if (clonedConnector.to.nodeId && idMap.has(clonedConnector.to.nodeId)) {
+        clonedConnector.to.nodeId = idMap.get(clonedConnector.to.nodeId) ?? null;
+      }
+      copy.connectors[clonedConnector.id] = clonedConnector;
+    }
+
+    copy.updatedAt = Date.now();
+    draft.boards[copy.id] = copy;
+    draft.viewports[copy.id] = { x: 120, y: 90, zoom: 1 };
+    return copy;
+  };
+
+  return duplicate(source, parentId, true).id;
 }

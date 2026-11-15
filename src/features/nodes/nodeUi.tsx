@@ -11,6 +11,7 @@ import {
   PenTool,
   Square,
   StickyNote,
+  Type,
   Video,
 } from "lucide-react";
 import type { NodeColor, NodeType } from "@/core/domain/types";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 
 export const NODE_ICONS: Record<NodeType, LucideIcon> = {
   note: StickyNote,
+  text: Type,
   card: Square,
   task: CheckSquare,
   checklist: ListChecks,
@@ -65,6 +67,8 @@ export function nodeDisplayName(type: NodeType): string {
   switch (type) {
     case "note":
       return "Nota";
+    case "text":
+      return "Texto";
     case "card":
       return "Cartão";
     case "task":

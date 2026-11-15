@@ -10,6 +10,7 @@ export interface ConnectorDraft {
 export function toolToNodeType(tool: string): string | null {
   switch (tool) {
     case "note":
+    case "text":
     case "card":
     case "task":
     case "checklist":

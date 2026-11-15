@@ -11,6 +11,7 @@ import type {
   EntityRef,
   HistoryEntry,
   ID,
+  NodeTransferMode,
   NodeType,
   Tab,
   TemplateDefinition,
@@ -95,6 +96,13 @@ export interface HistorySlice {
   clearHistory: () => void;
 }
 
+export interface NodeTransferResult {
+  boardId: ID;
+  title: string;
+  count: number;
+  mode: NodeTransferMode;
+}
+
 export interface NodeSlice {
   selection: ID[];
   selectedConnectors: ID[];
@@ -108,6 +116,8 @@ export interface NodeSlice {
   updateNodeSilent: (nodeId: ID, patch: Partial<CanvasNode>) => void;
   removeNodes: (ids: ID[]) => void;
   duplicateNodes: (ids: ID[]) => void;
+  /** Move ou copia elementos (com colunas, subquadros e conectores) para outro quadro. */
+  transferNodes: (ids: ID[], targetBoardId: ID, mode: NodeTransferMode) => NodeTransferResult | null;
   moveNodes: (ids: ID[], delta: Point) => void;
   resizeNode: (nodeId: ID, rect: { x: number; y: number; w: number; h: number }) => void;
   select: (ids: ID[]) => void;
@@ -179,6 +189,18 @@ export interface UiSlice {
   canvasSize: Size;
   sidebarCollapsed: boolean;
   dialog: DialogKind | null;
+  /** Elementos escolhidos para mover/copiar entre quadros (diálogo aberto). */
+  nodeTransfer: { nodeIds: ID[]; mode: NodeTransferMode } | null;
+  openNodeTransfer: (nodeIds: ID[], mode: NodeTransferMode) => void;
+  closeNodeTransfer: () => void;
+  /** Arraste de elementos sobre um quadro de destino (destaque e confirmação). */
+  nodeDrag: { nodeIds: ID[]; overBoardId: ID | null; mode: NodeTransferMode } | null;
+  startNodeDrag: (nodeIds: ID[]) => void;
+  hoverNodeDragTarget: (boardId: ID | null, mode: NodeTransferMode) => void;
+  endNodeDrag: () => void;
+  /** Quadro que acabou de receber elementos — dispara a animação de confirmação. */
+  dropFlash: { boardId: ID; at: number } | null;
+  flashDropTarget: (boardId: ID) => void;
   settingsSection: "geral" | "aparencia" | "canvas" | "atalhos" | "dados" | "sobre";
   inspectorTab: "props" | "references" | "comments";
   status: SaveStatus;

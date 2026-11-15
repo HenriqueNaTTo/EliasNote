@@ -166,6 +166,13 @@ export function migrateSettings(raw: unknown): AppSettings {
           )
         : {},
   };
+  // Migração de aparência para o visual Milanote (acento azul, canvas liso).
+  if (number(settings.visualVersion, 0) < 2) {
+    merged.accent = "blue";
+    merged.canvasTexture = "plain";
+    merged.showNodeShadows = true;
+  }
+  merged.visualVersion = 2;
   return merged;
 }
 

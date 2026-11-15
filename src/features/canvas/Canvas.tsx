@@ -21,6 +21,7 @@ import { openDialogs } from "@/features/shell/dialogActions";
 
 const TOOL_TYPES: Partial<Record<string, NodeType>> = {
   note: "note",
+  text: "text",
   card: "card",
   task: "task",
   checklist: "checklist",
@@ -240,6 +241,7 @@ export function Canvas() {
         y: Math.round(world.y - dimensions.h / 2),
       });
       if (id && nodeType === "drawing") state.openDrawing(id);
+      if (id && nodeType === "text") state.setEditingNode(id);
       state.setTool("select");
       return;
     }

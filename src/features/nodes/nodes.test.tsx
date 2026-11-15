@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useAppStore } from "@/core/store";
 import { makePayload, addNodeToPayload } from "@/test/fixtures";
 import { TaskNode } from "./TaskNode";
 import { ChecklistNode } from "./ChecklistNode";
 import { NoteNode } from "./NoteNode";
+import { TextNode } from "./TextNode";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { CanvasNode } from "@/core/domain/types";
 
@@ -114,5 +115,27 @@ describe("nós do canvas", () => {
     expect(screen.getByTitle("Editar Esboço")).toBeInTheDocument();
     expect(screen.getByText("Esboço")).toBeInTheDocument();
     expect(screen.getByLabelText("Criar desenho vinculado")).toBeInTheDocument();
+  });
+
+  it("escreve texto avulso sem moldura de nota", async () => {
+    const test = makePayload();
+    const text = addNodeToPayload(test, { type: "text", x: 1, y: 1, content: "" });
+    useAppStore.getState().hydrate(test.payload);
+
+    function TextHarness() {
+      const node = useAppStore((state) => state.boards[test.boardId].nodes[text.id]);
+      const editing = useAppStore((state) => state.editingNodeId === text.id);
+      return <TextNode node={node} editing={editing} selected={editing} />;
+    }
+
+    render(<TextHarness />);
+    expect(screen.getByText("Texto")).toBeInTheDocument();
+
+    act(() => useAppStore.getState().setEditingNode(text.id));
+    const user = userEvent.setup();
+    const textarea = await screen.findByPlaceholderText("Escreva algo…");
+    await user.type(textarea, "Bom dia");
+
+    expect(harnessFor(text.id, test.boardId)().content).toBe("Bom dia");
   });
 });

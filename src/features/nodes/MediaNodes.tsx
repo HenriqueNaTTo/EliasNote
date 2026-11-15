@@ -14,7 +14,7 @@ import { hostnameOf, openExternal } from "@/lib/platform";
 import { saveAttachment, useAttachmentUrl } from "@/core/media/attachments";
 import { Button } from "@/components/ui/button";
 import { ImageLightbox } from "./ImageLightbox";
-import { stopDrag } from "./nodeUi";
+import { nodeColorClass, stopDrag } from "./nodeUi";
 import type { NodeProps } from "./types";
 
 function useFilePicker(nodeId: string, kind: "image" | "video" | "file") {
@@ -56,46 +56,47 @@ export function ImageNode({ node }: NodeProps) {
   const source = url ?? node.src ?? "";
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl border border-[var(--node-border)] bg-muted">
-      {source ? (
-        <img
-          src={source}
-          alt={node.caption || node.name || "Imagem"}
-          draggable={false}
-          className={cn("h-full w-full", node.fit === "contain" ? "object-contain" : "object-cover")}
-          onDoubleClick={() => setLightbox(true)}
-        />
-      ) : (
-        <button
-          type="button"
-          data-no-drag
-          onPointerDown={stopDrag}
-          onClick={picker.open}
-          className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/70"
-        >
-          <Upload className="h-5 w-5" />
-          <span className="text-xs font-medium">Escolher imagem</span>
-        </button>
-      )}
+    <div className="relative flex h-full w-full flex-col overflow-hidden rounded-none border border-[var(--node-border)] bg-card">
+      <div className="group/image relative min-h-0 flex-1 overflow-hidden bg-muted">
+        {source ? (
+          <img
+            src={source}
+            alt={node.caption || node.name || "Imagem"}
+            draggable={false}
+            className={cn("h-full w-full", node.fit === "contain" ? "object-contain" : "object-cover")}
+            onDoubleClick={() => setLightbox(true)}
+          />
+        ) : (
+          <button
+            type="button"
+            data-no-drag
+            onPointerDown={stopDrag}
+            onClick={picker.open}
+            className="flex h-full w-full flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/70"
+          >
+            <Upload className="h-5 w-5" />
+            <span className="text-xs font-medium">Escolher imagem</span>
+          </button>
+        )}
 
-      {source ? (
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-0 transition-opacity hover:opacity-100">
-          <div className="pointer-events-auto flex items-end justify-between gap-2 p-2">
-            <p className="line-clamp-2 text-[11px] font-medium text-white/90">
-              {node.caption || node.name || "Imagem"}
-            </p>
-            <Button
-              data-no-drag
-              onPointerDown={stopDrag}
-              size="icon-xs"
-              variant="secondary"
-              className="bg-black/40 text-white hover:bg-black/60"
-              onClick={() => setLightbox(true)}
-              aria-label="Ampliar imagem"
-            >
-              <Maximize2 className="h-3 w-3" />
-            </Button>
-          </div>
+        {source ? (
+          <Button
+            data-no-drag
+            onPointerDown={stopDrag}
+            size="icon-xs"
+            variant="secondary"
+            className="absolute right-2 top-2 h-6 w-6 rounded-none bg-black/45 text-white opacity-0 transition-opacity hover:bg-black/65 group-hover/image:opacity-100"
+            onClick={() => setLightbox(true)}
+            aria-label="Ampliar imagem"
+          >
+            <Maximize2 className="h-3 w-3" />
+          </Button>
+        ) : null}
+      </div>
+
+      {node.caption ? (
+        <div className="shrink-0 truncate border-t border-border px-2.5 py-1.5 text-[10.5px] text-muted-foreground">
+          {node.caption}
         </div>
       ) : null}
 
@@ -117,24 +118,26 @@ export function VideoNode({ node }: NodeProps) {
   const source = url ?? node.src ?? "";
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-xl border border-[var(--node-border)] bg-black">
-      {source ? (
-        <video src={source} controls className="h-full w-full bg-black object-contain" preload="metadata" />
-      ) : (
-        <button
-          type="button"
-          data-no-drag
-          onPointerDown={stopDrag}
-          onClick={picker.open}
-          className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/70 hover:text-white"
-        >
-          <Video className="h-5 w-5" />
-          <span className="text-xs font-medium">Escolher vídeo</span>
-        </button>
-      )}
+    <div className="relative flex h-full w-full flex-col overflow-hidden rounded-none border border-[var(--node-border)] bg-card">
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
+        {source ? (
+          <video src={source} controls className="h-full w-full bg-black object-contain" preload="metadata" />
+        ) : (
+          <button
+            type="button"
+            data-no-drag
+            onPointerDown={stopDrag}
+            onClick={picker.open}
+            className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/70 hover:text-white"
+          >
+            <Video className="h-5 w-5" />
+            <span className="text-xs font-medium">Escolher vídeo</span>
+          </button>
+        )}
+      </div>
       {node.caption ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2">
-          <p className="line-clamp-1 text-[11px] text-white/85">{node.caption}</p>
+        <div className="shrink-0 truncate border-t border-border px-2.5 py-1.5 text-[10.5px] text-muted-foreground">
+          {node.caption}
         </div>
       ) : null}
       {picker.element}
@@ -147,8 +150,13 @@ export function FileNode({ node }: NodeProps) {
   const picker = useFilePicker(node.id, "file");
 
   return (
-    <div className="node-surface flex h-full items-center gap-3 overflow-hidden rounded-xl border px-3.5">
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-current/10">
+    <div
+      className={cn(
+        "node-surface flex h-full items-center gap-3 overflow-hidden rounded-none border px-3.5",
+        nodeColorClass(node.color),
+      )}
+    >
+      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-none bg-current/10">
         <FileText className="h-5 w-5 opacity-70" />
       </div>
       <div className="min-w-0 flex-1">
@@ -165,7 +173,7 @@ export function FileNode({ node }: NodeProps) {
             target="_blank"
             rel="noreferrer"
             onPointerDown={stopDrag}
-            className="grid h-7 w-7 place-items-center rounded-md bg-current/10 hover:bg-current/20"
+            className="grid h-7 w-7 place-items-center rounded-none bg-current/10 hover:bg-current/20"
             aria-label="Baixar arquivo"
           >
             <Download className="h-3.5 w-3.5" />
@@ -193,9 +201,14 @@ export function LinkNode({ node, editing }: NodeProps) {
   const host = node.url ? hostnameOf(node.url) : "sem link";
 
   return (
-    <div className="node-surface flex h-full flex-col gap-1.5 overflow-hidden rounded-xl border px-3.5 py-3">
-      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide opacity-55">
-        <Globe className="h-3.5 w-3.5" />
+    <div
+      className={cn(
+        "node-surface flex h-full flex-col gap-2 overflow-hidden rounded-none border px-3.5 py-3.5",
+        nodeColorClass(node.color),
+      )}
+    >
+      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] opacity-55">
+        <Globe className="h-3 w-3" />
         <span className="truncate normal-case tracking-normal">{host}</span>
       </div>
       {editing ? (

@@ -28,6 +28,7 @@ interface ItemOptions {
 function item(key: string, type: NodeType, x: number, y: number, options: ItemOptions = {}): TemplateItem {
   const defaults: Record<NodeType, { w: number; h: number }> = {
     note: { w: 300, h: 240 },
+    text: { w: 280, h: 64 },
     card: { w: 260, h: 160 },
     task: { w: 280, h: 64 },
     checklist: { w: 290, h: 210 },

@@ -4,6 +4,7 @@ import { ChecklistNode } from "./ChecklistNode";
 import { DrawingNode } from "./DrawingNode";
 import { FileNode, ImageNode, LinkNode, VideoNode } from "./MediaNodes";
 import { NoteNode } from "./NoteNode";
+import { TextNode } from "./TextNode";
 import { BoardNode, ColumnNode, CommentNode } from "./StructureNodes";
 import { TaskNode } from "./TaskNode";
 
@@ -19,6 +20,8 @@ export function NodeRenderer({ node, editing, selected }: NodeRendererProps) {
   switch (node.type) {
     case "note":
       return <NoteNode {...props} />;
+    case "text":
+      return <TextNode {...props} />;
     case "card":
       return <CardNode {...props} />;
     case "task":

@@ -2,7 +2,6 @@ import {
   ChevronDown,
   ChevronRight,
   LayoutDashboard,
-  MessageCircle,
   MoreHorizontal,
   Plus,
   Trash2,
@@ -14,7 +13,6 @@ import { activeBoard } from "@/core/store/helpers";
 import { boardStats } from "@/core/domain/tree";
 import { nodesBounds } from "@/core/domain/layout";
 import { importFiles } from "@/core/media/attachments";
-import { nodeDisplayTitle } from "@/core/search/search";
 import { cn, timeAgo, truncate } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -26,9 +24,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { NodeTypeIcon, nodeColorClass, stopDrag } from "./nodeUi";
+import type { NodeColor } from "@/core/domain/types";
 import type { NodeProps } from "./types";
 
-export function ColumnNode({ node, selected }: NodeProps) {
+const BOARD_TILE_COLORS: Record<NodeColor, string> = {
+  none: "#2F6FED",
+  sky: "#2F80ED",
+  mint: "#0F9D6E",
+  rose: "#E0473D",
+  amber: "#C97C05",
+  lilac: "#7C3AED",
+  sand: "#B45309",
+  slate: "#475569",
+};
+
+export function ColumnNode({ node }: NodeProps) {
   const board = useAppStore(activeBoard);
   const updateNode = useAppStore((state) => state.updateNode);
   const addNode = useAppStore((state) => state.addNode);
@@ -51,21 +61,17 @@ export function ColumnNode({ node, selected }: NodeProps) {
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col rounded-2xl border border-dashed",
+        "group/column node-column relative flex h-full flex-col overflow-hidden border",
         nodeColorClass(node.color),
       )}
-      style={{
-        backgroundColor: "color-mix(in srgb, var(--node-bg) 62%, transparent)",
-        borderColor: selected ? "hsl(var(--primary))" : "var(--node-border)",
-      }}
     >
-      <div className="flex h-[46px] shrink-0 items-center gap-1.5 px-2.5">
+      <div className="node-column-bar flex h-[46px] shrink-0 items-center gap-1.5 border-b px-1">
         <button
           type="button"
           data-no-drag
           onPointerDown={stopDrag}
           onClick={() => updateNode(node.id, { collapsed: !node.collapsed })}
-          className="rounded p-0.5 opacity-60 hover:bg-current/10 hover:opacity-100"
+          className="rounded-none p-0.5 text-muted-foreground opacity-70 hover:bg-foreground/5 hover:opacity-100"
           aria-label={node.collapsed ? "Expandir coluna" : "Recolher coluna"}
         >
           {node.collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -76,9 +82,9 @@ export function ColumnNode({ node, selected }: NodeProps) {
           onChange={(event) => updateNode(node.id, { title: event.target.value }, { label: "Editar coluna" })}
           onPointerDown={stopDrag}
           placeholder="Coluna"
-          className="node-input min-w-0 flex-1 text-[12px] font-semibold uppercase tracking-wide placeholder:opacity-40"
+          className="node-input min-w-0 flex-1 text-[12.5px] font-semibold placeholder:opacity-40"
         />
-        <span className="shrink-0 rounded bg-current/10 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums opacity-70">
+        <span className="shrink-0 px-1 text-[10px] font-medium tabular-nums text-muted-foreground">
           {children.length}
         </span>
         <DropdownMenu>
@@ -88,7 +94,7 @@ export function ColumnNode({ node, selected }: NodeProps) {
               onPointerDown={stopDrag}
               variant="ghost"
               size="icon-xs"
-              className="text-current opacity-60 hover:bg-current/10 hover:opacity-100"
+              className="rounded-none text-muted-foreground opacity-60 hover:bg-foreground/5 hover:opacity-100"
               aria-label="Ações da coluna"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
@@ -98,6 +104,9 @@ export function ColumnNode({ node, selected }: NodeProps) {
             <DropdownMenuLabel>Adicionar à coluna</DropdownMenuLabel>
             <DropdownMenuItem onClick={() => addChild("note")}>
               <NodeTypeIcon type="note" /> Nota
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addChild("text")}>
+              <NodeTypeIcon type="text" /> Texto
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => addChild("task")}>
               <NodeTypeIcon type="task" /> Tarefa
@@ -124,13 +133,13 @@ export function ColumnNode({ node, selected }: NodeProps) {
       </div>
 
       {node.collapsed ? (
-        <div className="flex flex-1 items-start px-3 pt-1 text-[11px] opacity-55">
+        <div className="flex flex-1 items-start px-1 pt-1.5 text-[11px] text-muted-foreground">
           {children.length} {children.length === 1 ? "item recolhido" : "itens recolhidos"}
         </div>
       ) : children.length === 0 ? (
-        <div className="m-2.5 flex flex-1 flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-current/20 px-3 text-center">
-          <Plus className="h-4 w-4 opacity-30" />
-          <p className="text-[11px] leading-snug opacity-50">
+        <div className="m-1 flex flex-1 flex-col items-center justify-center gap-1.5 rounded-none border border-dashed border-border px-3 text-center">
+          <Plus className="h-4 w-4 text-muted-foreground/50" />
+          <p className="text-[11px] leading-snug text-muted-foreground">
             Arraste elementos para esta coluna ou use o menu
           </p>
         </div>
@@ -150,13 +159,15 @@ export function BoardNode({ node, editing }: NodeProps) {
   const updateNode = useAppStore((state) => state.updateNode);
   const openBoard = useAppStore((state) => state.openBoard);
   const [dropActive, setDropActive] = useState(false);
-
-  const preview = useMemo(() => {
-    if (!childBoard) return [];
-    return Object.values(childBoard.nodes)
-      .sort((a, b) => a.z - b.z)
-      .slice(0, 10);
-  }, [childBoard]);
+  const dropMode = useAppStore((state) =>
+    node.childBoardId && state.nodeDrag?.overBoardId === node.childBoardId ? state.nodeDrag.mode : null,
+  );
+  const dropCount = useAppStore((state) =>
+    node.childBoardId && state.nodeDrag?.overBoardId === node.childBoardId ? state.nodeDrag.nodeIds.length : 0,
+  );
+  const justReceived = useAppStore((state) =>
+    Boolean(node.childBoardId && state.dropFlash?.boardId === node.childBoardId),
+  );
 
   const stats = childBoard ? boardStats(childBoard) : { nodes: 0, tasks: 0, tasksDone: 0, boards: 0 };
 
@@ -200,9 +211,12 @@ export function BoardNode({ node, editing }: NodeProps) {
   return (
     <div
       className={cn(
-        "node-surface relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--node-border)]",
+        "relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-black/10 p-3 text-white transition-[transform,box-shadow] duration-150 ease-out",
         dropActive && "ring-2 ring-primary ring-offset-1",
+        dropMode && "scale-[1.025] shadow-floating ring-2 ring-white/90",
+        justReceived && "animate-drop-pop",
       )}
+      style={{ backgroundColor: BOARD_TILE_COLORS[node.color] }}
       data-drop-target="board"
       onDragOver={(event) => {
         if (!isFileDrag(event)) return;
@@ -224,21 +238,21 @@ export function BoardNode({ node, editing }: NodeProps) {
         if (files.length > 0) void attachFiles(files);
       }}
     >
-      <div className="flex items-center gap-1.5 border-b border-current/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.09em] opacity-60">
-        <LayoutDashboard className="h-3.5 w-3.5" />
-        <span>Quadro aninhado</span>
+      <div className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.12em] text-white/80">
+        <LayoutDashboard className="h-4 w-4" />
+        <span>Quadro</span>
         <button
           type="button"
           data-no-drag
           onPointerDown={stopDrag}
           onClick={() => node.childBoardId && openBoard(node.childBoardId)}
-          className="ml-auto rounded bg-current/10 px-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal hover:bg-current/20"
+          className="ml-auto rounded-none border border-white/30 px-1.5 py-0.5 text-[10px] font-medium normal-case tracking-normal text-white transition-colors hover:bg-white/15"
         >
           Abrir
         </button>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-2 p-3">
+      <div className="min-w-0">
         {editing ? (
           <input
             data-no-drag
@@ -246,40 +260,40 @@ export function BoardNode({ node, editing }: NodeProps) {
             value={node.title ?? ""}
             onChange={(event) => updateNode(node.id, { title: event.target.value }, { label: "Editar quadro" })}
             onPointerDown={stopDrag}
-            className="node-input text-[15px] font-semibold"
+            className="node-input text-[16px] font-semibold text-white placeholder:text-white/50"
           />
         ) : (
-          <h3 className="text-[15px] font-semibold leading-snug">{childBoard?.title ?? node.title ?? "Quadro"}</h3>
+          <h3 className="line-clamp-2 text-[16px] font-semibold leading-snug">
+            {childBoard?.title ?? node.title ?? "Quadro"}
+          </h3>
         )}
-        <p className="text-[11px] opacity-60">
-          {stats.nodes} {stats.nodes === 1 ? "elemento" : "elementos"} · {stats.boards} subquadros ·{" "}
-          {stats.tasksDone}/{stats.tasks} tarefas
+        <p className="mt-1 text-[10.5px] text-white/75">
+          {stats.nodes} {stats.nodes === 1 ? "elemento" : "elementos"} · {stats.boards} subquadros
         </p>
-
-        <div className="mt-auto grid grid-cols-5 gap-1.5">
-          {preview.length === 0 ? (
-            <div className="col-span-5 rounded-lg border border-dashed border-current/20 px-2 py-4 text-center text-[10px] opacity-45">
-              Quadro vazio — abra para começar
-            </div>
-          ) : (
-            preview.map((child) => (
-              <div
-                key={child.id}
-                className={cn("h-7 rounded-md border border-current/10", `node-color-${child.color}`)}
-                style={{ backgroundColor: "var(--node-bg)" }}
-                title={nodeDisplayTitle(child)}
-              />
-            ))
-          )}
-        </div>
       </div>
 
       {dropActive ? (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl bg-primary/10 ring-2 ring-primary/60">
-          <span className="rounded-md bg-popover px-2 py-1 text-[10px] font-semibold shadow">
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-none bg-black/20 ring-2 ring-white/70">
+          <span className="rounded-none bg-white px-2 py-1 text-[10px] font-semibold text-foreground shadow">
             Solte para adicionar ao quadro
           </span>
         </div>
+      ) : null}
+
+      {dropMode ? (
+        <div className="pointer-events-none absolute inset-0 z-30 flex animate-[node-drop-in_140ms_ease-out] flex-col items-center justify-center gap-1.5 rounded-none bg-black/45 backdrop-blur-[1px]">
+          <span className="rounded-none bg-white px-2.5 py-1 text-[10.5px] font-semibold text-foreground shadow">
+            {dropMode === "copy" ? "Soltar para copiar" : "Soltar para mover"} {dropCount}{" "}
+            {dropCount === 1 ? "elemento" : "elementos"}
+          </span>
+          <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-white/80">
+            {dropMode === "copy" ? "Nova cópia no quadro" : "Segure Alt para copiar"}
+          </span>
+        </div>
+      ) : null}
+
+      {justReceived ? (
+        <span className="node-drop-flash pointer-events-none absolute inset-0 z-20 bg-white" aria-hidden />
       ) : null}
     </div>
   );
@@ -291,23 +305,30 @@ export function CommentNode({ node }: NodeProps) {
   const addReply = useAppStore((state) => state.addCommentReply);
 
   return (
-    <div className="node-surface flex h-full flex-col gap-1.5 overflow-hidden rounded-xl border">
-      <div className="flex items-center gap-1.5 px-3 pt-2.5 text-[10px] font-semibold uppercase tracking-wide opacity-60">
-        <MessageCircle className="h-3.5 w-3.5" />
-        <span>Comentário</span>
-        {node.resolved ? (
-          <span className="ml-auto rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] text-emerald-700 dark:text-emerald-300">
-            Resolvido
-          </span>
-        ) : (
-          <span className="ml-auto rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] text-amber-700 dark:text-amber-300">
-            Aberto
-          </span>
-        )}
-      </div>
-
-      <div className="px-3 text-[11px] opacity-60">
-        {node.author ?? "Você"} · {timeAgo(node.updatedAt)}
+    <div
+      className={cn(
+        "node-surface flex h-full flex-col gap-2 overflow-hidden rounded-none border",
+        nodeColorClass(node.color),
+      )}
+    >
+      <div className="flex items-center gap-2 px-3 pt-3">
+        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-none bg-primary/10 text-[10px] font-semibold uppercase text-primary">
+          {(node.author ?? "Você").slice(0, 1)}
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-[11px] font-semibold">{node.author ?? "Você"}</p>
+          <p className="text-[9.5px] text-muted-foreground">{timeAgo(node.updatedAt)}</p>
+        </div>
+        <span
+          className={cn(
+            "ml-auto rounded-none px-1.5 py-0.5 text-[9px] font-medium",
+            node.resolved
+              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+              : "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+          )}
+        >
+          {node.resolved ? "Resolvido" : "Aberto"}
+        </span>
       </div>
 
       <textarea
@@ -321,21 +342,21 @@ export function CommentNode({ node }: NodeProps) {
 
       <div className="scrollbar-thin max-h-24 overflow-auto px-3">
         {(node.replies ?? []).slice(-3).map((item) => (
-          <div key={item.id} className="border-t border-current/10 py-1 text-[11px] leading-snug">
+          <div key={item.id} className="border-t border-border py-1 text-[11px] leading-snug">
             <span className="font-semibold">{item.author}:</span>{" "}
             <span className="opacity-80">{truncate(item.content, 90)}</span>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center gap-1.5 border-t border-current/10 px-3 py-1.5">
+      <div className="flex items-center gap-1.5 border-t border-border px-3 py-1.5">
         <ReplyInput onSubmit={(text) => addReply(node.id, text)} />
         <button
           type="button"
           data-no-drag
           onPointerDown={stopDrag}
           onClick={() => toggleResolved(node.id)}
-          className="shrink-0 rounded bg-current/10 px-2 py-1 text-[10px] font-semibold hover:bg-current/20"
+          className="shrink-0 rounded-none bg-foreground/5 px-2 py-1 text-[10px] font-semibold hover:bg-foreground/10"
         >
           {node.resolved ? "Reabrir" : "Resolver"}
         </button>

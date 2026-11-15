@@ -9,12 +9,12 @@ export function CardNode({ node, editing }: NodeProps) {
   return (
     <div
       className={cn(
-        "node-surface flex h-full flex-col gap-1.5 overflow-hidden rounded-xl border px-3.5 pb-3 pt-3",
+        "node-surface flex h-full flex-col gap-2 overflow-hidden rounded-none border px-3.5 pb-3.5 pt-3.5",
         nodeColorClass(node.color),
       )}
     >
       {node.label?.trim() ? (
-        <span className="w-fit rounded bg-current/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide opacity-80">
+        <span className="w-fit text-[9px] font-semibold uppercase tracking-[0.12em] opacity-55">
           {node.label}
         </span>
       ) : null}
@@ -39,7 +39,7 @@ export function CardNode({ node, editing }: NodeProps) {
           className="node-input scrollbar-thin min-h-0 flex-1 resize-none text-xs leading-relaxed opacity-90 placeholder:opacity-40"
         />
       ) : (
-        <p className="scrollbar-thin min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-xs leading-relaxed opacity-75">
+        <p className="scrollbar-thin min-h-0 flex-1 overflow-auto whitespace-pre-wrap text-[12.5px] leading-relaxed opacity-75">
           {node.description?.trim() || "Duplo clique para adicionar uma descrição…"}
         </p>
       )}

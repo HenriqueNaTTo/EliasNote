@@ -20,6 +20,7 @@ import { descendantBoardIds, isDescendantOf } from "@/core/domain/tree";
 import { maxZ, nodesBounds } from "@/core/domain/layout";
 import {
   activeBoard,
+  duplicateBoardInDraft,
   ensureNavigation,
   openBoardInDraft,
   relayoutColumn,
@@ -277,74 +278,22 @@ export const createBoardSlice: AppStoreCreator<BoardSlice> = (set, get) => ({
     let createdId: ID | null = null;
 
     get().commit("Duplicar quadro", (draft) => {
-      const duplicate = (sourceBoard: Board, parentId: ID | null, isRoot: boolean): Board => {
-        const copy = createBoard({
-          workspaceId: sourceBoard.workspaceId,
-          parentId,
-          title: isRoot ? `${sourceBoard.title} (cópia)` : sourceBoard.title,
-          color: sourceBoard.color,
-          icon: sourceBoard.icon,
-        });
-        copy.description = sourceBoard.description;
-        const idMap = new Map<ID, ID>();
-        const offset = isRoot ? 48 : 0;
-        for (const node of Object.values(sourceBoard.nodes).sort((a, b) => a.createdAt - b.createdAt)) {
-          const cloned = cloneNode(node, {
-            parentId: null,
-            order: node.order,
-            x: node.x + offset,
-            y: node.y + offset,
-          });
-          idMap.set(node.id, cloned.id);
-          copy.nodes[cloned.id] = cloned;
-        }
-        for (const node of Object.values(sourceBoard.nodes)) {
-          const cloned = copy.nodes[idMap.get(node.id) ?? ""];
-          if (!cloned) continue;
-          if (node.parentId && idMap.has(node.parentId)) cloned.parentId = idMap.get(node.parentId) ?? null;
-          if (node.type === "board" && node.childBoardId) {
-            const nestedBoard = state.boards[node.childBoardId];
-            if (nestedBoard) {
-              const childCopy = duplicate(nestedBoard, copy.id, false);
-              copy.childOrder.push(childCopy.id);
-              cloned.childBoardId = childCopy.id;
-            }
-          }
-        }
-        for (const connector of Object.values(sourceBoard.connectors)) {
-          const clonedConnector: Connector = {
-            ...connector,
-            id: uid("conn"),
-            boardId: copy.id,
-            from: { ...connector.from },
-            to: { ...connector.to },
-          };
-          if (clonedConnector.from.nodeId && idMap.has(clonedConnector.from.nodeId)) {
-            clonedConnector.from.nodeId = idMap.get(clonedConnector.from.nodeId) ?? null;
-          }
-          if (clonedConnector.to.nodeId && idMap.has(clonedConnector.to.nodeId)) {
-            clonedConnector.to.nodeId = idMap.get(clonedConnector.to.nodeId) ?? null;
-          }
-          copy.connectors[clonedConnector.id] = clonedConnector;
-        }
-        copy.updatedAt = Date.now();
-        draft.boards[copy.id] = copy;
-        draft.viewports[copy.id] = { x: 120, y: 90, zoom: 1 };
-        return copy;
-      };
-
-      const duplicateRoot = duplicate(source, source.parentId, true);
-      createdId = duplicateRoot.id;
+      const duplicateRootId = duplicateBoardInDraft(draft, id, source.parentId, {
+        titleSuffix: " (cópia)",
+        offset: 48,
+      });
+      if (!duplicateRootId) return;
+      createdId = duplicateRootId;
       if (source.parentId) {
         const parent = draft.boards[source.parentId];
         if (parent) {
           const index = parent.childOrder.indexOf(source.id);
           const nextOrder = [...parent.childOrder];
-          nextOrder.splice(index >= 0 ? index + 1 : nextOrder.length, 0, duplicateRoot.id);
+          nextOrder.splice(index >= 0 ? index + 1 : nextOrder.length, 0, duplicateRootId);
           parent.childOrder = nextOrder;
         }
       }
-      openBoardInDraft(draft, duplicateRoot.id);
+      openBoardInDraft(draft, duplicateRootId);
     });
 
     return createdId;

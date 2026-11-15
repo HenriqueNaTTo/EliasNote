@@ -1,11 +1,13 @@
 import type { Draft } from "immer";
 import { uid } from "@/lib/utils";
+import { screenToWorld } from "@/lib/geometry";
 import type { AppStoreCreator } from "./slice";
 import type { AddNodeOptions, NodeSlice } from "./types";
 import type { AppState } from "./types";
 import type {
   CanvasNode,
   ChecklistItem,
+  Connector,
   ConnectorEndpoint,
   DrawingScene,
   EntityRef,
@@ -19,13 +21,17 @@ import {
   createConnector,
   createNode,
 } from "@/core/domain/factories";
+import { parseRef, refForBoard, refForNode } from "@/core/domain/refs";
+import { isDescendantOf } from "@/core/domain/tree";
 import {
   activeBoard,
   activeBoardId,
+  collectWithColumnChildren,
+  duplicateBoardInDraft,
   locateNode,
   relayoutColumn,
 } from "./helpers";
-import { clampSize, maxZ, minZ } from "@/core/domain/layout";
+import { clampSize, maxZ, minZ, nodesBounds } from "@/core/domain/layout";
 
 function findInDraft(draft: Draft<AppState>, nodeId: ID) {
   for (const boardId of Object.keys(draft.boards)) {
@@ -34,21 +40,6 @@ function findInDraft(draft: Draft<AppState>, nodeId: ID) {
     if (node) return { board, node };
   }
   return null;
-}
-
-function collectWithColumnChildren(board: { nodes: Record<ID, CanvasNode> }, ids: ID[]): ID[] {
-  const result = new Set(ids);
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const node of Object.values(board.nodes)) {
-      if (node.parentId && result.has(node.parentId) && !result.has(node.id)) {
-        result.add(node.id);
-        changed = true;
-      }
-    }
-  }
-  return Array.from(result);
 }
 
 export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
@@ -292,6 +283,235 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
       draft.selection = clones.map((node) => node.id);
       draft.selectedConnectors = [];
     });
+  },
+
+  transferNodes: (ids, targetBoardId, mode) => {
+    const state = get();
+    const source = activeBoard(state);
+    const target = state.boards[targetBoardId];
+    if (!source || !target || source.id === target.id) return null;
+
+    const movable = ids.filter((id) => source.nodes[id] && !source.nodes[id].locked);
+    if (movable.length === 0) return null;
+    const includedIds = collectWithColumnChildren(source, movable);
+    const includedSet = new Set(includedIds);
+    const selectedNodes = includedIds.map((id) => source.nodes[id]);
+    const topLevel = selectedNodes.filter((node) => !node.parentId || !includedSet.has(node.parentId));
+    const bounds = nodesBounds(topLevel) ?? nodesBounds(selectedNodes) ?? { x: 0, y: 0, w: 0, h: 0 };
+
+    // Os elementos entram centralizados na área visível do quadro de destino.
+    const viewport = state.viewports[target.id] ?? { x: 120, y: 100, zoom: 1 };
+    const size = state.canvasSize;
+    const center =
+      size.width > 0 && size.height > 0
+        ? screenToWorld({ x: size.width / 2, y: size.height / 2 }, viewport)
+        : { x: 400, y: 300 };
+    const offset = {
+      x: Math.round(center.x - bounds.x - bounds.w / 2),
+      y: Math.round(center.y - bounds.y - bounds.h / 2),
+    };
+    const baseZ = maxZ(target.nodes) + 1;
+    let transferred = 0;
+
+    get().commit(
+      mode === "move" ? "Mover para outro quadro" : "Copiar para outro quadro",
+      (draft) => {
+        const sourceDraft = draft.boards[source.id];
+        const targetDraft = draft.boards[target.id];
+        if (!sourceDraft || !targetDraft) return;
+
+        const idMap = new Map<ID, ID>();
+        const boardMap = new Map<ID, ID>();
+        const created = new Map<ID, CanvasNode>();
+
+        includedIds.forEach((id, index) => {
+          const node = sourceDraft.nodes[id];
+          if (!node) return;
+          if (mode === "copy") {
+            const cloned = cloneNode(node, {
+              boardId: targetDraft.id,
+              parentId: null,
+              order: node.order,
+              z: baseZ + index,
+              childBoardId: undefined,
+              x: node.x + offset.x,
+              y: node.y + offset.y,
+            });
+            idMap.set(node.id, cloned.id);
+            created.set(cloned.id, cloned);
+            return;
+          }
+          const moved: CanvasNode = {
+            ...node,
+            boardId: targetDraft.id,
+            parentId: null,
+            z: baseZ + index,
+            x: node.x + offset.x,
+            y: node.y + offset.y,
+            updatedAt: Date.now(),
+          };
+          idMap.set(node.id, node.id);
+          created.set(moved.id, moved);
+        });
+
+        for (const id of includedIds) {
+          const node = sourceDraft.nodes[id];
+          const next = created.get(idMap.get(id) ?? "");
+          if (!node || !next) continue;
+
+          // Só mantém o vínculo quando a coluna pai também vai junto.
+          if (node.parentId && includedSet.has(node.parentId)) {
+            next.parentId = idMap.get(node.parentId) ?? null;
+            next.order = node.order;
+          } else {
+            next.parentId = null;
+            next.order = undefined;
+          }
+
+          if (node.type !== "board" || !node.childBoardId) continue;
+
+          if (mode === "copy") {
+            const copiedBoardId = duplicateBoardInDraft(draft, node.childBoardId, targetDraft.id);
+            if (!copiedBoardId) {
+              next.childBoardId = undefined;
+              continue;
+            }
+            boardMap.set(node.childBoardId, copiedBoardId);
+            next.childBoardId = copiedBoardId;
+            if (!targetDraft.childOrder.includes(copiedBoardId)) {
+              targetDraft.childOrder.push(copiedBoardId);
+            }
+            continue;
+          }
+
+          // Mover: o subquadro acompanha o cartão para o quadro de destino.
+          const childBoard = draft.boards[node.childBoardId];
+          if (!childBoard) continue;
+          if (childBoard.id === targetDraft.id) continue;
+          if (isDescendantOf(draft.boards, targetDraft.id, childBoard.id)) continue;
+          if (childBoard.parentId) {
+            const oldParent = draft.boards[childBoard.parentId];
+            if (oldParent) {
+              oldParent.childOrder = oldParent.childOrder.filter((childId) => childId !== childBoard.id);
+            }
+          }
+          childBoard.parentId = targetDraft.id;
+          childBoard.workspaceId = targetDraft.workspaceId;
+          targetDraft.childOrder = targetDraft.childOrder.filter((childId) => childId !== childBoard.id);
+          targetDraft.childOrder.push(childBoard.id);
+          draft.expandedBoards[targetDraft.id] = true;
+        }
+
+        // Cópias internas apontam para os clones, não para os originais.
+        if (mode === "copy") {
+          for (const node of created.values()) {
+            if (!node.references?.length) continue;
+            node.references = Array.from(
+              new Set(
+                node.references.map((ref) => {
+                  const parsed = parseRef(ref);
+                  if (!parsed) return ref;
+                  if (parsed.kind === "node") {
+                    const mapped = idMap.get(parsed.id);
+                    return mapped ? refForNode(mapped) : ref;
+                  }
+                  const mapped = boardMap.get(parsed.id);
+                  return mapped ? refForBoard(mapped) : ref;
+                }),
+              ),
+            );
+          }
+        }
+
+        const transferable = Object.values(sourceDraft.connectors).filter(
+          (connector) =>
+            connector.from.nodeId &&
+            connector.to.nodeId &&
+            includedSet.has(connector.from.nodeId) &&
+            includedSet.has(connector.to.nodeId),
+        );
+        for (const connector of transferable) {
+          const fromId = connector.from.nodeId;
+          const toId = connector.to.nodeId;
+          if (!fromId || !toId) continue;
+          if (mode === "copy") {
+            const cloned: Connector = {
+              ...connector,
+              id: uid("conn"),
+              boardId: targetDraft.id,
+              from: { ...connector.from, nodeId: idMap.get(fromId) ?? null },
+              to: { ...connector.to, nodeId: idMap.get(toId) ?? null },
+            };
+            targetDraft.connectors[cloned.id] = cloned;
+            continue;
+          }
+          delete sourceDraft.connectors[connector.id];
+          targetDraft.connectors[connector.id] = {
+            ...connector,
+            boardId: targetDraft.id,
+            from: { ...connector.from },
+            to: { ...connector.to },
+            updatedAt: Date.now(),
+          };
+        }
+
+        if (mode === "move") {
+          // Conectores que ligavam a elementos fora da seleção ficam na origem,
+          // com a ponta solta no último ponto conhecido.
+          const centers = new Map<ID, { x: number; y: number }>();
+          for (const node of selectedNodes) {
+            centers.set(node.id, { x: node.x + node.w / 2, y: node.y + node.h / 2 });
+          }
+          for (const connector of Object.values(sourceDraft.connectors)) {
+            const fromInside = Boolean(connector.from.nodeId && includedSet.has(connector.from.nodeId));
+            const toInside = Boolean(connector.to.nodeId && includedSet.has(connector.to.nodeId));
+            if (fromInside === toInside) continue;
+            if (fromInside && connector.from.nodeId) {
+              const center = centers.get(connector.from.nodeId);
+              connector.from = {
+                nodeId: null,
+                x: center?.x ?? connector.from.x,
+                y: center?.y ?? connector.from.y,
+              };
+            }
+            if (toInside && connector.to.nodeId) {
+              const center = centers.get(connector.to.nodeId);
+              connector.to = {
+                nodeId: null,
+                x: center?.x ?? connector.to.x,
+                y: center?.y ?? connector.to.y,
+              };
+            }
+            connector.updatedAt = Date.now();
+          }
+
+          const touchedColumns = new Set<string>();
+          for (const id of includedIds) {
+            const node = sourceDraft.nodes[id];
+            if (!node) continue;
+            if (node.parentId && !includedSet.has(node.parentId)) touchedColumns.add(node.parentId);
+            delete sourceDraft.nodes[id];
+          }
+          for (const columnId of touchedColumns) relayoutColumn(draft, sourceDraft.id, columnId);
+          sourceDraft.updatedAt = Date.now();
+
+          draft.selection = draft.selection.filter((id) => !includedSet.has(id));
+          draft.selectedConnectors = draft.selectedConnectors.filter((id) => Boolean(sourceDraft.connectors[id]));
+          if (draft.editingNodeId && includedSet.has(draft.editingNodeId)) draft.editingNodeId = null;
+          if (draft.drawingNodeId && includedSet.has(draft.drawingNodeId)) draft.drawingNodeId = null;
+        }
+
+        for (const node of created.values()) targetDraft.nodes[node.id] = node;
+        for (const node of created.values()) {
+          if (node.type === "column") relayoutColumn(draft, targetDraft.id, node.id);
+        }
+        targetDraft.updatedAt = Date.now();
+        transferred = includedIds.length;
+      },
+    );
+
+    if (transferred === 0) return null;
+    return { boardId: target.id, title: target.title, count: transferred, mode };
   },
 
   moveNodes: (ids, delta) => {

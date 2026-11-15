@@ -32,6 +32,7 @@ function createNodeAtCenter(type: NodeType): void {
     y: Math.round(center.y - size.h / 2 + stagger),
   });
   if (id && type === "drawing") state.openDrawing(id);
+  if (id && type === "text") state.setEditingNode(id);
 }
 
 function openSelected(): void {
@@ -52,6 +53,9 @@ function runAction(actionId: string): void {
   switch (actionId) {
     case "new-note":
       createNodeAtCenter("note");
+      break;
+    case "new-text":
+      createNodeAtCenter("text");
       break;
     case "new-card":
       createNodeAtCenter("card");
@@ -161,6 +165,12 @@ export function useAppHotkeys(): void {
     const handleKeyDown = (event: KeyboardEvent) => {
       const state = useAppStore.getState();
       const editing = isEditableTarget(event.target);
+
+      // Diálogo de mover/copiar entre quadros bloqueia os atalhos do canvas.
+      if (state.nodeTransfer) {
+        if (event.key === "Escape") state.closeNodeTransfer();
+        return;
+      }
 
       if (event.key === "Escape") {
         if (state.dialog) return;

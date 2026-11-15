@@ -4,6 +4,7 @@ export type ID = string;
 
 export type NodeType =
   | "note"
+  | "text"
   | "card"
   | "task"
   | "checklist"
@@ -17,6 +18,9 @@ export type NodeType =
   | "comment";
 
 export type NodeColor = "none" | "amber" | "rose" | "sky" | "mint" | "lilac" | "sand" | "slate";
+
+/** Transporte de elementos entre quadros: mover remove da origem, copiar mantém. */
+export type NodeTransferMode = "move" | "copy";
 
 export type Priority = "low" | "medium" | "high";
 
@@ -196,12 +200,15 @@ export interface AppSettings {
   inspectorOpen: boolean;
   /** Último backup automático, em epoch ms. */
   lastBackupAt?: number;
+  /** Versão do conjunto visual aplicado (migração de aparência). */
+  visualVersion: number;
 }
 
 export type ToolId =
   | "select"
   | "pan"
   | "note"
+  | "text"
   | "card"
   | "task"
   | "checklist"

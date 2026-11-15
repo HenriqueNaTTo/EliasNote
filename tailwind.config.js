@@ -56,10 +56,10 @@ export default {
         "2xl": "calc(var(--radius) + 8px)",
       },
       boxShadow: {
-        node: "0 1px 2px rgba(16,24,40,.06), 0 8px 24px -12px rgba(16,24,40,.18)",
-        "node-hover": "0 2px 4px rgba(16,24,40,.07), 0 16px 40px -18px rgba(16,24,40,.28)",
-        floating: "0 12px 40px -12px rgba(16,24,40,.35)",
-        panel: "0 0 0 1px hsl(var(--border)), 0 20px 50px -30px rgba(16,24,40,.4)",
+        node: "0 1px 2px rgba(16,24,40,.05), 0 1px 3px rgba(16,24,40,.05)",
+        "node-hover": "0 2px 6px rgba(16,24,40,.08)",
+        floating: "0 8px 24px -14px rgba(16,24,40,.25)",
+        panel: "0 0 0 1px hsl(var(--border)), 0 12px 30px -26px rgba(16,24,40,.35)",
       },
       keyframes: {
         "fade-in": {

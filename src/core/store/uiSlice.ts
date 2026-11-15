@@ -1,15 +1,18 @@
 import { clampZoom, zoomAtPoint } from "@/lib/geometry";
 import { DEFAULT_SETTINGS } from "@/core/domain/constants";
 import { createHistoryState } from "./history";
-import { ensureNavigation } from "./helpers";
+import { activeBoard, ensureNavigation } from "./helpers";
 import type { AppStoreCreator } from "./slice";
-import type { UiSlice } from "./types";
+import type { AppState, UiSlice } from "./types";
 
 export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
   viewports: {},
   canvasSize: { width: 0, height: 0 },
   sidebarCollapsed: false,
   dialog: null,
+  nodeTransfer: null,
+  nodeDrag: null,
+  dropFlash: null,
   settingsSection: "geral",
   inspectorTab: "props",
   status: "idle",
@@ -98,6 +101,58 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
     });
   },
 
+  openNodeTransfer: (nodeIds, mode) => {
+    set((draft) => {
+      const board = activeBoard(draft as unknown as AppState);
+      const ids = board
+        ? nodeIds.filter((id) => board.nodes[id] && !board.nodes[id].locked)
+        : [];
+      if (ids.length === 0) return;
+      draft.nodeTransfer = { nodeIds: ids, mode };
+      draft.editingNodeId = null;
+    });
+  },
+
+  closeNodeTransfer: () => {
+    set((draft) => {
+      draft.nodeTransfer = null;
+    });
+  },
+
+  startNodeDrag: (nodeIds) => {
+    if (nodeIds.length === 0) return;
+    set((draft) => {
+      draft.nodeDrag = { nodeIds: [...nodeIds], overBoardId: null, mode: "move" };
+    });
+  },
+
+  hoverNodeDragTarget: (boardId, mode) => {
+    set((draft) => {
+      const current = draft.nodeDrag;
+      if (!current) return;
+      if (current.overBoardId === boardId && current.mode === mode) return;
+      draft.nodeDrag = { ...current, overBoardId: boardId, mode };
+    });
+  },
+
+  endNodeDrag: () => {
+    set((draft) => {
+      draft.nodeDrag = null;
+    });
+  },
+
+  flashDropTarget: (boardId) => {
+    const at = Date.now();
+    set((draft) => {
+      draft.dropFlash = { boardId, at };
+    });
+    setTimeout(() => {
+      set((draft) => {
+        if (draft.dropFlash?.at === at) draft.dropFlash = null;
+      });
+    }, 640);
+  },
+
   setSettingsSection: (section) => {
     set((draft) => {
       draft.settingsSection = section;
@@ -164,6 +219,9 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       draft.editingNodeId = null;
       draft.drawingNodeId = null;
       draft.dialog = null;
+      draft.nodeTransfer = null;
+      draft.nodeDrag = null;
+      draft.dropFlash = null;
       draft.sidebarCollapsed = false;
       draft.status = "idle";
       draft.lastError = null;

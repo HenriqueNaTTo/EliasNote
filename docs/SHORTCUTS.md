@@ -19,6 +19,7 @@
 | Ação | Atalho |
 | --- | --- |
 | Nova nota | `N` |
+| Novo texto livre | `Shift + T` |
 | Novo cartão | `C` |
 | Nova tarefa | `T` |
 | Novo checklist | `L` |

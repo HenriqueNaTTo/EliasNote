@@ -69,7 +69,7 @@ export function TopBar() {
   const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
 
   return (
-    <header className="flex h-11 shrink-0 items-center gap-1 border-b border-border bg-[hsl(var(--sidebar))] px-2" data-tauri-drag-region>
+    <header className="flex h-11 shrink-0 items-center gap-1 border-b border-border bg-background px-2" data-tauri-drag-region>
       <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto scrollbar-thin">
         {tabs.map((tab) => {
           const board = boards[tab.boardId];
@@ -79,10 +79,10 @@ export function TopBar() {
             <div
               key={tab.id}
               className={cn(
-                "group/tab flex h-8 max-w-[220px] shrink-0 items-center gap-1.5 rounded-lg border px-2 text-[12px] transition-colors",
+                "group/tab flex h-8 max-w-[220px] shrink-0 items-center gap-1.5 rounded-none border px-2 text-[12px] transition-colors",
                 active
-                  ? "border-border bg-background text-foreground shadow-sm"
-                  : "border-transparent text-muted-foreground hover:bg-accent/60",
+                  ? "border-border bg-muted/60 font-medium text-foreground"
+                  : "border-transparent text-muted-foreground hover:bg-muted/40",
               )}
               role="tab"
               aria-selected={active}

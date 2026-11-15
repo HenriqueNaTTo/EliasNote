@@ -5,6 +5,7 @@ export const SNAPSHOT_VERSION = 1;
 
 export const NODE_WIDTHS: Record<NodeType, { w: number; h: number; minW: number; minH: number }> = {
   note: { w: 280, h: 220, minW: 160, minH: 110 },
+  text: { w: 280, h: 72, minW: 60, minH: 32 },
   card: { w: 260, h: 170, minW: 150, minH: 90 },
   task: { w: 280, h: 64, minW: 180, minH: 56 },
   checklist: { w: 280, h: 220, minW: 180, minH: 110 },
@@ -20,6 +21,7 @@ export const NODE_WIDTHS: Record<NodeType, { w: number; h: number; minW: number;
 
 export const NODE_LABELS: Record<NodeType, string> = {
   note: "Nota",
+  text: "Texto",
   card: "Cartão",
   task: "Tarefa",
   checklist: "Checklist",
@@ -52,6 +54,18 @@ export const COLOR_HEX: Record<NodeColor, string> = COLOR_OPTIONS.reduce(
   {} as Record<NodeColor, string>,
 );
 
+/** Ponto colorido usado em quadros, espaços e listas de destino. */
+export const COLOR_DOT_CLASS: Record<NodeColor, string> = {
+  none: "bg-muted-foreground/40",
+  amber: "bg-amber-400",
+  rose: "bg-rose-400",
+  sky: "bg-sky-400",
+  mint: "bg-emerald-400",
+  lilac: "bg-violet-400",
+  sand: "bg-orange-300",
+  slate: "bg-slate-400",
+};
+
 export const CONNECTOR_COLORS: Record<NodeColor, string> = {
   none: "hsl(var(--muted-foreground))",
   amber: "#d99e1b",
@@ -71,8 +85,8 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
 
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: "system",
-  accent: "violet",
-  canvasTexture: "dots",
+  accent: "blue",
+  canvasTexture: "plain",
   density: "comfortable",
   uiScale: 1,
   snapToGrid: false,
@@ -91,6 +105,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   shortcuts: {},
   sidebarWidth: 272,
   inspectorOpen: true,
+  visualVersion: 2,
 };
 
 export const COLUMN_PADDING = 12;
@@ -101,6 +116,7 @@ export const COLUMN_MIN_HEIGHT = 220;
 /** Estilos visuais por tipo (usados por nós e pelo painel de propriedades). */
 export const NODE_ICONS: Record<NodeType, string> = {
   note: "sticky-note",
+  text: "type",
   card: "square",
   task: "check-square",
   checklist: "list-checks",

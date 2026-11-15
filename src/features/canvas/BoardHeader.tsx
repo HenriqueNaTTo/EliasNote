@@ -74,7 +74,8 @@ export function BoardHeader({ board }: { board: Board }) {
               event.currentTarget.blur();
             }
           }}
-          className="min-w-0 flex-1 rounded-md bg-transparent px-1 py-0.5 text-[17px] font-semibold tracking-tight outline-none transition-colors hover:bg-card/60 focus:bg-card focus:shadow-sm"
+          style={{ fontFamily: '"Source Serif 4", Georgia, serif' }}
+          className="min-w-0 flex-1 rounded-none bg-transparent px-1 py-0.5 font-serif text-[19px] font-semibold tracking-tight outline-none transition-colors hover:bg-card/70 focus:bg-card"
           aria-label="Título do quadro"
         />
         <div className="flex shrink-0 items-center gap-1">
@@ -83,7 +84,7 @@ export function BoardHeader({ board }: { board: Board }) {
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="bg-card/60 backdrop-blur hover:bg-card"
+                className="rounded-none bg-card/70 hover:bg-card"
                 onClick={() => openDialogs.templates()}
                 aria-label="Modelos"
               >
@@ -97,7 +98,7 @@ export function BoardHeader({ board }: { board: Board }) {
               <Button
                 variant="ghost"
                 size="icon-sm"
-                className="bg-card/60 backdrop-blur hover:bg-card"
+                className="rounded-none bg-card/70 hover:bg-card"
                 onClick={() => addBoardNode(board.id, { x: 40 + Math.random() * 60, y: 40 + Math.random() * 60 })}
                 aria-label="Novo subquadro"
               >

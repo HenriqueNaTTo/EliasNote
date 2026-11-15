@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useAppStore } from "@/core/store";
 import { useBoardTree, useIsSidebarCollapsed } from "@/core/store/selectors";
+import { COLOR_DOT_CLASS } from "@/core/domain/constants";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -37,16 +38,7 @@ import { openDialogs } from "./dialogActions";
 import { SaveIndicator } from "./SaveIndicator";
 import type { BoardTreeNode } from "@/core/domain/tree";
 
-const COLOR_DOT: Record<string, string> = {
-  none: "bg-muted-foreground/40",
-  amber: "bg-amber-400",
-  rose: "bg-rose-400",
-  sky: "bg-sky-400",
-  mint: "bg-emerald-400",
-  lilac: "bg-violet-400",
-  sand: "bg-orange-300",
-  slate: "bg-slate-400",
-};
+const COLOR_DOT = COLOR_DOT_CLASS;
 
 export function Sidebar() {
   const collapsed = useIsSidebarCollapsed();
@@ -376,6 +368,13 @@ function TreeRow({ node, depth }: { node: BoardTreeNode; depth: number }) {
   const hasChildren = children.length > 0;
   const isActive = activeBoardId === node.board.id;
   const nodeCount = Object.keys(node.board.nodes).length;
+  const nodeDropMode = useAppStore((state) =>
+    state.nodeDrag?.overBoardId === node.board.id ? state.nodeDrag.mode : null,
+  );
+  const nodeDropCount = useAppStore((state) =>
+    state.nodeDrag?.overBoardId === node.board.id ? state.nodeDrag.nodeIds.length : 0,
+  );
+  const justReceived = useAppStore((state) => state.dropFlash?.boardId === node.board.id);
 
   return (
     <div>
@@ -403,10 +402,15 @@ function TreeRow({ node, depth }: { node: BoardTreeNode; depth: number }) {
             event.dataTransfer.effectAllowed = "move";
           }}
           className={cn(
-            "flex min-h-[28px] cursor-pointer items-center gap-1 rounded-md pr-1 transition-colors",
-            isActive ? "bg-primary/10 text-foreground" : "hover:bg-accent/70",
+            "flex min-h-[28px] cursor-pointer items-center gap-1 rounded-none border-l-2 border-transparent pr-1 transition-[background-color,box-shadow,transform] duration-150 ease-out",
+            isActive
+              ? "border-primary bg-foreground/[0.06] text-foreground"
+              : "hover:bg-foreground/[0.04]",
             dragOver && "ring-1 ring-primary/60",
+            nodeDropMode && "scale-[1.02] bg-primary/20 text-foreground ring-1 ring-primary/70",
+            justReceived && "animate-drop-pop",
           )}
+          data-board-drop={node.board.id}
           style={{ paddingLeft: 4 + depth * 12 }}
           onClick={() => openBoard(node.board.id)}
           title={node.board.title}
@@ -439,6 +443,12 @@ function TreeRow({ node, depth }: { node: BoardTreeNode; depth: number }) {
           {nodeCount > 0 ? (
             <span className="shrink-0 rounded bg-muted px-1 text-[9.5px] font-medium tabular-nums text-muted-foreground">
               {nodeCount}
+            </span>
+          ) : null}
+
+          {nodeDropMode ? (
+            <span className="shrink-0 rounded bg-primary px-1 text-[9px] font-semibold uppercase tracking-wide text-primary-foreground">
+              soltar {nodeDropCount}
             </span>
           ) : null}
 

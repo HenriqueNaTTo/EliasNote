@@ -14,6 +14,7 @@ import {
   Redo2,
   Square,
   StickyNote,
+  Type,
   Undo2,
 } from "lucide-react";
 import { useAppStore } from "@/core/store";
@@ -32,6 +33,7 @@ const TOOLS: { id: ToolId; label: string; shortcut?: string; icon: typeof Sticky
   { id: "select", label: "Selecionar", shortcut: "V", icon: MousePointer2 },
   { id: "pan", label: "Mover canvas", shortcut: "H", icon: Hand },
   { id: "note", label: "Nota", shortcut: "N", icon: StickyNote },
+  { id: "text", label: "Texto", shortcut: "⇧T", icon: Type },
   { id: "card", label: "Cartão", shortcut: "C", icon: Square },
   { id: "task", label: "Tarefa", shortcut: "T", icon: CheckSquare },
   { id: "checklist", label: "Checklist", shortcut: "L", icon: ListChecks },
@@ -82,7 +84,7 @@ export function CanvasToolbar() {
     <>
       <div
         data-canvas-ui
-        className="glass-panel absolute bottom-4 left-1/2 z-20 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-2xl border border-border p-1.5 shadow-floating scrollbar-thin"
+        className="absolute bottom-4 left-1/2 z-20 flex max-w-[calc(100%-2rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-none border border-border bg-popover/95 p-1 backdrop-blur shadow-floating scrollbar-thin"
         onPointerDown={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-0.5">

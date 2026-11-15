@@ -97,25 +97,25 @@ export function ConnectorLayer({ board, draft, selectedConnectors, showLabels }:
               d={geometry.path}
               fill="none"
               stroke={stroke}
-              strokeWidth={selected ? 2.4 : 1.8}
+              strokeWidth={selected ? 2.2 : 1.6}
               strokeLinecap="round"
               strokeDasharray={connector.dashed ? "6 5" : undefined}
             />
             {connector.arrowEnd !== false ? (
               <path
-                d={arrowHeadPath(geometry.to, geometry.endAngle, 9)}
+                d={arrowHeadPath(geometry.to, geometry.endAngle, 8)}
                 fill="none"
                 stroke={stroke}
-                strokeWidth={2}
+                strokeWidth={1.8}
                 strokeLinecap="round"
               />
             ) : null}
             {connector.arrowStart ? (
               <path
-                d={arrowHeadPath(geometry.from, geometry.startAngle + Math.PI, 9)}
+                d={arrowHeadPath(geometry.from, geometry.startAngle + Math.PI, 8)}
                 fill="none"
                 stroke={stroke}
-                strokeWidth={2}
+                strokeWidth={1.8}
                 strokeLinecap="round"
               />
             ) : null}
@@ -126,15 +126,14 @@ export function ConnectorLayer({ board, draft, selectedConnectors, showLabels }:
                   y={-9}
                   width={Math.max(36, connector.label.length * 6.8)}
                   height={18}
-                  rx={5}
-                  fill="hsl(var(--popover))"
-                  stroke="hsl(var(--border))"
+                  rx={2}
+                  fill="#1f2937"
                 />
                 <text
                   textAnchor="middle"
                   dominantBaseline="middle"
                   fontSize={10}
-                  fill="hsl(var(--popover-foreground))"
+                  fill="#ffffff"
                   style={{ userSelect: "none" }}
                 >
                   {connector.label}

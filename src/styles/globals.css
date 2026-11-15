@@ -5,53 +5,53 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222 24% 12%;
+    --foreground: 0 0% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 222 24% 12%;
+    --card-foreground: 0 0% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 24% 12%;
-    --primary: 258 82% 58%;
+    --popover-foreground: 0 0% 12%;
+    --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 24% 16%;
-    --muted: 220 16% 96%;
-    --muted-foreground: 220 9% 44%;
-    --accent: 220 16% 94%;
-    --accent-foreground: 222 24% 16%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 12%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 12%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 15% 90%;
-    --input: 220 15% 88%;
-    --ring: 258 82% 58%;
-    --canvas: 40 22% 97%;
-    --canvas-dot: 220 12% 80%;
-    --radius: 0.75rem;
-    --sidebar: 40 20% 98%;
+    --border: 0 0% 89%;
+    --input: 0 0% 86%;
+    --ring: 221 83% 53%;
+    --canvas: 0 0% 95.5%;
+    --canvas-dot: 0 0% 87%;
+    --radius: 0.125rem;
+    --sidebar: 0 0% 97%;
   }
 
   .dark {
-    --background: 224 18% 9%;
-    --foreground: 210 20% 96%;
-    --card: 224 16% 12%;
-    --card-foreground: 210 20% 96%;
-    --popover: 224 17% 11%;
-    --popover-foreground: 210 20% 96%;
-    --primary: 258 84% 68%;
-    --primary-foreground: 224 24% 10%;
-    --secondary: 222 14% 17%;
-    --secondary-foreground: 210 20% 96%;
-    --muted: 222 14% 16%;
-    --muted-foreground: 220 10% 64%;
-    --accent: 222 14% 20%;
-    --accent-foreground: 210 20% 96%;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 13%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 13%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 213 94% 68%;
+    --primary-foreground: 0 0% 10%;
+    --secondary: 0 0% 17%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 96%;
     --destructive: 0 65% 56%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 12% 21%;
-    --input: 220 12% 24%;
-    --ring: 258 84% 68%;
-    --canvas: 224 18% 8%;
-    --canvas-dot: 220 10% 25%;
-    --sidebar: 224 18% 10%;
+    --border: 0 0% 22%;
+    --input: 0 0% 26%;
+    --ring: 213 94% 68%;
+    --canvas: 0 0% 9%;
+    --canvas-dot: 0 0% 24%;
+    --sidebar: 0 0% 11%;
   }
 
   [data-accent="blue"] {
@@ -59,8 +59,8 @@
     --ring: 214 88% 56%;
   }
   .dark[data-accent="blue"] {
-    --primary: 212 92% 66%;
-    --ring: 212 92% 66%;
+    --primary: 213 94% 68%;
+    --ring: 213 94% 68%;
   }
   [data-accent="emerald"] {
     --primary: 158 68% 38%;
@@ -272,87 +272,200 @@
   --node-bg: hsl(var(--card));
   --node-ink: hsl(var(--card-foreground));
   --node-border: hsl(var(--border));
+  --node-accent: transparent;
+  --node-tint: rgba(15, 23, 42, 0.03);
+  --node-tint-strong: rgba(15, 23, 42, 0.06);
 }
 .node-color-amber {
   --node-bg: #fdf0b8;
   --node-ink: #3b2f0b;
   --node-border: #eeda9f;
+  --node-accent: #d99e1b;
+  --node-tint: rgba(217, 158, 27, 0.1);
+  --node-tint-strong: rgba(217, 158, 27, 0.18);
 }
 .node-color-rose {
   --node-bg: #fbdfe5;
   --node-ink: #481d29;
   --node-border: #f0c6d1;
+  --node-accent: #e0648a;
+  --node-tint: rgba(224, 100, 138, 0.1);
+  --node-tint-strong: rgba(224, 100, 138, 0.18);
 }
 .node-color-sky {
   --node-bg: #d9ecfb;
   --node-ink: #102f45;
   --node-border: #bcdcf2;
+  --node-accent: #3d8fd6;
+  --node-tint: rgba(61, 143, 214, 0.1);
+  --node-tint-strong: rgba(61, 143, 214, 0.18);
 }
 .node-color-mint {
   --node-bg: #d9f2e4;
   --node-ink: #12382a;
   --node-border: #b8e3d0;
+  --node-accent: #2f9e74;
+  --node-tint: rgba(47, 158, 116, 0.1);
+  --node-tint-strong: rgba(47, 158, 116, 0.18);
 }
 .node-color-lilac {
   --node-bg: #e8e0fb;
   --node-ink: #2c2350;
   --node-border: #d3c6f3;
+  --node-accent: #8a63e8;
+  --node-tint: rgba(138, 99, 232, 0.1);
+  --node-tint-strong: rgba(138, 99, 232, 0.18);
 }
 .node-color-sand {
   --node-bg: #f6e6d4;
   --node-ink: #432f1b;
   --node-border: #e8d1b7;
+  --node-accent: #b98145;
+  --node-tint: rgba(185, 129, 69, 0.1);
+  --node-tint-strong: rgba(185, 129, 69, 0.18);
 }
 .node-color-slate {
   --node-bg: #e3e6ec;
   --node-ink: #212734;
   --node-border: #ccd2dc;
+  --node-accent: #6b7280;
+  --node-tint: rgba(107, 114, 128, 0.1);
+  --node-tint-strong: rgba(107, 114, 128, 0.18);
 }
 .dark .node-color-none {
   --node-bg: hsl(var(--card));
   --node-ink: hsl(var(--card-foreground));
   --node-border: hsl(var(--border));
+  --node-accent: transparent;
+  --node-tint: rgba(255, 255, 255, 0.03);
+  --node-tint-strong: rgba(255, 255, 255, 0.06);
 }
 .dark .node-color-amber {
-  --node-bg: #3f320f;
-  --node-ink: #fbeec2;
-  --node-border: #5c4818;
+  --node-bg: #70531a;
+  --node-ink: #fae9c6;
+  --node-border: #9d7525;
+  --node-accent: #f7b83b;
+  --node-tint: rgba(247, 184, 59, 0.13);
+  --node-tint-strong: rgba(247, 184, 59, 0.22);
 }
 .dark .node-color-rose {
-  --node-bg: #46202c;
-  --node-ink: #f9dbe3;
-  --node-border: #642c3c;
+  --node-bg: #752940;
+  --node-ink: #fad6e1;
+  --node-border: #9f3857;
+  --node-accent: #ef6c93;
+  --node-tint: rgba(239, 108, 147, 0.13);
+  --node-tint-strong: rgba(239, 108, 147, 0.22);
 }
 .dark .node-color-sky {
-  --node-bg: #133449;
-  --node-ink: #d5eafb;
-  --node-border: #1d4a66;
+  --node-bg: #1f4e6b;
+  --node-ink: #d0ebfb;
+  --node-border: #2c6d96;
+  --node-accent: #55b8f6;
+  --node-tint: rgba(85, 184, 246, 0.13);
+  --node-tint-strong: rgba(85, 184, 246, 0.22);
 }
 .dark .node-color-mint {
-  --node-bg: #143a2c;
-  --node-ink: #d3f2e4;
-  --node-border: #1d5240;
+  --node-bg: #205542;
+  --node-ink: #cdf4e6;
+  --node-border: #307e61;
+  --node-accent: #35d49a;
+  --node-tint: rgba(53, 212, 154, 0.13);
+  --node-tint-strong: rgba(53, 212, 154, 0.22);
 }
 .dark .node-color-lilac {
-  --node-bg: #2c2350;
-  --node-ink: #e9e2fb;
-  --node-border: #3e3170;
+  --node-bg: #4b3177;
+  --node-ink: #e7dbfa;
+  --node-border: #64419f;
+  --node-accent: #a87ef1;
+  --node-tint: rgba(168, 126, 241, 0.13);
+  --node-tint-strong: rgba(168, 126, 241, 0.22);
 }
 .dark .node-color-sand {
-  --node-bg: #402f1e;
-  --node-ink: #f5e5d3;
-  --node-border: #5a4229;
+  --node-bg: #664224;
+  --node-ink: #f5e1d1;
+  --node-border: #8f5c32;
+  --node-accent: #f0964c;
+  --node-tint: rgba(240, 150, 76, 0.13);
+  --node-tint-strong: rgba(240, 150, 76, 0.22);
 }
 .dark .node-color-slate {
-  --node-bg: #272d38;
-  --node-ink: #e3e8f0;
-  --node-border: #39414f;
+  --node-bg: #364054;
+  --node-ink: #e3e8f2;
+  --node-border: #4c5b76;
+  --node-accent: #99a7c2;
+  --node-tint: rgba(153, 167, 194, 0.13);
+  --node-tint-strong: rgba(153, 167, 194, 0.22);
 }
 
 .node-surface {
   background-color: var(--node-bg);
   color: var(--node-ink);
   border-color: var(--node-border);
+  /* Faixa de cor no topo: mantém a cor legível mesmo nos tons escuros. */
+  box-shadow: inset 0 3px 0 0 var(--node-accent);
+}
+/* Coluna: superfície tingida com a cor do elemento, mantendo os filhos destacados. */
+.node-column {
+  background-color: var(--node-tint);
+  border-color: var(--node-border);
+  color: var(--node-ink);
+}
+.node-column-bar {
+  background-color: var(--node-tint-strong);
+  border-color: var(--node-border);
+}
+/* Texto avulso: sem cartão, com realce sutil de área editável. */
+.node-text {
+  color: var(--node-ink);
+}
+.node-text:hover {
+  background-color: var(--node-tint);
+}
+.node-text:focus-within {
+  background-color: var(--node-tint-strong);
+}
+
+/* Arraste de elementos para outro quadro (canvas ou árvore lateral). */
+.node-dragging {
+  opacity: 0.92;
+  transform: scale(1.015);
+  filter: drop-shadow(0 16px 28px rgb(0 0 0 / 0.24));
+  transition: transform 140ms ease, opacity 140ms ease;
+}
+@keyframes node-drop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes node-drop-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes node-drop-flash {
+  0% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.animate-drop-pop {
+  animation: node-drop-pop 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.node-drop-flash {
+  animation: node-drop-flash 560ms ease-out forwards;
 }
 .node-input {
   background: transparent;
@@ -401,4 +514,20 @@
 .node-selected .resize-handle,
 .node-frame:hover .resize-handle {
   opacity: 1;
+}
+
+/* Cantos retos no estilo Milanote: superfícies e controles quadrados. */
+[class*="rounded-"]:not(.rounded-full):not(.rounded-none) {
+  border-radius: 2px !important;
+}
+.rounded {
+  border-radius: 2px !important;
+}
+[data-sonner-toast] {
+  border-radius: 2px !important;
+}
+
+/* Superfícies de cartão mais planas (a sombra é controlada pelo canvas) */
+.node-surface {
+  border-radius: 2px;
 }

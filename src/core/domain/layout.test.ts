@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { renderOrder, visibleNodes, nodesBounds, columnAtPoint, maxZ } from "./layout";
+import { renderOrder, visibleNodes, nodesBounds, columnAtPoint, boardNodeAtPoint, maxZ } from "./layout";
 import { createNode, layoutColumnNodes } from "./factories";
 import type { CanvasNode } from "./types";
 
@@ -64,5 +64,17 @@ describe("layout do canvas", () => {
     expect(laidOut[1].y).toBe(158 + 60 + 10);
     expect(laidOut[0].w).toBe(320 - 24);
     expect(maxZ({ a: childA, b: childB })).toBeGreaterThan(0);
+  });
+
+  it("encontra o cartão de quadro sob o ponto, ignorando elementos arrastados", () => {
+    const nodes: Record<string, CanvasNode> = {
+      tile: node({ id: "tile", type: "board", x: 100, y: 100, w: 300, h: 200, z: 1, childBoardId: "b2" }),
+      empty: node({ id: "empty", type: "board", x: 500, y: 100, w: 300, h: 200, z: 2 }),
+      note: node({ id: "note", type: "note", x: 120, y: 120, w: 80, h: 80, z: 3 }),
+    };
+    expect(boardNodeAtPoint(nodes, { x: 200, y: 200 })?.id).toBe("tile");
+    expect(boardNodeAtPoint(nodes, { x: 620, y: 200 })).toBeNull();
+    expect(boardNodeAtPoint(nodes, { x: 200, y: 200 }, ["tile"])).toBeNull();
+    expect(boardNodeAtPoint(nodes, { x: 900, y: 900 })).toBeNull();
   });
 });

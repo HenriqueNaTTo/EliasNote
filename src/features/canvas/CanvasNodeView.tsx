@@ -1,6 +1,7 @@
 import { memo, useRef } from "react";
 import {
   ArrowDownToLine,
+  ArrowRightLeft,
   ArrowUpToLine,
   Check,
   Copy,
@@ -12,15 +13,17 @@ import {
   Unlock,
   Upload,
 } from "lucide-react";
-import type { CanvasNode, ID, NodeColor } from "@/core/domain/types";
+import { toast } from "sonner";
+import type { CanvasNode, ID, NodeColor, NodeTransferMode } from "@/core/domain/types";
 import type { Point } from "@/lib/geometry";
 import { snapToGrid } from "@/lib/geometry";
 import { COLOR_OPTIONS, NODE_WIDTHS } from "@/core/domain/constants";
-import { columnAtPoint } from "@/core/domain/layout";
+import { boardNodeAtPoint, columnAtPoint } from "@/core/domain/layout";
+import { isDescendantOf } from "@/core/domain/tree";
 import { useAppStore } from "@/core/store";
-import { activeBoard } from "@/core/store/helpers";
+import { activeBoard, activeBoardId } from "@/core/store/helpers";
 import { NodeRenderer } from "@/features/nodes/NodeRenderer";
-import { cn } from "@/lib/utils";
+import { cn, plural } from "@/lib/utils";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -46,6 +49,7 @@ interface DragState {
   startClient: Point;
   primaryStart: Point;
   moved: boolean;
+  raised: boolean;
 }
 
 const RESIZE_HANDLES = [
@@ -76,6 +80,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
   const selected = useAppStore((state) => state.selection.includes(node.id));
   const editing = useAppStore((state) => state.editingNodeId === node.id);
   const showShadows = useAppStore((state) => state.settings.showNodeShadows);
+  const dragging = useAppStore((state) => Boolean(state.nodeDrag?.nodeIds.includes(node.id)));
   const dragRef = useRef<DragState | null>(null);
 
   const startDrag = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -112,6 +117,44 @@ export const CanvasNodeView = memo(function CanvasNodeView({
       startClient: { x: event.clientX, y: event.clientY },
       primaryStart: { x: primary.x, y: primary.y },
       moved: false,
+      raised: false,
+    };
+
+    /** Quadro de destino sob o ponteiro: cartão de quadro no canvas ou linha da árvore lateral. */
+    const findDropTarget = (
+      clientX: number,
+      clientY: number,
+      altKey: boolean,
+    ): { boardId: ID; mode: NodeTransferMode } | null => {
+      const currentState = useAppStore.getState();
+      const boardNow = activeBoard(currentState);
+      const activeId = activeBoardId(currentState);
+      if (!boardNow || !activeId) return null;
+
+      const refuses = (targetBoardId: string | null | undefined): boolean => {
+        if (!targetBoardId || targetBoardId === activeId || !currentState.boards[targetBoardId]) return true;
+        for (const id of ids) {
+          const childBoardId = boardNow.nodes[id]?.childBoardId;
+          if (!childBoardId) continue;
+          if (childBoardId === targetBoardId) return true;
+          if (isDescendantOf(currentState.boards, targetBoardId, childBoardId)) return true;
+        }
+        return false;
+      };
+
+      const tile = boardNodeAtPoint(boardNow.nodes, getWorldPoint(clientX, clientY), ids);
+      if (tile?.childBoardId && !refuses(tile.childBoardId)) {
+        return { boardId: tile.childBoardId, mode: altKey ? "copy" : "move" };
+      }
+
+      const row = (document.elementFromPoint(clientX, clientY) as HTMLElement | null)?.closest<HTMLElement>(
+        "[data-board-drop]",
+      );
+      const rowBoardId = row?.dataset.boardDrop;
+      if (rowBoardId && !refuses(rowBoardId)) {
+        return { boardId: rowBoardId, mode: "move" };
+      }
+      return null;
     };
 
     const onMove = (moveEvent: PointerEvent) => {
@@ -134,19 +177,61 @@ export const CanvasNodeView = memo(function CanvasNodeView({
         drag.moved = true;
         currentState.moveNodes(drag.ids, step);
       }
-      if (Math.abs(moveEvent.clientX - drag.startClient.x) + Math.abs(moveEvent.clientY - drag.startClient.y) > 3) {
-        drag.moved = true;
+      const movedEnough =
+        Math.abs(moveEvent.clientX - drag.startClient.x) + Math.abs(moveEvent.clientY - drag.startClient.y) > 3;
+      if (movedEnough && !drag.raised) {
+        drag.raised = true;
+        currentState.bringToFront(drag.ids);
       }
+      if (movedEnough) drag.moved = true;
+      if (!drag.moved) return;
+
+      const target = findDropTarget(moveEvent.clientX, moveEvent.clientY, moveEvent.altKey);
+      if (!currentState.nodeDrag) currentState.startNodeDrag(drag.ids);
+      currentState.hoverNodeDragTarget(target?.boardId ?? null, target?.mode ?? "move");
     };
 
     const onUp = (upEvent: PointerEvent) => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
       const drag = dragRef.current;
       dragRef.current = null;
       if (!drag) return;
       const currentState = useAppStore.getState();
       const boardNow = activeBoard(currentState);
+      const pendingDrop = drag.moved ? currentState.nodeDrag : null;
+      currentState.endNodeDrag();
+
+      if (pendingDrop?.overBoardId) {
+        // Cópia por arraste: os originais voltam para o lugar de onde saíram.
+        if (pendingDrop.mode === "copy" && boardNow) {
+          const primary = boardNow.nodes[node.id];
+          const dx = primary ? primary.x - drag.primaryStart.x : 0;
+          const dy = primary ? primary.y - drag.primaryStart.y : 0;
+          if (dx !== 0 || dy !== 0) {
+            currentState.moveNodes(pendingDrop.nodeIds, { x: -dx, y: -dy });
+          }
+        }
+        const result = currentState.transferNodes(
+          pendingDrop.nodeIds,
+          pendingDrop.overBoardId,
+          pendingDrop.mode,
+        );
+        currentState.endTransaction();
+        if (result) {
+          currentState.flashDropTarget(result.boardId);
+          toast.success(
+            `${pendingDrop.mode === "copy" ? "Copiado" : "Movido"} para "${result.title}"`,
+            {
+              description: `${result.count} ${plural(result.count, "elemento", "elementos")} · Ctrl+Z desfaz`,
+              action: { label: "Abrir", onClick: () => useAppStore.getState().openBoard(result.boardId) },
+            },
+          );
+        }
+        return;
+      }
+
       if (drag.moved && drag.ids.length === 1 && node.type !== "column" && boardNow) {
         const point = getWorldPoint(upEvent.clientX, upEvent.clientY);
         const column = columnAtPoint(boardNow.nodes, point, [], node.id);
@@ -163,6 +248,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
 
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
   };
 
   const startResize = (direction: string, event: React.PointerEvent<HTMLButtonElement>) => {
@@ -229,6 +315,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
           className={cn(
             "node-frame absolute select-none rounded-xl",
             selected && "node-selected",
+            dragging && "node-dragging",
             connectorMode && "cursor-crosshair",
           )}
           style={{ left: node.x, top: node.y, width: node.w, height: node.h }}
@@ -241,7 +328,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
         >
           <div
             className={cn(
-              "h-full w-full overflow-hidden rounded-xl",
+              "h-full w-full overflow-hidden rounded-none",
               showShadows && "shadow-node",
               node.locked && "opacity-95",
             )}
@@ -250,11 +337,11 @@ export const CanvasNodeView = memo(function CanvasNodeView({
           </div>
 
           {selected ? (
-            <div className="pointer-events-none absolute -inset-[3px] rounded-[14px] ring-2 ring-primary/80" />
+            <div className="pointer-events-none absolute -inset-[2px] rounded-none ring-2 ring-primary/80" />
           ) : null}
 
           {node.locked ? (
-            <div className="pointer-events-none absolute -right-2 -top-2 grid h-5 w-5 place-items-center rounded-full bg-card text-muted-foreground shadow ring-1 ring-border">
+            <div className="pointer-events-none absolute -right-2 -top-2 grid h-5 w-5 place-items-center rounded-none bg-card text-muted-foreground shadow ring-1 ring-border">
               <Lock className="h-3 w-3" />
             </div>
           ) : null}
@@ -268,7 +355,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
                   aria-label={`Redimensionar ${handle.dir}`}
                   onPointerDown={(event) => startResize(handle.dir, event)}
                   className={cn(
-                    "resize-handle absolute h-2.5 w-2.5 rounded-sm border border-primary bg-background shadow-sm",
+                    "resize-handle absolute h-2 w-2 rounded-none border border-primary bg-background shadow-sm",
                     handle.className,
                   )}
                 />
@@ -288,7 +375,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
                     onStartConnector(node.id, event.clientX, event.clientY);
                   }}
                   className={cn(
-                    "absolute h-3 w-3 rounded-full border-2 border-primary bg-background opacity-0 transition-opacity hover:opacity-100 node-selected:opacity-100",
+                    "absolute h-2.5 w-2.5 rounded-none border-2 border-primary bg-background opacity-0 transition-opacity hover:opacity-100 node-selected:opacity-100",
                     handle.className,
                     handle.cursor,
                   )}
@@ -298,7 +385,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
         </div>
       </ContextMenuTrigger>
 
-      <ContextMenuContent className="w-52">
+      <ContextMenuContent className="w-60">
         <ContextMenuLabel>
           {node.title?.trim() || (node.type === "board" ? "Quadro" : "Elemento")}
         </ContextMenuLabel>
@@ -317,6 +404,20 @@ export const CanvasNodeView = memo(function CanvasNodeView({
         </ContextMenuItem>
         <ContextMenuItem onSelect={() => useAppStore.getState().duplicateNodes(useAppStore.getState().selection)}>
           <Copy /> Duplicar
+        </ContextMenuItem>
+        <ContextMenuItem
+          onSelect={() =>
+            useAppStore.getState().openNodeTransfer(useAppStore.getState().selection, "move")
+          }
+        >
+          <ArrowRightLeft /> Mover para outro quadro…
+        </ContextMenuItem>
+        <ContextMenuItem
+          onSelect={() =>
+            useAppStore.getState().openNodeTransfer(useAppStore.getState().selection, "copy")
+          }
+        >
+          <Copy /> Copiar para outro quadro…
         </ContextMenuItem>
         <ContextMenuSub>
           <ContextMenuSubTrigger>

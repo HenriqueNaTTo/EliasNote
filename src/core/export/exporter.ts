@@ -62,6 +62,12 @@ function nodeMarkdown(node: CanvasNode, depth: number): string {
       if (node.content?.trim()) lines.push("", node.content.trim());
       break;
     }
+    case "text": {
+      if (node.content?.trim()) {
+        lines.push(`${indent}${node.content.trim()}`);
+      }
+      break;
+    }
     case "card": {
       lines.push(`${indent}### ${title}`);
       if (node.description?.trim()) lines.push("", node.description.trim());

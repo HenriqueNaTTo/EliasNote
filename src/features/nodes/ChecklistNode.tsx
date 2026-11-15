@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, Plus, Trash2 } from "lucide-react";
 import { useAppStore } from "@/core/store";
 import { cn } from "@/lib/utils";
-import { stopDrag } from "./nodeUi";
+import { nodeColorClass, stopDrag } from "./nodeUi";
 import type { NodeProps } from "./types";
 
 export function ChecklistNode({ node }: NodeProps) {
@@ -14,7 +14,6 @@ export function ChecklistNode({ node }: NodeProps) {
 
   const items = node.items ?? [];
   const done = items.filter((item) => item.done).length;
-  const percent = items.length > 0 ? Math.round((done / items.length) * 100) : 0;
 
   const submitDraft = () => {
     const text = draft.trim();
@@ -24,8 +23,13 @@ export function ChecklistNode({ node }: NodeProps) {
   };
 
   return (
-    <div className="node-surface flex h-full flex-col overflow-hidden rounded-xl border">
-      <div className="flex items-center gap-2 px-3 pb-1.5 pt-2.5">
+    <div
+      className={cn(
+        "node-surface flex h-full flex-col overflow-hidden rounded-none border",
+        nodeColorClass(node.color),
+      )}
+    >
+      <div className="flex items-center gap-2 px-3 pb-2 pt-3">
         <input
           data-no-drag
           value={node.title ?? ""}
@@ -34,25 +38,16 @@ export function ChecklistNode({ node }: NodeProps) {
           placeholder="Checklist"
           className="node-input min-w-0 flex-1 text-[13px] font-semibold placeholder:opacity-40"
         />
-        <span className="shrink-0 rounded bg-current/10 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums opacity-75">
+        <span className="shrink-0 rounded-none bg-current/10 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums opacity-75">
           {done}/{items.length}
         </span>
       </div>
 
-      <div className="px-3">
-        <div className="h-1 overflow-hidden rounded-full bg-current/10">
-          <div
-            className="h-full rounded-full bg-current/50 transition-[width] duration-300"
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-      </div>
-
-      <div className="scrollbar-thin mt-1 flex min-h-0 flex-1 flex-col gap-0.5 overflow-auto px-1.5 pb-2">
+      <div className="scrollbar-thin flex min-h-0 flex-1 flex-col gap-0.5 overflow-auto px-2 pb-2">
         {items.map((item) => (
           <div
             key={item.id}
-            className="group/item flex items-start gap-2 rounded-md px-1.5 py-1 hover:bg-current/[0.06]"
+            className="group/item flex items-start gap-2 rounded-none px-1.5 py-1 hover:bg-current/[0.06]"
           >
             <button
               type="button"
@@ -60,7 +55,7 @@ export function ChecklistNode({ node }: NodeProps) {
               onPointerDown={stopDrag}
               onClick={() => updateChecklistItem(node.id, item.id, { done: !item.done })}
               className={cn(
-                "mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded border transition-colors",
+                "mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-none border transition-colors",
                 item.done
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-current/30 hover:border-current/60",
@@ -95,7 +90,7 @@ export function ChecklistNode({ node }: NodeProps) {
         ))}
 
         <div className="flex items-center gap-2 px-1.5 py-1">
-          <span className="grid h-4 w-4 place-items-center rounded border border-dashed border-current/25 opacity-50">
+          <span className="grid h-4 w-4 place-items-center rounded-none border border-dashed border-current/25 opacity-50">
             <Plus className="h-2.5 w-2.5" />
           </span>
           <input

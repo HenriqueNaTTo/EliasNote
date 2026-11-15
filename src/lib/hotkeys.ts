@@ -12,6 +12,7 @@ export interface ShortcutDefinition {
 export const SHORTCUTS: ShortcutDefinition[] = [
   { id: "search", label: "Busca global", group: "navegação", combo: "Mod+K" },
   { id: "new-note", label: "Nova nota", group: "edição", combo: "N" },
+  { id: "new-text", label: "Novo texto", group: "edição", combo: "Shift+T" },
   { id: "new-card", label: "Novo cartão", group: "edição", combo: "C" },
   { id: "new-task", label: "Nova tarefa", group: "edição", combo: "T" },
   { id: "new-checklist", label: "Novo checklist", group: "edição", combo: "L" },

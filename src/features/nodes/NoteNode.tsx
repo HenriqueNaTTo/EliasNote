@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { ImageLightbox } from "./ImageLightbox";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { MarkdownView } from "./MarkdownView";
-import { NodeTypeIcon, nodeColorClass, stopDrag } from "./nodeUi";
+import { nodeColorClass, stopDrag } from "./nodeUi";
 import type { NodeProps } from "./types";
 
 const MEDIA_TYPES = new Set(["drawing", "image", "video", "file"]);
@@ -26,7 +26,6 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
   });
   const [dropActive, setDropActive] = useState(false);
   const content = node.content ?? "";
-  const words = content.split(/\s+/).filter(Boolean).length;
 
   const linkedMedia = (node.references ?? [])
     .map((reference) => parseRef(reference))
@@ -81,7 +80,7 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
   return (
     <div
       className={cn(
-        "node-surface relative flex h-full flex-col overflow-hidden rounded-xl border",
+        "node-surface relative flex h-full flex-col overflow-hidden rounded-none border",
         nodeColorClass(node.color),
         dropActive && "ring-2 ring-primary ring-offset-1",
       )}
@@ -106,27 +105,20 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
         if (files.length > 0) void attachFiles(files);
       }}
     >
-      <div className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-[0.09em] opacity-55">
-        <NodeTypeIcon type="note" />
-        <span>Nota</span>
+      <div className={cn("scrollbar-thin flex min-h-0 flex-1 flex-col overflow-auto px-3.5 pb-3.5 pt-3.5", editing && "gap-2")}>
         {selected && !editing ? (
           <button
             type="button"
             data-no-drag
             onPointerDown={stopDrag}
             onClick={createLinkedDrawing}
-            className="ml-1 rounded p-0.5 opacity-70 hover:bg-current/10 hover:opacity-100"
+            className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-none bg-current/10 opacity-70 transition-opacity hover:opacity-100"
             title="Criar desenho vinculado a esta nota"
             aria-label="Criar desenho vinculado"
           >
             <PenTool className="h-3 w-3" />
           </button>
         ) : null}
-        <span className="ml-auto font-normal normal-case tracking-normal opacity-80">
-          {words > 0 ? `${words} ${words === 1 ? "palavra" : "palavras"}` : ""}
-        </span>
-      </div>
-      <div className={cn("scrollbar-thin flex min-h-0 flex-1 flex-col overflow-auto px-3 pb-3", editing && "gap-2")}>
         {editing ? (
           <input
             data-no-drag
@@ -134,10 +126,12 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
             onChange={(event) => updateNode(node.id, { title: event.target.value }, { label: "Editar nota" })}
             onPointerDown={stopDrag}
             placeholder="Título da nota"
-            className="node-input shrink-0 border-b border-current/10 pb-1 text-sm font-semibold placeholder:opacity-40"
+            className="node-input shrink-0 border-b border-current/10 pb-1.5 text-[15px] font-semibold placeholder:opacity-40"
           />
         ) : (
-          node.title?.trim() && <h3 className="mb-0.5 shrink-0 text-sm font-semibold leading-snug">{node.title}</h3>
+          node.title?.trim() && (
+            <h3 className="mb-1.5 shrink-0 pr-7 text-[15px] font-semibold leading-snug">{node.title}</h3>
+          )
         )}
 
         {editing ? (
@@ -157,7 +151,7 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
         )}
 
         {!editing && linkedMedia.length > 0 ? (
-          <div className="mt-2 grid shrink-0 grid-cols-2 gap-1.5">
+          <div className="mt-3 grid shrink-0 grid-cols-2 gap-2">
             {linkedMedia.map((media) => (
               <NoteMediaItem key={media.id} media={media} />
             ))}
@@ -166,8 +160,8 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
       </div>
 
       {dropActive ? (
-        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-xl bg-primary/10 ring-2 ring-primary/60">
-          <span className="rounded-md bg-popover px-2 py-1 text-[10px] font-semibold shadow">
+        <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center rounded-none bg-primary/10 ring-2 ring-primary/60">
+          <span className="rounded-none bg-popover px-2 py-1 text-[10px] font-semibold shadow">
             Solte para anexar à nota
           </span>
         </div>
@@ -186,7 +180,7 @@ function NoteMediaItem({ media }: { media: CanvasNode }) {
         data-no-drag
         onPointerDown={stopDrag}
         onClick={() => openDrawing(media.id)}
-        className="group/link relative h-16 overflow-hidden rounded-lg border border-current/15 bg-white/60 text-left dark:bg-black/20"
+        className="group/link relative h-24 overflow-hidden rounded-none border border-current/15 bg-white/70 text-left dark:bg-black/25"
         title={`Editar ${media.title || "desenho"}`}
       >
         {media.scene?.thumbnail ? (
@@ -220,7 +214,7 @@ function NoteMediaItem({ media }: { media: CanvasNode }) {
       data-no-drag
       onPointerDown={stopDrag}
       onClick={() => focusNode(media.id)}
-      className="flex h-16 items-center gap-1.5 overflow-hidden rounded-lg border border-current/15 bg-white/50 px-2 text-left text-[10px] dark:bg-black/20"
+      className="flex h-24 items-center gap-1.5 overflow-hidden rounded-none border border-current/15 bg-white/60 px-2 text-left text-[10px] dark:bg-black/25"
       title={`Selecionar ${media.name || media.title || "anexo"}`}
     >
       <Icon className="h-4 w-4 shrink-0 opacity-60" />
@@ -245,7 +239,7 @@ function NoteImage({ media }: { media: CanvasNode }) {
           if (url) setPreview(true);
           else focusNode(media.id);
         }}
-        className="group/link relative h-16 overflow-hidden rounded-lg border border-current/15 bg-white/60 dark:bg-black/20"
+        className="group/link relative h-24 overflow-hidden rounded-none border border-current/15 bg-white/70 dark:bg-black/25"
         title={`Ampliar ${label}`}
       >
         {url ? (

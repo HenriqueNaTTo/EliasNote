@@ -49,6 +49,9 @@ export function createNode(boardId: string, seed: NodeSeed): CanvasNode {
       node.content = node.content ?? "";
       node.title = node.title ?? "";
       break;
+    case "text":
+      node.content = node.content ?? "";
+      break;
     case "card":
       node.title = node.title ?? "Novo cartão";
       node.description = node.description ?? "";
@@ -172,7 +175,7 @@ export function createConnector(
     from: { nodeId: fromNodeId, x: 0, y: 0 },
     to: { nodeId: toNodeId, x: 0, y: 0 },
     kind: "curve" as ConnectorKind,
-    color: "lilac",
+    color: "slate",
     arrowEnd: true,
     arrowStart: false,
     dashed: false,
@@ -346,7 +349,7 @@ export function createSeedState(_settings: AppSettings): SeedResult {
     ],
   });
 
-  const connector = createConnector(welcome.id, note.id, boardNode.id, { color: "lilac" });
+  const connector = createConnector(welcome.id, note.id, boardNode.id, { color: "slate" });
   welcome.connectors[connector.id] = connector;
 
   const childNote = createNode(child.id, {

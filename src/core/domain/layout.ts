@@ -100,6 +100,35 @@ export function parentColumnId(node: CanvasNode): ID | null {
   return node.parentId ?? null;
 }
 
+/** Retorna o cartão de quadro (subquadro) sob o ponto — usado como destino de arraste. */
+export function boardNodeAtPoint(
+  nodes: Record<ID, CanvasNode>,
+  point: Point,
+  excludeIds: ID[] = [],
+): CanvasNode | null {
+  const candidates = Object.values(nodes)
+    .filter(
+      (node) =>
+        node.type === "board" &&
+        Boolean(node.childBoardId) &&
+        !node.hidden &&
+        !node.locked &&
+        !excludeIds.includes(node.id),
+    )
+    .sort((a, b) => b.z - a.z);
+  for (const candidate of candidates) {
+    if (
+      point.x >= candidate.x &&
+      point.x <= candidate.x + candidate.w &&
+      point.y >= candidate.y &&
+      point.y <= candidate.y + candidate.h
+    ) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
 export function maxZ(nodes: Record<ID, CanvasNode>): number {
   return Object.values(nodes).reduce((max, node) => Math.max(max, node.z), 0);
 }

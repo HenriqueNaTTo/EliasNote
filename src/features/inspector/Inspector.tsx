@@ -43,6 +43,7 @@ import { suggestedFilename } from "@/features/export/boardExport";
 import { sceneToPdfBlob, sceneToPngBlob, sceneToSvgString } from "@/features/drawing/drawingExport";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -74,12 +75,12 @@ export function Inspector() {
   const connector = board && selectedConnectors[0] ? board.connectors[selectedConnectors[0]] : undefined;
 
   return (
-    <aside className="flex w-[306px] shrink-0 flex-col border-l border-border bg-[hsl(var(--sidebar))]">
+    <aside className="flex w-[306px] shrink-0 flex-col border-l border-border bg-background">
       <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border px-3">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Inspector</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Inspector</span>
         <div className="ml-auto flex items-center gap-1">
           <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>
-            <TabsList className="h-7 bg-muted/70 p-0.5">
+            <TabsList className="h-7 rounded-none bg-muted/60 p-0.5">
               <TabsTrigger value="props" className="px-2 py-0.5 text-[10px]">
                 Propriedades
               </TabsTrigger>
@@ -313,7 +314,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
         </IconAction>
       </div>
 
-      {node.type !== "image" && node.type !== "video" && node.type !== "file" && node.type !== "drawing" ? (
+      {node.type !== "image" && node.type !== "video" && node.type !== "file" && node.type !== "drawing" && node.type !== "text" ? (
         <>
           {node.type !== "column" ? (
             <>
@@ -420,6 +421,23 @@ function NodeSpecificPanel({
   const toggleTask = useAppStore((state) => state.toggleTask);
 
   switch (node.type) {
+    case "text":
+      return (
+        <>
+          <SectionTitle>Texto</SectionTitle>
+          <Textarea
+            value={node.content ?? ""}
+            onChange={(event) =>
+              updateNode(node.id, { content: event.target.value }, { label: "Editar texto" })
+            }
+            placeholder="Escreva algo…"
+            className="min-h-[96px] text-xs leading-relaxed"
+          />
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            Texto livre sobre o canvas, sem moldura de cartão. Duplo clique no elemento para editar.
+          </p>
+        </>
+      );
     case "task":
       return (
         <>

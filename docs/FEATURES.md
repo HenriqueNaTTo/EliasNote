@@ -8,6 +8,8 @@
 - Encaixe opcional em grade com tamanhos 8/16/24/32 px.
 - Seleção múltipla por arraste, Shift+clique, `Ctrl/Cmd+A`, mover com setas (Shift = 10 px) e alinhadores no inspector.
 - Duplicar, trazer para frente, enviar para trás, bloquear, ocultar e excluir com desfazer.
+- Mover ou copiar a seleção para outro quadro pelo menu de contexto: colunas vão com os itens, subquadros acompanham o cartão e o conteúdo entra centralizado no destino.
+- Arraste a seleção até um cartão de quadro no canvas ou até a linha do quadro na árvore lateral para mover (segure `Alt` no canvas para copiar); o destino reage ao arraste e pulsa ao receber os elementos.
 - Duplo clique em área vazia cria uma nota; duplo clique em um elemento abre o editor correspondente.
 - Arraste arquivos do sistema para o canvas: imagens, vídeos, arquivos, Markdown (vira nota), `.excalidraw` (vira desenho) e JSON (importa elementos).
 - Arraste imagens/arquivos para uma **nota**: o anexo é salvo localmente, a miniatura aparece dentro do cartão e o elemento fica ao lado com referência bidirecional.
@@ -18,6 +20,7 @@
 | Elemento | Recursos |
 | --- | --- |
 | Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores |
+| Texto | Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores |
 | Cartão | Título, descrição, etiqueta e cores |
 | Tarefa | Concluir, prioridade, prazo, Enter cria a próxima tarefa |
 | Checklist | Itens editáveis, progresso, adicionar/remover, concluir |
@@ -78,6 +81,7 @@ O menu **Arquivo → Cofre do Obsidian** (ou **Importar → Importar cofre do Ob
 
 ## Dados e configurações
 
+- Visual inspirado no Milanote: canvas cinza neutro, cartões brancos, notas coloridas sem cabeçalho, quadros em tiles coloridos, colunas transparentes, conectores finos com rótulos escuros e cantos retos em toda a interface.
 - Autosave incremental com indicador de status, armazenamento identificado (SQLite/IndexedDB).
 - Backups automáticos por intervalo configurável e manuais, com retenção e restauração.
 - Tema claro/escuro/sistema, cor de destaque, textura do canvas, densidade, escala de UI, sombra dos elementos, minimapa e rótulos de conectores.

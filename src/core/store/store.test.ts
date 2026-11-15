@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createAppStore } from "@/core/store";
 import { makePayload } from "@/test/fixtures";
 import { refForBoard } from "@/core/domain/refs";
@@ -125,5 +125,135 @@ describe("store: elementos e histórico", () => {
     const imported = store.getState().boards[otherBoardId];
     expect(imported.title).toBe("Outro");
     expect(store.getState().boards[test.boardId].childOrder).not.toContain(otherBoardId);
+  });
+});
+
+describe("store: mover e copiar elementos entre quadros", () => {
+  function setupWithTarget() {
+    const context = setup();
+    const targetBoardId = context.store
+      .getState()
+      .createBoard({ title: "Destino", open: false }) as string;
+    return { ...context, targetBoardId };
+  }
+
+  it("move o elemento para o destino e desfaz tudo em uma única ação", () => {
+    const { store, test, targetBoardId } = setupWithTarget();
+    const noteId = store.getState().addNode("note", { x: 100, y: 100 }) as string;
+
+    const result = store.getState().transferNodes([noteId], targetBoardId, "move");
+    expect(result).toMatchObject({ boardId: targetBoardId, title: "Destino", count: 1, mode: "move" });
+    expect(store.getState().boards[test.boardId].nodes[noteId]).toBeUndefined();
+
+    const moved = store.getState().boards[targetBoardId].nodes[noteId];
+    expect(moved.boardId).toBe(targetBoardId);
+    // Centralizado na área visível (canvasSize vazio usa 400x300).
+    expect(moved.x).toBe(400 - 280 / 2);
+    expect(moved.y).toBe(300 - 220 / 2);
+
+    store.getState().undo();
+    expect(store.getState().boards[test.boardId].nodes[noteId]).toBeDefined();
+    expect(store.getState().boards[targetBoardId].nodes[noteId]).toBeUndefined();
+  });
+
+  it("copia uma coluna com os filhos sem alterar a origem", () => {
+    const { store, test, targetBoardId } = setupWithTarget();
+    const columnId = store.getState().addNode("column", { x: 100, y: 100 }) as string;
+    const childId = store.getState().addNode("note", { x: 0, y: 0 }, { parentId: columnId }) as string;
+
+    expect(store.getState().transferNodes([columnId], targetBoardId, "copy")?.count).toBe(2);
+
+    const source = store.getState().boards[test.boardId];
+    expect(Object.keys(source.nodes)).toHaveLength(2);
+    expect(source.nodes[childId].parentId).toBe(columnId);
+
+    const targetNodes = Object.values(store.getState().boards[targetBoardId].nodes);
+    expect(targetNodes).toHaveLength(2);
+    const copiedColumn = targetNodes.find((node) => node.type === "column");
+    const copiedChild = targetNodes.find((node) => node.type === "note");
+    expect(copiedColumn?.id).not.toBe(columnId);
+    expect(copiedChild?.parentId).toBe(copiedColumn?.id);
+    expect(copiedChild?.id).not.toBe(childId);
+    expect(copiedChild?.x).toBe((copiedColumn?.x ?? 0) + 12);
+  });
+
+  it("move a coluna junto com os filhos e reorganiza o layout no destino", () => {
+    const { store, test, targetBoardId } = setupWithTarget();
+    const columnId = store.getState().addNode("column", { x: 100, y: 100 }) as string;
+    const childId = store.getState().addNode("note", { x: 0, y: 0 }, { parentId: columnId }) as string;
+
+    expect(store.getState().transferNodes([columnId], targetBoardId, "move")?.count).toBe(2);
+
+    const source = store.getState().boards[test.boardId];
+    expect(source.nodes[columnId]).toBeUndefined();
+    expect(source.nodes[childId]).toBeUndefined();
+
+    const target = store.getState().boards[targetBoardId];
+    expect(target.nodes[columnId].boardId).toBe(targetBoardId);
+    expect(target.nodes[childId].parentId).toBe(columnId);
+    expect(target.nodes[childId].x).toBe(target.nodes[columnId].x + 12);
+  });
+
+  it("leva o conector entre dois elementos movidos", () => {
+    const { store, test, targetBoardId } = setupWithTarget();
+    const firstId = store.getState().addNode("note", { x: 0, y: 0 }) as string;
+    const secondId = store.getState().addNode("card", { x: 400, y: 0 }) as string;
+    store.getState().addConnector({ nodeId: firstId, x: 0, y: 0 }, { nodeId: secondId, x: 0, y: 0 });
+
+    store.getState().transferNodes([firstId, secondId], targetBoardId, "move");
+
+    expect(Object.keys(store.getState().boards[test.boardId].connectors)).toHaveLength(0);
+    const connectors = Object.values(store.getState().boards[targetBoardId].connectors);
+    expect(connectors).toHaveLength(1);
+    expect(connectors[0].from.nodeId).toBe(firstId);
+    expect(connectors[0].to.nodeId).toBe(secondId);
+  });
+
+  it("leva o subquadro vinculado ao mover o cartão de quadro", () => {
+    const { store, test, targetBoardId } = setupWithTarget();
+    const boardNodeId = store.getState().addBoardNode(test.boardId, { x: 40, y: 40 }, "Filho") as string;
+    const childBoardId = store.getState().boards[test.boardId].nodes[boardNodeId].childBoardId as string;
+    expect(store.getState().boards[childBoardId].parentId).toBe(test.boardId);
+
+    store.getState().transferNodes([boardNodeId], targetBoardId, "move");
+
+    expect(store.getState().boards[childBoardId].parentId).toBe(targetBoardId);
+    expect(store.getState().boards[targetBoardId].childOrder).toContain(childBoardId);
+    expect(store.getState().boards[test.boardId].childOrder).not.toContain(childBoardId);
+  });
+
+  it("recusa destinos inválidos e elementos bloqueados", () => {
+    const { store, test, targetBoardId } = setupWithTarget();
+    const lockedId = store.getState().addNode("card", { x: 0, y: 0 }) as string;
+    store.getState().updateNode(lockedId, { locked: true });
+
+    expect(store.getState().transferNodes([lockedId], targetBoardId, "move")).toBeNull();
+    expect(store.getState().boards[test.boardId].nodes[lockedId]).toBeDefined();
+    expect(store.getState().boards[targetBoardId].nodes[lockedId]).toBeUndefined();
+    expect(store.getState().transferNodes([lockedId], test.boardId, "move")).toBeNull();
+  });
+
+  it("controla o arraste até o quadro e o flash de confirmação", () => {
+    vi.useFakeTimers();
+    try {
+      const { store, targetBoardId } = setupWithTarget();
+      const noteId = store.getState().addNode("note", { x: 10, y: 10 }) as string;
+
+      store.getState().startNodeDrag([noteId]);
+      expect(store.getState().nodeDrag).toMatchObject({ nodeIds: [noteId], overBoardId: null, mode: "move" });
+
+      store.getState().hoverNodeDragTarget(targetBoardId, "copy");
+      expect(store.getState().nodeDrag).toMatchObject({ overBoardId: targetBoardId, mode: "copy" });
+
+      store.getState().endNodeDrag();
+      expect(store.getState().nodeDrag).toBeNull();
+
+      store.getState().flashDropTarget(targetBoardId);
+      expect(store.getState().dropFlash?.boardId).toBe(targetBoardId);
+      vi.advanceTimersByTime(700);
+      expect(store.getState().dropFlash).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

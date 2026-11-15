@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 import { useAppStore } from "@/core/store";
 import { cn, formatDate } from "@/lib/utils";
 import { PRIORITY_LABELS } from "@/core/domain/constants";
-import { priorityDotClass, stopDrag } from "./nodeUi";
+import { priorityDotClass, nodeColorClass, stopDrag } from "./nodeUi";
 import type { NodeProps } from "./types";
 
 export function TaskNode({ node }: NodeProps) {
@@ -11,7 +11,12 @@ export function TaskNode({ node }: NodeProps) {
   const done = Boolean(node.done);
 
   return (
-    <div className="node-surface flex h-full items-center gap-2.5 overflow-hidden rounded-xl border px-3">
+    <div
+      className={cn(
+        "node-surface flex h-full items-center gap-2.5 overflow-hidden rounded-none border px-3",
+        nodeColorClass(node.color),
+      )}
+    >
       <button
         type="button"
         data-no-drag
@@ -19,7 +24,7 @@ export function TaskNode({ node }: NodeProps) {
         onClick={() => toggleTask(node.id)}
         aria-label={done ? "Marcar como pendente" : "Marcar como concluída"}
         className={cn(
-          "grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 transition-colors",
+          "grid h-4 w-4 shrink-0 place-items-center rounded-none border transition-colors",
           done ? "border-primary bg-primary text-primary-foreground" : "border-current/30 hover:border-current/60",
         )}
       >
@@ -46,7 +51,7 @@ export function TaskNode({ node }: NodeProps) {
 
       <div className="flex shrink-0 items-center gap-1.5" data-no-drag>
         {node.due ? (
-          <span className="rounded bg-current/10 px-1.5 py-0.5 text-[10px] font-medium opacity-80">
+          <span className="rounded-none bg-current/10 px-1.5 py-0.5 text-[10px] font-medium opacity-80">
             {formatDate(new Date(`${node.due}T12:00:00`).getTime())}
           </span>
         ) : null}
