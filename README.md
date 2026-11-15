@@ -45,6 +45,20 @@ Pré-requisitos do desktop: Rust 1.77.2+ (toolchain MSVC) e as dependências do 
 
 No primeiro `npm run dev`/`build`, as fontes do Excalidraw são copiadas para `public/excalidraw-assets` (scripts/copy-excalidraw-assets.mjs) para funcionar sem CDN.
 
+## Release
+
+```bash
+npm run version:set 0.2.0          # sincroniza package.json, tauri.conf.json e Cargo.toml
+git commit -am "chore: release v0.2.0"
+git tag v0.2.0
+git push origin main --follow-tags
+```
+
+A tag `v*` dispara o workflow `.github/workflows/release.yml`: typecheck + testes + build, criação da
+release e compilação paralela para **Windows** (`.msi`/`.exe`), **Linux** (`.AppImage`/`.deb`) e
+**macOS** (`.dmg` universal), com os instaladores anexados à release do GitHub. Detalhes, disparo
+manual e ajustes da matriz em [docs/RELEASE.md](docs/RELEASE.md).
+
 ## Estrutura
 
 ```
@@ -88,4 +102,4 @@ docs/                 arquitetura, funcionalidades, atalhos e desenvolvimento
 
 Código original sob MIT. Bibliotecas de terceiros mantêm suas licenças: Excalidraw (MIT), React, TypeScript, Vite, Tailwind CSS, Radix UI, lucide, Zustand, Immer, marked, DOMPurify, html-to-image, jsPDF, Tauri 2 e rusqlite. Nenhum código ou asset proprietário do Milanote foi utilizado.
 
-Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/FEATURES.md](docs/FEATURES.md), [docs/OBSIDIAN.md](docs/OBSIDIAN.md), [docs/SHORTCUTS.md](docs/SHORTCUTS.md) e [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
+Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/FEATURES.md](docs/FEATURES.md), [docs/OBSIDIAN.md](docs/OBSIDIAN.md), [docs/SHORTCUTS.md](docs/SHORTCUTS.md), [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) e [docs/RELEASE.md](docs/RELEASE.md).

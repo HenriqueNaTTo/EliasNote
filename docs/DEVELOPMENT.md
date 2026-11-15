@@ -18,9 +18,23 @@ npm run build            # assets + typecheck + build de produção
 npm run tauri dev        # desktop com SQLite
 npm run tauri build -- --bundles nsis
 npm run icons            # regenera src-tauri/icons
+npm run version:set 0.2.0  # sincroniza a versão nos manifestos
 ```
 
 O script `scripts/copy-excalidraw-assets.mjs` copia as fontes/dados do Excalidraw para `public/excalidraw-assets` para garantir funcionamento sem CDN. Ele roda antes de `dev` e `build`.
+
+## Release
+
+O repositório publica os instaladores por GitHub Actions em `.github/workflows/release.yml`:
+
+```bash
+npm run version:set 0.2.0
+git commit -am "chore: release v0.2.0"
+git tag v0.2.0
+git push origin main --follow-tags
+```
+
+A tag `v*` dispara os checks (typecheck, testes, build), cria a release e compila Windows, Linux e macOS em paralelo, anexando `.msi`, `.exe`, `.AppImage`, `.deb` e `.dmg`. Detalhes, disparo manual e ajustes da matriz estão em [RELEASE.md](RELEASE.md).
 
 ## Estrutura de dados
 
