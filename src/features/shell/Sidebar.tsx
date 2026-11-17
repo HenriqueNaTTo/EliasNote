@@ -11,7 +11,6 @@ import {
   Plus,
   Search,
   Settings,
-  Sparkles,
   Sun,
   Trash2,
   Wand2,
@@ -20,6 +19,7 @@ import { useAppStore } from "@/core/store";
 import { useBoardTree, useIsSidebarCollapsed } from "@/core/store/selectors";
 import { COLOR_DOT_CLASS } from "@/core/domain/constants";
 import { cn } from "@/lib/utils";
+import { AppMark } from "@/components/brand/AppMark";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -49,8 +49,8 @@ export function Sidebar() {
   if (collapsed) {
     return (
       <aside className="flex w-[56px] shrink-0 flex-col items-center gap-2 border-r border-border bg-[hsl(var(--sidebar))] py-3">
-        <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-          <Sparkles className="h-4 w-4" />
+        <div className="grid h-8 w-8 place-items-center rounded-lg border border-border bg-card text-foreground shadow-sm">
+          <AppMark className="h-4 w-4" />
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -103,8 +103,8 @@ export function Sidebar() {
       style={{ width: sidebarWidth }}
     >
       <div className="flex items-center gap-2 px-3 pb-2 pt-3">
-        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-sm">
-          <Sparkles className="h-4 w-4" />
+        <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border bg-card text-foreground shadow-sm">
+          <AppMark className="h-4 w-4" />
         </div>
         <div className="min-w-0 flex-1 leading-tight">
           <p className="truncate text-[13px] font-semibold tracking-tight">EliasNote</p>

@@ -33,7 +33,7 @@ Pré-requisitos:
 ```bash
 npm install
 npm run dev        # frontend no navegador (IndexedDB)
-npm test           # 70 testes unitários, de componentes e de integração
+npm test           # testes unitários, de componentes e de integração
 npm run build      # typecheck + build de produção
 npm run tauri dev  # aplicativo desktop com SQLite
 npm run tauri build -- --bundles nsis
@@ -44,6 +44,21 @@ Pré-requisitos do desktop: Rust 1.77.2+ (toolchain MSVC) e as dependências do 
 > O target do Cargo está em `F:/cargo-target/eliasnote` via `src-tauri/.cargo/config.toml`, porque o disco C: tem pouco espaço livre. Ajuste esse arquivo se necessário.
 
 No primeiro `npm run dev`/`build`, as fontes do Excalidraw são copiadas para `public/excalidraw-assets` (scripts/copy-excalidraw-assets.mjs) para funcionar sem CDN.
+
+## Landing page
+
+A página de divulgação é uma segunda entrada do Vite (`landing.html` + `src/landing`), com o mesmo Tailwind, os mesmos tokens de tema e a mesma marca do app. Tem abas **Principal**, **Funcionalidades**, **Downloads**, **Sobre** e **Contato**, alternância de tema, seletor de cor de destaque e um formulário que gera uma issue pré-preenchida no GitHub (sem backend). Na aba Funcionalidades, cada cartão abre uma prévia da interface ao passar o mouse ou focar pelo teclado.
+
+```bash
+npm run dev     # http://localhost:1420/landing.html
+npm run build   # gera dist/index.html (app) e dist/landing.html (site)
+```
+
+O conteúdo de `dist/landing.html` e de `dist/assets` pode ser publicado em qualquer host estático. Para GitHub Pages em subpasta, rode o build com `npx vite build --base=/EliasNote/`.
+
+## Marca
+
+A arte da marca fica em `public/logoNova.png`. `npm run icons` gera as máscaras em `src/assets/brand` (arte completa e cabeça), o favicon e os ícones do app; `npm run installer:assets` regenera as artes do instalador NSIS. O componente `AppMark` pinta o livro/herói com `currentColor` e a cabeça com `--primary`, então o logo acompanha tema e cor de destaque no app, na landing e no assistente.
 
 ## Release
 
@@ -62,7 +77,9 @@ manual e ajustes da matriz em [docs/RELEASE.md](docs/RELEASE.md).
 ## Estrutura
 
 ```
+landing.html          landing page de divulgação (segunda entrada do Vite)
 src/
+  landing/            shell, seções, prévia do app e dados da landing page
   app/                App, shell e providers
   core/
     domain/           tipos, fábricas, layout, árvore, templates, referências

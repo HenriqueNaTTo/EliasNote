@@ -1,0 +1,218 @@
+name: Release
+
+# Gera os instaladores do Tauri e publica uma release no GitHub.
+#
+# Como publicar:
+#   1. npm run version:set 0.2.0
+#   2. git commit -am "chore: release v0.2.0"
+#   3. git tag v0.2.0
+#   4. git push origin main --follow-tags
+#
+# Também pode ser disparado manualmente em Actions → Release, informando uma tag existente.
+# Tags com sufixo (ex.: v0.3.0-beta.1) são publicadas como pré-release.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag existente a publicar (ex.: v0.2.0)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+  # Tag alvo: input do dispatch ou a própria tag empurrada.
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+  NODE_VERSION: "20"
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    name: Testes e typecheck
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Testes
+        run: npm test
+
+      - name: Build do frontend
+        run: npm run build
+
+  release:
+    name: Criar release
+    needs: checks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    outputs:
+      release_id: ${{ steps.create.outputs.release_id }}
+    steps:
+      - name: Criar ou reaproveitar a release
+        id: create
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          notes="$(gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="${RELEASE_TAG}" --jq .body 2>/dev/null || true)"
+          if [ -z "${notes}" ]; then
+            notes="Release ${RELEASE_TAG} do EliasNote."
+          fi
+
+          {
+            printf '%s\n' "${notes}"
+            cat <<'EOF'
+
+          ### Instaladores
+
+          - **Windows:** `.msi` (WiX) e `.exe` (NSIS)
+          - **Linux:** `.AppImage` e `.deb`
+          - **macOS:** `.dmg` universal (Apple Silicon + Intel)
+
+          > Os instaladores não são assinados. No macOS, se o sistema bloquear a abertura, libere com
+          > `xattr -dr com.apple.quarantine /Applications/EliasNote.app`.
+          > Os dados ficam em `%APPDATA%` / `~/Library/Application Support` / `~/.local/share` (`com.eliasnote.desktop`).
+          EOF
+          } > release-notes.md
+
+          release_id="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
+            --jq .id 2>/dev/null || true)"
+
+          if [ -z "${release_id}" ]; then
+            prerequisite="false"
+            if [[ "${RELEASE_TAG}" == *-* ]]; then prerequisite="true"; fi
+            release_id="$(gh api -X POST "repos/${GITHUB_REPOSITORY}/releases" \
+              -f tag_name="${RELEASE_TAG}" \
+              -f name="EliasNote ${RELEASE_TAG}" \
+              -F prerelease="${prerequisite}" \
+              -f body="$(cat release-notes.md)" \
+              --jq .id)"
+            echo "Release criada: ${RELEASE_TAG} (id ${release_id})"
+          else
+            echo "Release já existente: ${RELEASE_TAG} (id ${release_id})"
+          fi
+
+          if [ -z "${release_id}" ] || [ "${release_id}" = "null" ]; then
+            echo "Não foi possível obter a release ${RELEASE_TAG}." >&2
+            exit 1
+          fi
+
+          echo "release_id=${release_id}" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.label }}
+    needs: release
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Windows (x64)
+            os: windows-latest
+            args: ""
+          - label: Linux (x64)
+            os: ubuntu-22.04
+            args: ""
+          - label: macOS (universal)
+            os: macos-latest
+            args: "--target universal-apple-darwin"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Dependências do sistema (Linux)
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev \
+            patchelf libxdo-dev libssl-dev
+
+      - name: Alvos do Rust (macOS universal)
+        if: matrix.os == 'macos-latest'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Cache do Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          key: ${{ matrix.label }}
+
+      - name: Instalar dependências
+        run: npm ci --no-audit --no-fund
+
+      - name: Sincronizar versão com a tag
+        shell: bash
+        run: node scripts/set-version.mjs "$RELEASE_TAG"
+
+      - name: Build e upload dos instaladores
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # A release já foi criada no job anterior; aqui só enviamos os assets.
+          releaseId: ${{ needs.release.outputs.release_id }}
+          args: ${{ matrix.args }}
+
+      - name: Instalador visual (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run setup:build
+          $asset = Get-ChildItem dist-setup/*.exe | Select-Object -First 1
+          if (-not $asset) { throw "instalador visual não foi gerado" }
+          gh release upload $env:RELEASE_TAG $asset.FullName --clobber
+
+  summary:
+    name: Resumo da release
+    needs: [checks, release, build]
+    if: always()
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Estado das builds
+        run: |
+          echo "Release: ${RELEASE_TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Plataforma | Resultado |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Checks (typecheck, testes, build) | ${{ needs.checks.result == 'success' && 'ok' || 'falhou' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Release criada/reaproveitada | ${{ needs.release.result == 'success' && 'ok' || 'falhou' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Instaladores (todos os alvos) | ${{ needs.build.result == 'success' && 'ok' || 'falhou' }} |" >> "$GITHUB_STEP_SUMMARY"

@@ -12,6 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "icons": "node scripts/generate-icons.mjs",
+    "installer:assets": "node scripts/generate-installer-assets.mjs",
+    "setup:dev": "cd setup && tauri dev",
+    "setup:build": "node scripts/build-setup.mjs",
     "assets": "node scripts/copy-excalidraw-assets.mjs",
     "version:set": "node scripts/set-version.mjs",
     "tauri": "tauri"

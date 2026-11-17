@@ -7,9 +7,18 @@ Thumbs.db
 
 # Tauri / Rust
 src-tauri/target/
+src-tauri/target-setup/
 src-tauri/gen/schemas/
 src-tauri/.cargo/
 !src-tauri/icons/
+
+# Assistente de instalacao (app embutido, icones copiados e artefatos)
+setup/src-tauri/payload/*.exe
+setup/src-tauri/icons/
+setup/src-tauri/target/
+setup/src-tauri/gen/schemas/
+setup/src-tauri/.cargo/
+dist-setup/
 
 # Assets gerados (fontes do Excalidraw)
 public/excalidraw-assets/

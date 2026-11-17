@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "EliasNote Setup",
+  "version": "0.2.0",
+  "identifier": "com.eliasnote.setup",
+  "build": {
+    "devUrl": "http://localhost:1420/setup.html",
+    "frontendDist": "../../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "setup",
+        "title": "EliasNote Setup",
+        "url": "setup.html",
+        "width": 1024,
+        "height": 688,
+        "minWidth": 900,
+        "minHeight": 620,
+        "resizable": true,
+        "decorations": false,
+        "center": true,
+        "dragDropEnabled": false,
+        "backgroundColor": "#f7f7f7"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data: asset: http://asset.localhost; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": false,
+    "icon": ["icons/icon.ico", "icons/icon.png"]
+  }
+}

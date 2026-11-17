@@ -37,9 +37,24 @@
     "active": true,
     "targets": "all",
     "icon": ["icons/icon.png", "icons/icon.ico"],
+    "licenseFile": "../LICENSE",
     "shortDescription": "Organizacao visual local-first com canvas infinito",
     "longDescription": "EliasNote combina organizacao visual estilo Milanote com desenho Excalidraw nativo. Totalmente offline, com SQLite local, quadros aninhados e exportacao.",
     "category": "Productivity",
-    "copyright": "EliasNote - software livre"
+    "copyright": "EliasNote - software livre",
+    "windows": {
+      "nsis": {
+        "template": "installer/installer.nsi",
+        "installerHooks": "installer/brand.nsh",
+        "installerIcon": "icons/icon.ico",
+        "headerImage": "installer/assets/header.bmp",
+        "sidebarImage": "installer/assets/sidebar.bmp",
+        "installMode": "currentUser",
+        "languages": ["PortugueseBR"],
+        "displayLanguageSelector": false,
+        "compression": "lzma",
+        "startMenuFolder": "EliasNote"
+      }
+    }
   }
 }

@@ -8,7 +8,6 @@ import {
   RotateCcw,
   Save,
   ShieldCheck,
-  Sparkles,
   SlidersHorizontal,
   Trash2,
   Wand2,
@@ -24,6 +23,7 @@ import { suggestedFilename } from "@/features/export/boardExport";
 import { SHORTCUTS, comboFromEvent, findShortcutConflicts, formatCombo } from "@/lib/hotkeys";
 import { cn, formatBytes } from "@/lib/utils";
 import type { AccentColor, AppSettings, CanvasTexture, ThemeMode } from "@/core/domain/types";
+import { AppMark } from "@/components/brand/AppMark";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -658,8 +658,8 @@ function AboutSection({ totals }: { totals: { boards: number; nodes: number; wor
   return (
     <>
       <div className="flex items-center gap-3">
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground">
-          <Sparkles className="h-5 w-5" />
+        <div className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-card text-foreground">
+          <AppMark className="h-6 w-6" />
         </div>
         <div>
           <p className="text-sm font-semibold">EliasNote</p>

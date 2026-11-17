@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
+    <title>EliasNote Setup</title>
+    <script>
+      // Aplica o tema antes da primeira pintura para evitar flash.
+      (function () {
+        try {
+          var stored = localStorage.getItem("eliasnote-setup-theme");
+          document.documentElement.classList.toggle("dark", stored === "dark");
+        } catch (error) {
+          /* sem localStorage: segue o tema claro */
+        }
+      })();
+    </script>
+  </head>
+  <body class="overflow-hidden bg-background text-foreground antialiased">
+    <div id="setup-root" class="h-full"></div>
+    <script type="module" src="/src/setup/main.tsx"></script>
+  </body>
+</html>

@@ -18,10 +18,27 @@ npm run build            # assets + typecheck + build de produção
 npm run tauri dev        # desktop com SQLite
 npm run tauri build -- --bundles nsis
 npm run icons            # regenera src-tauri/icons
+npm run installer:assets # regenera as artes do instalador (src-tauri/installer/assets)
+npm run setup:dev        # assistente de instalação em modo dev (setup.html)
+npm run setup:build      # instalador visual (.exe) em dist-setup/
 npm run version:set 0.2.0  # sincroniza a versão nos manifestos
 ```
 
 O script `scripts/copy-excalidraw-assets.mjs` copia as fontes/dados do Excalidraw para `public/excalidraw-assets` para garantir funcionamento sem CDN. Ele roda antes de `dev` e `build`.
+
+## Assistente de instalação (`setup/`)
+
+`npm run setup:build` monta `dist-setup/EliasNote_<versão>_x64-setup.exe`: um app Tauri
+próprio (`setup/src-tauri`, interface em `setup.html` + `src/setup/**`) que embute o
+`eliasnote.exe` em `setup/src-tauri/payload` e instala o programa no escopo do usuário.
+
+- Os ícones (`setup/src-tauri/icons`) e o payload são **gerados** pelo script; um
+  `cargo build` isolado em `setup/src-tauri` falha até o payload existir.
+- O build usa o CLI do Tauri nas duas etapas (app e assistente): só ele define as
+  variáveis `TAURI_ENV_*` que embutem o frontend de produção no binário.
+- `npm run setup:dev` abre só a interface (rode `npm run dev` para o Vite em `:1420`).
+- O assistente copia a si mesmo como `uninstall.exe`; ele abre a tela de remoção com
+  `--uninstall` e apaga a pasta de instalação quando o processo termina.
 
 ## Release
 

@@ -25,6 +25,12 @@ export default defineConfig({
     sourcemap: false,
     chunkSizeWarningLimit: 6000,
     rollupOptions: {
+      // Duas entradas: o app desktop (index.html) e a landing page de divulgação.
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        landing: path.resolve(__dirname, "landing.html"),
+        setup: path.resolve(__dirname, "setup.html"),
+      },
       output: {
         manualChunks(id) {
           if (id.includes("@excalidraw")) return "excalidraw";

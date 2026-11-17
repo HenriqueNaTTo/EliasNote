@@ -1,0 +1,328 @@
+/* Ajustes exclusivos da landing page. O restante do visual vem de globals.css. */
+
+html {
+  min-height: 100%;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+}
+
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: hsl(var(--muted-foreground) / 0.28);
+}
+
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#landing-root {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+/* Fundo pontilhado que reproduz o canvas do app. */
+.landing-canvas {
+  background-color: hsl(var(--canvas));
+  background-image: radial-gradient(hsl(var(--canvas-dot)) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+#landing-root a:focus-visible,
+#landing-root button:focus-visible {
+  outline: 2px solid hsl(var(--ring) / 0.5);
+  outline-offset: 2px;
+}
+
+/* Movimento: entradas, revelações no scroll e microinterações. */
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-scale-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-page-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-rule-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes landing-row-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-count-pop {
+  from {
+    opacity: 0.2;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes landing-dash {
+  to {
+    stroke-dashoffset: -120;
+  }
+}
+
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes landing-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes landing-underline {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.landing-enter {
+  animation: landing-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-enter-scale {
+  animation: landing-scale-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-page-enter {
+  animation: landing-page-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-reveal {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.landing-reveal-fade {
+  transform: none;
+}
+
+.landing-reveal-scale {
+  transform: translate3d(0, 12px, 0) scale(0.965);
+}
+
+.landing-reveal-left {
+  transform: translate3d(-26px, 0, 0);
+}
+
+.landing-reveal-right {
+  transform: translate3d(26px, 0, 0);
+}
+
+.landing-reveal[data-visible="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.landing-lift {
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    border-color 0.28s ease,
+    background-color 0.28s ease;
+}
+
+.landing-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px -26px rgba(0, 0, 0, 0.45);
+}
+
+.landing-cta {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.landing-cta:hover {
+  transform: translateY(-1px);
+}
+
+.landing-cta:active {
+  transform: translateY(0);
+}
+
+.landing-header {
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.landing-header[data-scrolled="true"] {
+  box-shadow:
+    0 1px 0 hsl(var(--border)),
+    0 18px 40px -34px rgba(0, 0, 0, 0.55);
+}
+
+.landing-progress {
+  transform-origin: 0 50%;
+}
+
+.landing-hero-glow {
+  background: radial-gradient(closest-side, hsl(var(--primary) / 0.22), transparent 72%);
+  animation: landing-glow 9s ease-in-out infinite;
+}
+
+.landing-preview-frame {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease;
+}
+
+.landing-preview-frame:hover {
+  transform: translateY(-3px);
+}
+
+.landing-float {
+  animation: landing-float 7s ease-in-out infinite;
+}
+
+.landing-connector {
+  animation: landing-dash 24s linear infinite;
+}
+
+.landing-rule {
+  transform-origin: left center;
+  animation: landing-rule-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-underline {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: landing-underline 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+}
+
+.landing-row {
+  opacity: 0;
+}
+
+.landing-reveal[data-visible="true"] .landing-row {
+  animation: landing-row-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.landing-count {
+  display: inline-block;
+  animation: landing-count-pop 0.4s ease-out both;
+}
+
+.landing-feature-grid {
+  background-color: hsl(var(--canvas));
+  background-image:
+    linear-gradient(to right, hsl(var(--canvas-dot) / 0.65) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--canvas-dot) / 0.65) 1px, transparent 1px);
+  background-size: 12px 12px;
+}
+
+@keyframes landing-preview-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.landing-preview-pop {
+  animation: landing-preview-in 0.18s ease-out both;
+}
+
+.landing-preview-pop[data-placement="bottom"] {
+  transform-origin: center top;
+}
+
+.landing-preview-pop[data-placement="top"] {
+  transform-origin: center bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #landing-root *,
+  #landing-root *::before,
+  #landing-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .landing-lift:hover,
+  .landing-cta:hover,
+  .landing-preview-frame:hover {
+    transform: none;
+  }
+}

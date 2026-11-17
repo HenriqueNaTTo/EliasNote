@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { Toaster } from "sonner";
 import { bootstrapApplication } from "@/core/bootstrap";
 import { useAppStore } from "@/core/store";
+import { AppMark } from "@/components/brand/AppMark";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Sidebar } from "@/features/shell/Sidebar";
 import { TopBar } from "@/features/shell/TopBar";
@@ -34,8 +35,8 @@ export default function App() {
   if (!hydrated) {
     return (
       <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background">
-        <div className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-primary to-primary/60 text-primary-foreground shadow-lg">
-          <Sparkles className="h-7 w-7" />
+        <div className="grid h-14 w-14 place-items-center rounded-2xl border border-border bg-card text-foreground shadow-lg">
+          <AppMark className="h-7 w-7" />
         </div>
         <div className="text-center">
           <p className="text-sm font-semibold tracking-tight">EliasNote</p>
