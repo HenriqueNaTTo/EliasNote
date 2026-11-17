@@ -1,29 +1,36 @@
 import { useState } from "react";
 import { ArrowUpRight, FolderTree, Keyboard, PenTool } from "lucide-react";
 import { Reveal } from "@/landing/components/animate";
-import { FeatureCard } from "@/landing/components/FeatureCard";
+import { FeatureCard, type FeatureCardItem } from "@/landing/components/FeatureCard";
 import { CheckItem, Container, Kbd, PageHeader, SectionHeading } from "@/landing/components/ui";
-import { FEATURES, FEATURE_CATEGORIES, type FeatureCategoryId } from "@/landing/data";
-import { DOCS_URL, ELEMENTS, EXCALIDRAW_URL, SHORTCUTS } from "@/landing/site";
+import { FEATURE_CATEGORY_IDS, FEATURE_META } from "@/landing/data";
+import { useContent } from "@/landing/i18n/LocaleContext";
+import { format } from "@/landing/i18n/locale";
+import { ELEMENT_META, EXCALIDRAW_URL, SHORTCUT_META, docHref } from "@/landing/site";
+import type { FeatureCategoryId } from "@/landing/i18n/types";
 import { cn } from "@/lib/utils";
 
 type CategoryFilter = "todos" | FeatureCategoryId;
 
 export function Features() {
+  const content = useContent();
+  const c = content.features;
   const [category, setCategory] = useState<CategoryFilter>("todos");
-  const filtered = FEATURES.filter((feature) => category === "todos" || feature.category === category);
+
+  const items: FeatureCardItem[] = FEATURE_META.map((meta) => ({ ...meta, ...c.items[meta.id] }));
+  const filtered = items.filter((feature) => category === "todos" || feature.category === category);
+  const filters: { id: CategoryFilter; label: string }[] = [
+    { id: "todos", label: c.allCategories },
+    ...FEATURE_CATEGORY_IDS.map((id) => ({ id, label: c.categories[id] })),
+  ];
 
   return (
     <div className="landing-page-enter">
-      <PageHeader
-        eyebrow="Funcionalidades"
-        title="Tudo que o EliasNote faz"
-        description="Um app só para capturar, organizar, desenhar e entregar. Abaixo, o inventário completo do que já está pronto na versão atual."
-      >
-        <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filtrar funcionalidades por categoria">
-          {FEATURE_CATEGORIES.map((item) => {
+      <PageHeader eyebrow={c.header.eyebrow} title={c.header.title} description={c.header.description}>
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label={c.filterAria}>
+          {filters.map((item) => {
             const count =
-              item.id === "todos" ? FEATURES.length : FEATURES.filter((feature) => feature.category === item.id).length;
+              item.id === "todos" ? items.length : items.filter((feature) => feature.category === item.id).length;
             const active = category === item.id;
             return (
               <button
@@ -52,10 +59,10 @@ export function Features() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-[11px] uppercase tracking-wide text-muted-foreground" aria-live="polite">
             <span key={category} className="landing-count inline-block">
-              {filtered.length} {filtered.length === 1 ? "recurso" : "recursos"} nesta categoria
+              {format(filtered.length === 1 ? c.countOne : c.countMany, { count: filtered.length })}
             </span>
           </p>
-          <p className="text-[11px] text-muted-foreground">Atalhos remapeáveis · interface em português</p>
+          <p className="text-[11px] text-muted-foreground">{c.meta}</p>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -69,36 +76,32 @@ export function Features() {
         {/* Elementos */}
         <section className="mt-12 sm:mt-16">
           <Reveal>
-            <SectionHeading
-              eyebrow="Elementos"
-              title="Cada conteúdo tem o formato certo."
-              description="Arraste do sistema para o canvas: imagem vira mídia, Markdown vira nota, .excalidraw vira desenho e JSON importa elementos."
-            />
+            <SectionHeading eyebrow={c.elements.eyebrow} title={c.elements.title} description={c.elements.description} />
           </Reveal>
           <Reveal delay={100}>
             <div className="mt-5 overflow-x-auto border border-border bg-card">
               <table className="w-full border-collapse text-[12px]">
-                <caption className="sr-only">Tipos de elementos do EliasNote e o que cada um faz</caption>
+                <caption className="sr-only">{c.elements.caption}</caption>
                 <thead>
                   <tr className="border-b border-border bg-muted/60">
                     <th
                       scope="col"
                       className="px-3 py-2 text-left text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
                     >
-                      Elemento
+                      {c.elements.columnName}
                     </th>
                     <th
                       scope="col"
                       className="px-3 py-2 text-left text-[10px] font-medium uppercase tracking-wide text-muted-foreground"
                     >
-                      O que faz
+                      {c.elements.columnDescription}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {ELEMENTS.map((element, index) => (
+                  {ELEMENT_META.map((element, index) => (
                     <tr
-                      key={element.name}
+                      key={element.id}
                       className="landing-row border-b border-border transition-colors last:border-0 hover:bg-muted/40"
                       style={{ animationDelay: `${index * 28}ms` }}
                     >
@@ -107,18 +110,16 @@ export function Features() {
                           className={cn("mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle", element.dot)}
                           aria-hidden
                         />
-                        {element.name}
+                        {c.elements.items[element.id].name}
                       </th>
-                      <td className="px-3 py-2 text-muted-foreground">{element.description}</td>
+                      <td className="px-3 py-2 text-muted-foreground">{c.elements.items[element.id].description}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </Reveal>
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            Todos os elementos aceitam cor, redimensionamento, bloqueio, ocultação e referências bidirecionais.
-          </p>
+          <p className="mt-2 text-[11px] text-muted-foreground">{c.elements.footnote}</p>
         </section>
 
         {/* Atalhos + destaques */}
@@ -130,18 +131,18 @@ export function Features() {
                   <Keyboard className="h-4 w-4" />
                 </span>
                 <div>
-                  <h3 className="text-[13px] font-semibold tracking-tight">Atalhos essenciais</h3>
-                  <p className="text-[11px] text-muted-foreground">Todos remapeáveis em Configurações → Atalhos.</p>
+                  <h3 className="text-[13px] font-semibold tracking-tight">{c.shortcuts.title}</h3>
+                  <p className="text-[11px] text-muted-foreground">{c.shortcuts.subtitle}</p>
                 </div>
               </div>
               <ul className="divide-y divide-border">
-                {SHORTCUTS.map((shortcut, index) => (
+                {SHORTCUT_META.map((shortcut, index) => (
                   <li
-                    key={shortcut.action}
+                    key={shortcut.id}
                     className="landing-row flex items-center justify-between gap-3 px-4 py-2"
                     style={{ animationDelay: `${index * 45}ms` }}
                   >
-                    <span className="text-[12px] text-muted-foreground">{shortcut.action}</span>
+                    <span className="text-[12px] text-muted-foreground">{c.shortcuts.actions[shortcut.id]}</span>
                     <span className="flex shrink-0 gap-1">
                       {shortcut.keys.map((key) => (
                         <Kbd key={key}>{key}</Kbd>
@@ -150,9 +151,7 @@ export function Features() {
                   </li>
                 ))}
               </ul>
-              <p className="border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground">
-                Ctrl/Cmd representa ⌘ no macOS. Atalhos de uma letra são ignorados enquanto você digita.
-              </p>
+              <p className="border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground">{c.shortcuts.note}</p>
             </div>
           </Reveal>
 
@@ -163,16 +162,13 @@ export function Features() {
                   <span className="grid h-8 w-8 place-items-center border border-primary/20 bg-primary/10 text-primary">
                     <PenTool className="h-4 w-4" />
                   </span>
-                  <h3 className="text-[13.5px] font-semibold tracking-tight">Desenho sem trocar de app</h3>
+                  <h3 className="text-[13.5px] font-semibold tracking-tight">{c.drawing.title}</h3>
                 </div>
-                <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                  O editor Excalidraw abre em tela cheia e a cena fica salva no próprio quadro, com miniatura no
-                  canvas. A biblioteca de elementos é local e pode ser importada ou exportada em .excalidrawlib.
-                </p>
+                <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">{c.drawing.description}</p>
                 <ul className="mt-3 space-y-1.5">
-                  <CheckItem>Mesclagem de cenas com remapeamento de bindings e imagens</CheckItem>
-                  <CheckItem>Exportação do desenho em PNG, SVG e PDF</CheckItem>
-                  <CheckItem>Importação de arquivos .excalidraw por arraste</CheckItem>
+                  {c.drawing.items.map((item) => (
+                    <CheckItem key={item}>{item}</CheckItem>
+                  ))}
                 </ul>
                 <a
                   href={EXCALIDRAW_URL}
@@ -180,7 +176,7 @@ export function Features() {
                   rel="noreferrer"
                   className="group mt-auto inline-flex items-center gap-1 pt-4 text-[11.5px] font-medium text-primary hover:underline"
                 >
-                  Conhecer o Excalidraw
+                  {c.drawing.link}
                   <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </a>
               </div>
@@ -190,19 +186,14 @@ export function Features() {
                   <span className="grid h-8 w-8 place-items-center border border-primary/20 bg-primary/10 text-primary">
                     <FolderTree className="h-4 w-4" />
                   </span>
-                  <h3 className="text-[13.5px] font-semibold tracking-tight">Cofre do Obsidian em um clique</h3>
+                  <h3 className="text-[13.5px] font-semibold tracking-tight">{c.obsidian.title}</h3>
                 </div>
-                <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
-                  A importação cria um workspace novo com a hierarquia de pastas, notas, anexos, canvases e desenhos.
-                  O cofre original não é modificado.
-                </p>
+                <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">{c.obsidian.description}</p>
                 <a
-                  href={`${DOCS_URL}/OBSIDIAN.md`}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={docHref("obsidian")}
                   className="group mt-auto inline-flex items-center gap-1 pt-4 text-[11.5px] font-medium text-primary hover:underline"
                 >
-                  Ver o que é convertido
+                  {c.obsidian.link}
                   <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                 </a>
               </div>
@@ -212,16 +203,15 @@ export function Features() {
 
         <Reveal variant="fade">
           <p className="mt-8 border-t border-border pt-4 text-[11px] text-muted-foreground">
-            Detalhes técnicos e limites conhecidos estão em{" "}
-            <a
-              href={`${DOCS_URL}/FEATURES.md`}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium text-primary hover:underline"
-            >
-              docs/FEATURES.md
+            {c.footnote.start}
+            <a href={docHref("funcionalidades")} className="font-medium text-primary hover:underline">
+              {c.footnote.featuresLink}
             </a>
-            .
+            {c.footnote.middle}
+            <a href={docHref("atalhos")} className="font-medium text-primary hover:underline">
+              {c.footnote.shortcutsLink}
+            </a>
+            {c.footnote.end}
           </p>
         </Reveal>
       </Container>

@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import {
   ArrowUp,
+  BookOpen,
   Download,
   Home as HomeIcon,
   Info,
+  Languages,
   LayoutGrid,
   Mail,
   Moon,
@@ -14,12 +16,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Reveal, useReducedMotion } from "@/landing/components/animate";
 import { Container } from "@/landing/components/ui";
+import { Docs } from "@/landing/docs/Docs";
+import { useContent, useLocale } from "@/landing/i18n/LocaleContext";
+import { LOCALES, format, getLocaleEntry } from "@/landing/i18n/locale";
+import type { DocId, Locale, SiteContent, TabId } from "@/landing/i18n/types";
 import { About } from "@/landing/sections/About";
 import { Contact } from "@/landing/sections/Contact";
 import { Downloads } from "@/landing/sections/Downloads";
 import { Features } from "@/landing/sections/Features";
 import { Home as HomeSection } from "@/landing/sections/Home";
 import {
+  ACCENTS,
   APP_VERSION,
   DOCS_URL,
   ISSUES_URL,
@@ -27,9 +34,11 @@ import {
   RELEASES_PAGE_URL,
   RELEASES_URL,
   REPO_URL,
-  TABS,
-  parseTab,
-  type TabId,
+  TAB_IDS,
+  docHref,
+  parseRoute,
+  type AccentId,
+  type SiteRoute,
 } from "@/landing/site";
 import { cn } from "@/lib/utils";
 
@@ -37,30 +46,14 @@ const THEME_KEY = "eliasnote-landing-theme";
 const ACCENT_KEY = "eliasnote-landing-accent";
 
 type ThemeMode = "light" | "dark";
-type AccentId = "blue" | "emerald" | "rose" | "amber" | "slate";
-
-const ACCENTS: { id: AccentId; label: string; color: string }[] = [
-  { id: "blue", label: "Azul", color: "#2f7fe0" },
-  { id: "emerald", label: "Esmeralda", color: "#159a6a" },
-  { id: "rose", label: "Rosa", color: "#e0436e" },
-  { id: "amber", label: "Âmbar", color: "#d98a0b" },
-  { id: "slate", label: "Ardósia", color: "#5b6472" },
-];
 
 const TAB_ICONS: Record<TabId, typeof HomeIcon> = {
   principal: HomeIcon,
   funcionalidades: LayoutGrid,
   downloads: Download,
+  documentacao: BookOpen,
   sobre: Info,
   contato: Mail,
-};
-
-const PAGE_TITLES: Record<TabId, string> = {
-  principal: "EliasNote — canvas infinito, 100% offline",
-  funcionalidades: "Funcionalidades · EliasNote",
-  downloads: "Downloads · EliasNote",
-  sobre: "Sobre · EliasNote",
-  contato: "Contato · EliasNote",
 };
 
 function readStored(key: string): string | null {
@@ -97,20 +90,22 @@ function navClickHandler(tab: TabId, onNavigate: (target: TabId) => void) {
 }
 
 function TabLink({
-  tab,
+  id,
+  label,
   active,
   onNavigate,
 }: {
-  tab: (typeof TABS)[number];
+  id: TabId;
+  label: string;
   active: boolean;
   onNavigate: (target: TabId) => void;
 }) {
-  const Icon = TAB_ICONS[tab.id];
+  const Icon = TAB_ICONS[id];
   return (
     <a
-      href={`#${tab.id}`}
+      href={`#${id}`}
       aria-current={active ? "page" : undefined}
-      onClick={navClickHandler(tab.id, onNavigate)}
+      onClick={navClickHandler(id, onNavigate)}
       className={cn(
         "group inline-flex h-8 shrink-0 items-center gap-1.5 border px-2 text-[12px] transition-colors",
         active
@@ -119,19 +114,50 @@ function TabLink({
       )}
     >
       <Icon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
-      {tab.label}
+      {label}
     </a>
   );
 }
 
+/** Seletor de idioma. Um `select` nativo mantém o foco, o teclado e o mobile previsíveis. */
+function LanguageSelect() {
+  const { locale, content, setLocale } = useLocale();
+  const current = getLocaleEntry(locale);
+
+  return (
+    <label
+      className="relative inline-flex h-8 items-center gap-1 border border-border bg-card/60 pl-1.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+      title={content.nav.languageAria}
+    >
+      <Languages className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      <select
+        aria-label={content.nav.languageAria}
+        value={locale}
+        onChange={(event) => setLocale(event.target.value as Locale)}
+        className="h-8 max-w-[6.5rem] cursor-pointer appearance-none bg-transparent pr-1 text-[11px] font-medium text-foreground outline-none"
+      >
+        {LOCALES.map((entry) => (
+          <option key={entry.id} value={entry.id}>
+            {entry.label}
+          </option>
+        ))}
+      </select>
+      <span className="pointer-events-none pr-1.5 font-mono text-[9px] uppercase text-muted-foreground/70" aria-hidden>
+        {current.short}
+      </span>
+    </label>
+  );
+}
+
 function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
+  const c = useContent();
   const year = new Date().getFullYear();
   const resources = [
-    { label: "Repositório", href: REPO_URL },
-    { label: "Releases", href: RELEASES_PAGE_URL },
-    { label: "Issues", href: ISSUES_URL },
-    { label: "Documentação", href: DOCS_URL },
-    { label: "Licença MIT", href: LICENSE_URL },
+    { label: c.footer.links.repo, href: REPO_URL },
+    { label: c.footer.links.releases, href: RELEASES_PAGE_URL },
+    { label: c.footer.links.issues, href: ISSUES_URL },
+    { label: c.footer.links.docs, href: DOCS_URL },
+    { label: c.footer.links.license, href: LICENSE_URL },
   ];
 
   return (
@@ -142,30 +168,27 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
             <span className="grid h-8 w-8 place-items-center rounded-lg border border-border bg-card text-foreground shadow-sm">
               <AppMark className="h-4 w-4" />
             </span>
-            <span className="text-[13px] font-semibold tracking-tight">EliasNote</span>
+            <span className="text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
             <Badge variant="outline">v{APP_VERSION}</Badge>
           </div>
-          <p className="mt-3 max-w-sm text-[12px] leading-relaxed text-muted-foreground">
-            Organização visual local-first com canvas infinito e Excalidraw nativo. 100% offline, sem contas e sem
-            sincronização.
-          </p>
+          <p className="mt-3 max-w-sm text-[12px] leading-relaxed text-muted-foreground">{c.footer.summary}</p>
           <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-            Feito para rodar sem internet
+            {c.footer.offline}
           </p>
         </Reveal>
 
         <Reveal delay={90}>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Navegar</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{c.footer.navigate}</p>
           <ul className="mt-2.5 space-y-1.5">
-            {TABS.map((tab) => (
-              <li key={tab.id}>
+            {TAB_IDS.map((id) => (
+              <li key={id}>
                 <a
-                  href={`#${tab.id}`}
-                  onClick={navClickHandler(tab.id, onNavigate)}
+                  href={`#${id}`}
+                  onClick={navClickHandler(id, onNavigate)}
                   className="text-[12px] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  {tab.label}
+                  {c.nav.tabs[id]}
                 </a>
               </li>
             ))}
@@ -173,7 +196,7 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
         </Reveal>
 
         <Reveal delay={160}>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Recursos</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{c.footer.resources}</p>
           <ul className="mt-2.5 space-y-1.5">
             {resources.map((resource) => (
               <li key={resource.label}>
@@ -193,26 +216,66 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
 
       <div className="border-t border-border">
         <Container className="flex flex-col gap-1.5 py-4 text-[11px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} EliasNote · código aberto sob licença MIT</p>
-          <p>Tauri 2 · React · Excalidraw · sem cookies de rastreio</p>
+          <p>{format(c.footer.copyright, { year })}</p>
+          <p>{c.footer.tech}</p>
         </Container>
       </div>
     </footer>
   );
 }
 
+function pageTitle(content: SiteContent, tab: TabId, docId: DocId | null): string {
+  return docId
+    ? format(content.meta.docTitle, { page: content.docs.pages[docId].title })
+    : content.meta.titles[tab];
+}
+
+function setMeta(attribute: "name" | "property", key: string, value: string) {
+  let node = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);
+  if (!node) {
+    node = document.createElement("meta");
+    node.setAttribute(attribute, key);
+    document.head.appendChild(node);
+  }
+  node.setAttribute("content", value);
+}
+
+/** Título, descrição e Open Graph acompanham a aba, a página de docs e o idioma. */
+function syncDocumentMeta(content: SiteContent, tab: TabId, docId: DocId | null, locale: Locale) {
+  const title = pageTitle(content, tab, docId);
+  const description = docId ? content.docs.pages[docId].summary : content.meta.description;
+
+  document.title = title;
+  setMeta("name", "description", description);
+  setMeta("property", "og:title", title);
+  setMeta("property", "og:description", description);
+  setMeta("property", "og:locale", getLocaleEntry(locale).ogLocale);
+}
+
 export function LandingApp() {
-  const [active, setActive] = useState<TabId>(() => parseTab(window.location.hash));
+  const content = useContent();
+  const { locale } = useLocale();
+  const [route, setRoute] = useState<SiteRoute>(() => parseRoute(window.location.hash));
+  const { tab: active, doc: docId } = route;
   const [theme, setTheme] = useState<ThemeMode>(initialTheme);
   const [accent, setAccent] = useState<AccentId>(initialAccent);
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showTop, setShowTop] = useState(false);
   const reducedMotion = useReducedMotion();
+  const c = content;
 
   const scrollToTop = useCallback(() => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+  }, []);
+
+  const pushHash = useCallback((hash: string) => {
+    try {
+      window.history.pushState(null, "", hash);
+    } catch {
+      window.location.hash = hash.replace(/^#/, "");
+    }
   }, []);
 
   const navigate = useCallback(
@@ -220,14 +283,19 @@ export function LandingApp() {
       // Volta ao topo antes de montar a nova aba: assim as revelações por scroll
       // começam do zero em vez de já nascerem visíveis na posição anterior.
       scrollToTop();
-      setActive(tab);
-      try {
-        window.history.pushState(null, "", `#${tab}`);
-      } catch {
-        window.location.hash = tab;
-      }
+      setRoute({ tab, doc: null });
+      pushHash(`#${tab}`);
     },
-    [scrollToTop],
+    [pushHash, scrollToTop],
+  );
+
+  const navigateDoc = useCallback(
+    (doc: DocId | null) => {
+      scrollToTop();
+      setRoute({ tab: "documentacao", doc });
+      pushHash(docHref(doc));
+    },
+    [pushHash, scrollToTop],
   );
 
   useEffect(() => {
@@ -241,14 +309,14 @@ export function LandingApp() {
   }, [accent]);
 
   useEffect(() => {
-    document.title = PAGE_TITLES[active];
+    syncDocumentMeta(c, active, docId, locale);
     scrollToTop();
-  }, [active, scrollToTop]);
+  }, [active, c, docId, locale, scrollToTop]);
 
   useEffect(() => {
     const sync = () => {
       scrollToTop();
-      setActive(parseTab(window.location.hash));
+      setRoute(parseRoute(window.location.hash));
     };
     window.addEventListener("hashchange", sync);
     window.addEventListener("popstate", sync);
@@ -294,7 +362,7 @@ export function LandingApp() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [active]);
+  }, [active, locale]);
 
   function toggleTheme() {
     const next: ThemeMode = theme === "dark" ? "light" : "dark";
@@ -318,23 +386,23 @@ export function LandingApp() {
             href="#principal"
             onClick={navClickHandler("principal", navigate)}
             className="group flex shrink-0 items-center gap-2"
-            aria-label="EliasNote — página principal"
+            aria-label={c.nav.homeAria}
           >
             <span className="grid h-8 w-8 place-items-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
               <AppMark className="h-4 w-4" />
             </span>
             <span className="leading-tight">
-              <span className="block text-[13px] font-semibold tracking-tight">EliasNote</span>
-              <span className="hidden text-[10px] text-muted-foreground sm:block">Canvas local-first</span>
+              <span className="block text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
+              <span className="hidden text-[10px] text-muted-foreground sm:block">{c.nav.brandSubtitle}</span>
             </span>
             <Badge variant="outline" className="ml-1 hidden md:inline-flex">
               v{APP_VERSION}
             </Badge>
           </a>
 
-          <nav aria-label="Seções do site" className="ml-2 hidden flex-1 items-center gap-1 lg:flex">
-            {TABS.map((tab) => (
-              <TabLink key={tab.id} tab={tab} active={active === tab.id} onNavigate={navigate} />
+          <nav aria-label={c.nav.sectionsAria} className="ml-2 hidden flex-1 items-center gap-1 xl:flex">
+            {TAB_IDS.map((id) => (
+              <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
             ))}
           </nav>
 
@@ -342,15 +410,15 @@ export function LandingApp() {
             <div
               className="hidden items-center gap-1 border border-border bg-card/60 px-1.5 py-1 md:flex"
               role="group"
-              aria-label="Cor de destaque"
+              aria-label={c.nav.accentGroup}
             >
               {ACCENTS.map((option) => (
                 <button
                   key={option.id}
                   type="button"
-                  aria-label={`Cor ${option.label}`}
+                  aria-label={`${c.nav.accentPrefix} ${c.nav.accentNames[option.id]}`}
                   aria-pressed={accent === option.id}
-                  title={option.label}
+                  title={c.nav.accentNames[option.id]}
                   onClick={() => changeAccent(option.id)}
                   className="grid h-6 w-6 place-items-center rounded-full"
                 >
@@ -367,11 +435,13 @@ export function LandingApp() {
               ))}
             </div>
 
+            <LanguageSelect />
+
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={toggleTheme}
-              aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}
+              aria-label={theme === "dark" ? c.nav.themeToLight : c.nav.themeToDark}
             >
               <span key={theme} className="landing-count inline-flex">
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -379,18 +449,18 @@ export function LandingApp() {
             </Button>
 
             <Button asChild size="sm" className="landing-cta h-8 px-2.5 text-[12px]">
-              <a href={RELEASES_URL} target="_blank" rel="noreferrer" aria-label="Baixar instaladores do EliasNote">
+              <a href={RELEASES_URL} target="_blank" rel="noreferrer" aria-label={c.nav.downloadAria}>
                 <Download className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Baixar</span>
+                <span className="hidden sm:inline">{c.nav.download}</span>
               </a>
             </Button>
           </div>
         </Container>
 
-        <div className="border-t border-border/70 lg:hidden">
+        <div className="border-t border-border/70 xl:hidden">
           <Container className="flex gap-1 overflow-x-auto py-1.5">
-            {TABS.map((tab) => (
-              <TabLink key={tab.id} tab={tab} active={active === tab.id} onNavigate={navigate} />
+            {TAB_IDS.map((id) => (
+              <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
             ))}
           </Container>
         </div>
@@ -404,6 +474,7 @@ export function LandingApp() {
         {active === "principal" ? <HomeSection onNavigate={navigate} /> : null}
         {active === "funcionalidades" ? <Features /> : null}
         {active === "downloads" ? <Downloads /> : null}
+        {active === "documentacao" ? <Docs docId={docId} onNavigateDoc={navigateDoc} /> : null}
         {active === "sobre" ? <About /> : null}
         {active === "contato" ? <Contact /> : null}
       </main>
@@ -413,7 +484,7 @@ export function LandingApp() {
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" })}
-        aria-label="Voltar ao topo"
+        aria-label={c.nav.backToTop}
         className={cn(
           "fixed bottom-5 right-5 z-40 grid h-10 w-10 place-items-center border border-border bg-card/95 text-muted-foreground shadow-floating backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:text-foreground sm:bottom-6 sm:right-6",
           showTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",

@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Eye } from "lucide-react";
-import type { Feature } from "@/landing/data";
+import type { FeatureMeta } from "@/landing/data";
 import { FeaturePreview } from "./FeaturePreview";
 import { cn } from "@/lib/utils";
+
+/** Funcionalidade com o texto já resolvido no idioma atual. */
+export interface FeatureCardItem extends FeatureMeta {
+  title: string;
+  description: string;
+}
 
 const PANEL_WIDTH = 360;
 const PANEL_HEIGHT = 232;
@@ -16,7 +22,7 @@ interface PanelLayout {
   placement: "top" | "bottom";
 }
 
-export function FeatureCard({ feature }: { feature: Feature }) {
+export function FeatureCard({ feature }: { feature: FeatureCardItem }) {
   const Icon = feature.icon;
   const cardRef = useRef<HTMLElement | null>(null);
   const focusedRef = useRef(false);

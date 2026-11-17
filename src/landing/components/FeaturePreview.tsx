@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { AppMark } from "@/components/brand/AppMark";
-import type { Feature } from "@/landing/data";
+import type { FeatureMeta } from "@/landing/data";
 import { cn } from "@/lib/utils";
 
 const NODE_CLASS = {
@@ -959,7 +959,7 @@ function HistoryScene() {
   );
 }
 
-function sceneFor(feature: Feature) {
+function sceneFor(feature: FeatureMeta) {
   switch (feature.id) {
     case "canvas-infinito":
       return <BoardScene />;
@@ -1016,6 +1016,6 @@ function sceneFor(feature: Feature) {
   }
 }
 
-export function FeaturePreview({ feature }: { feature: Feature }) {
+export function FeaturePreview({ feature }: { feature: FeatureMeta }) {
   return <div className="h-full w-full">{sceneFor(feature)}</div>;
 }
