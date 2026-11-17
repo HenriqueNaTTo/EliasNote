@@ -92,7 +92,7 @@ jobs:
 
           ### Instaladores
 
-          - **Windows:** `.exe` (assistente visual) e `.msi` (WiX, instalação silenciosa)
+          - **Windows:** `.exe` do assistente visual (~40 MB, janela com etapas) e `.msi` (~18 MB, instalação silenciosa)
           - **Linux:** `.AppImage`, `.deb` e `.rpm`
           - **macOS:** `.dmg` universal (Apple Silicon + Intel)
 
