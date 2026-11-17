@@ -102,21 +102,26 @@ jobs:
           EOF
           } > release-notes.md
 
+          prerequisite="false"
+          if [[ "${RELEASE_TAG}" == *-* ]]; then prerequisite="true"; fi
+
           release_id="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${RELEASE_TAG}" \
             --jq .id 2>/dev/null || true)"
 
           if [ -z "${release_id}" ]; then
-            prerequisite="false"
-            if [[ "${RELEASE_TAG}" == *-* ]]; then prerequisite="true"; fi
             release_id="$(gh api -X POST "repos/${GITHUB_REPOSITORY}/releases" \
               -f tag_name="${RELEASE_TAG}" \
               -f name="EliasNote ${RELEASE_TAG}" \
               -F prerelease="${prerequisite}" \
+              -F draft=false \
               -f body="$(cat release-notes.md)" \
               --jq .id)"
             echo "Release criada: ${RELEASE_TAG} (id ${release_id})"
           else
             echo "Release já existente: ${RELEASE_TAG} (id ${release_id})"
+            # Garante que uma release deixada como rascunho seja publicada.
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/releases/${release_id}" \
+              -F draft=false -F prerelease="${prerequisite}" > /dev/null
           fi
 
           if [ -z "${release_id}" ] || [ "${release_id}" = "null" ]; then
@@ -125,6 +130,10 @@ jobs:
           fi
 
           echo "release_id=${release_id}" >> "$GITHUB_OUTPUT"
+
+          # Diagnóstico: confirma tag, rascunho e URL da release usada pelos jobs seguintes.
+          gh api "repos/${GITHUB_REPOSITORY}/releases/${release_id}" \
+            --jq '"release: " + .html_url + " | tag=" + .tag_name + " | draft=" + (.draft | tostring)'
 
   build:
     name: Build ${{ matrix.label }}
@@ -195,11 +204,23 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ needs.release.outputs.release_id }}
         run: |
           npm run setup:build
           $asset = Get-ChildItem dist-setup/*.exe | Select-Object -First 1
           if (-not $asset) { throw "instalador visual não foi gerado" }
-          gh release upload $env:RELEASE_TAG $asset.FullName --clobber
+          if (-not $env:RELEASE_ID) { throw "release_id vazio: o job 'Criar release' não produziu uma release" }
+
+          # Diagnóstico: o que o token enxerga antes do upload.
+          gh release list --limit 5
+          gh api "repos/$env:GITHUB_REPOSITORY/releases/$env:RELEASE_ID" --jq '"tag=" + .tag_name + " draft=" + (.draft | tostring)'
+
+          # Upload pelo ID da release (não pela tag): funciona mesmo quando a
+          # resolução por tag falha, como aconteceu na primeira execução.
+          $url = "https://uploads.github.com/repos/$env:GITHUB_REPOSITORY/releases/$env:RELEASE_ID/assets?name=$($asset.Name)"
+          gh api -X POST $url -H "Content-Type: application/octet-stream" --input $asset.FullName --jq '"anexado: " + .name + " (" + (.size | tostring) + " bytes)"'
+
+          gh api "repos/$env:GITHUB_REPOSITORY/releases/$env:RELEASE_ID/assets" --jq '.[].name'
 
   summary:
     name: Resumo da release
