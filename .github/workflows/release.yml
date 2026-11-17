@@ -92,8 +92,8 @@ jobs:
 
           ### Instaladores
 
-          - **Windows:** `.msi` (WiX) e `.exe` (NSIS)
-          - **Linux:** `.AppImage` e `.deb`
+          - **Windows:** `.exe` (assistente visual) e `.msi` (WiX, instalação silenciosa)
+          - **Linux:** `.AppImage`, `.deb` e `.rpm`
           - **macOS:** `.dmg` universal (Apple Silicon + Intel)
 
           > Os instaladores não são assinados. No macOS, se o sistema bloquear a abertura, libere com
@@ -165,7 +165,10 @@ jobs:
         include:
           - label: Windows (x64)
             os: windows-latest
-            args: ""
+            # O .exe do Windows é o assistente visual (publicado no passo
+            # "Instalador visual"); o MSI cobre instalação silenciosa/empresarial.
+            # O wizard NSIS continua disponível localmente com --bundles nsis.
+            args: "--bundles msi"
           - label: Linux (x64)
             os: ubuntu-22.04
             args: ""

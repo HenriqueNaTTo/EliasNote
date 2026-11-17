@@ -26,12 +26,16 @@ O push da tag `v*` dispara o workflow:
 | --- | --- |
 | `checks` | `npm ci`, `npm run typecheck`, `npm test` e `npm run build` (ubuntu-22.04) |
 | `release` | Gera as notas via API de `generate-notes`, cria a release da tag (ou reaproveita a existente) |
-| `build` | Matriz **Windows** (`.msi` WiX + `.exe` NSIS), **Linux** (`.AppImage` + `.deb`) e **macOS** (`.dmg` universal) com `tauri-action`, enviando os instaladores para a release |
+| `build` | Matriz **Windows** (`.msi` WiX pelo `tauri-action` + `.exe` do assistente visual), **Linux** (`.AppImage`, `.deb`, `.rpm`) e **macOS** (`.dmg` universal), enviando os instaladores para a release |
 | `summary` | Publica um resumo do resultado no job summary |
 
 Os instaladores aparecem em **Releases → vX.Y.Z**. Para publicar como rascunho, rode
 `gh release edit vX.Y.Z --draft` antes de divulgar (ou crie a release manualmente e reexecute apenas
 o job `build`).
+
+O job `release` publica a release antes das builds (inclusive se ela estiver como rascunho) e o
+upload do assistente usa o **id** da release, então rodar a mesma tag de novo substitui os assets
+sem duplicar nomes.
 
 O workflow roda `scripts/set-version.mjs` com a tag antes do build, então os artefatos saem com a
 versão da tag mesmo que os manifestos estejam desatualizados no commit.
@@ -124,8 +128,16 @@ Regras do assistente:
   para apagar quadros, anexos e configurações;
 - atualização é o mesmo `.exe` rodado de novo: a versão instalada é detectada no registro.
 
-O instalador NSIS (`bundle.windows.nsis`) continua sendo gerado como alternativa silenciosa
-(`/S`, `/P`) e para quem precisa de um pacote com o wizard clássico.
+O instalador NSIS (`bundle.windows.nsis`) continua disponível como alternativa silenciosa
+(`/S`, `/P`) com o wizard clássico, mas **não** é publicado pelo CI: ele sai com o mesmo nome do
+assistente (`EliasNote_<versão>_x64-setup.exe`) e um sobrescreveria o outro. Para gerá-lo localmente:
+
+```bash
+npm run tauri build -- --bundles nsis   # → <target>/release/bundle/nsis/EliasNote_<versão>_x64-setup.exe
+```
+
+No CI o Windows publica o assistente visual (`.exe`) e o MSI (`.msi`), que cobre instalação
+silenciosa (`msiexec /i EliasNote_<versão>_x64_en-US.msi /qn`).
 
 ## Problemas comuns
 
