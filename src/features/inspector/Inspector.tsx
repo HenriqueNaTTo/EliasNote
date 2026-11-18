@@ -32,7 +32,7 @@ import type {
   NodeColor,
   Priority,
 } from "@/core/domain/types";
-import { COLOR_OPTIONS, CONNECTOR_COLORS, NODE_LABELS, PRIORITY_LABELS, nodeTexts } from "@/core/domain/constants";
+import { COLOR_OPTIONS, CONNECTOR_COLORS, DEFAULT_SETTINGS, NODE_LABELS, PRIORITY_LABELS, nodeTexts } from "@/core/domain/constants";
 import { parseRef, refForBoard, refForNode } from "@/core/domain/refs";
 import { boardStats } from "@/core/domain/tree";
 import { nodeDisplayTitle } from "@/core/search/search";
@@ -61,8 +61,19 @@ import {
 import { NodeTypeIcon } from "@/features/nodes/nodeUi";
 import { openDialogs } from "@/features/shell/dialogActions";
 
+/** Limites do arraste de largura do inspector (espelham a barra lateral). */
+const INSPECTOR_MIN_WIDTH = 260;
+const INSPECTOR_MAX_WIDTH = 560;
+const INSPECTOR_DEFAULT_WIDTH = DEFAULT_SETTINGS.inspectorWidth;
+
+function clampWidth(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return INSPECTOR_DEFAULT_WIDTH;
+  return Math.min(INSPECTOR_MAX_WIDTH, Math.max(INSPECTOR_MIN_WIDTH, value));
+}
+
 export function Inspector() {
   const open = useAppStore((state) => state.settings.inspectorOpen);
+  const width = useAppStore((state) => clampWidth(state.settings.inspectorWidth));
   const tab = useAppStore((state) => state.inspectorTab);
   const setTab = useAppStore((state) => state.setInspectorTab);
   const updateSettings = useAppStore((state) => state.updateSettings);
@@ -75,10 +86,15 @@ export function Inspector() {
   const connector = board && selectedConnectors[0] ? board.connectors[selectedConnectors[0]] : undefined;
 
   return (
-    <aside className="flex w-[306px] shrink-0 flex-col border-l border-border bg-background">
+    <aside
+      className="relative flex shrink-0 flex-col border-l border-border bg-background"
+      style={{ width }}
+    >
       <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border px-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Inspector</span>
-        <div className="ml-auto flex items-center gap-1">
+        <span className="min-w-0 truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Inspector
+        </span>
+        <div className="ml-auto flex shrink-0 items-center gap-1">
           <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>
             <TabsList className="h-7 rounded-none bg-muted/60 p-0.5">
               <TabsTrigger value="props" className="px-2 py-0.5 text-[10px]">
@@ -122,6 +138,32 @@ export function Inspector() {
           )}
         </div>
       </ScrollArea>
+
+      <div
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Redimensionar inspector"
+        className="absolute left-0 top-0 h-full w-1.5 cursor-col-resize hover:bg-primary/20"
+        onPointerDown={(event) => {
+          event.preventDefault();
+          const startX = event.clientX;
+          const startWidth = width;
+          const onMove = (moveEvent: PointerEvent) => {
+            const next = Math.min(
+              INSPECTOR_MAX_WIDTH,
+              Math.max(INSPECTOR_MIN_WIDTH, startWidth - (moveEvent.clientX - startX)),
+            );
+            useAppStore.getState().updateSettings({ inspectorWidth: next });
+          };
+          const onUp = () => {
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
+          };
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
+        }}
+        onDoubleClick={() => useAppStore.getState().updateSettings({ inspectorWidth: INSPECTOR_DEFAULT_WIDTH })}
+      />
     </aside>
   );
 }

@@ -105,6 +105,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   shortcuts: {},
   sidebarWidth: 272,
   inspectorOpen: true,
+  inspectorWidth: 306,
   visualVersion: 2,
 };
 

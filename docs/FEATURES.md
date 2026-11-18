@@ -51,6 +51,7 @@
 - Árvore lateral com expansão, arraste para aninhar, mover para a raiz, renomear, duplicar e excluir.
 - Abas independentes por quadro, com fechamento por botão, clique do meio e `Ctrl/Cmd+W`.
 - Subquadros recursivos criados pela barra, pelo inspector, pela árvore ou pelo atalho.
+- Largura da barra lateral e do inspector ajustável arrastando a borda divisória (duplo clique na borda do inspector volta ao padrão); a medida fica salva nas configurações.
 
 ## Busca e referências
 
