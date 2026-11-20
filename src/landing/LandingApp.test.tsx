@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { LandingApp } from "./LandingApp";
 import { LocaleProvider } from "./i18n/LocaleContext";
 import { LOCALE_STORAGE_KEY } from "./i18n/locale";
@@ -8,6 +9,13 @@ import { FEATURE_META } from "./data";
 
 function metaContent(attribute: "name" | "property", key: string): string | null {
   return document.head.querySelector(`meta[${attribute}="${key}"]`)?.getAttribute("content") ?? null;
+}
+
+/** Abre o menu de idioma pelo header e escolhe uma opção pelo nome acessível. */
+async function chooseLanguage(name: RegExp) {
+  const user = userEvent.setup();
+  await user.click(screen.getByRole("button", { name: /idioma|language/i }));
+  await user.click(await screen.findByRole("menuitem", { name }));
 }
 
 /** jsdom deste projeto não expõe localStorage; o site usa a API de verdade. */
@@ -143,10 +151,23 @@ describe("landing page do EliasNote", () => {
     expect(screen.getByRole("status")).toHaveTextContent(/rascunho de issue gerado/i);
   });
 
-  it("troca o idioma do site e mantém a escolha", () => {
+  it("deixa o estado beta visível em todo o site", () => {
     renderSite();
 
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "en" } });
+    expect(screen.getByText(SITE_CONTENT.pt.beta.message)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: SITE_CONTENT.pt.beta.link })).toBeInTheDocument();
+    // Selo no header e no rodapé, ao lado da versão.
+    expect(screen.getAllByText(new RegExp(`${SITE_CONTENT.pt.beta.badge} · v`)).length).toBeGreaterThanOrEqual(2);
+
+    openTab("Downloads");
+    expect(screen.getByRole("heading", { name: SITE_CONTENT.pt.beta.downloads.title })).toBeInTheDocument();
+    expect(screen.getByText(SITE_CONTENT.pt.beta.downloads.items[0])).toBeInTheDocument();
+  });
+
+  it("troca o idioma do site e mantém a escolha", async () => {
+    renderSite();
+
+    await chooseLanguage(/english/i);
 
     expect(screen.getByRole("heading", { level: 1, name: /infinite canvas/i })).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("en");
@@ -154,7 +175,8 @@ describe("landing page do EliasNote", () => {
     expect(metaContent("name", "description")).toBe(SITE_CONTENT.en.meta.description);
     expect(metaContent("property", "og:locale")).toBe("en_US");
 
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "zh" } });
+    await chooseLanguage(/中文/);
+
     expect(document.documentElement.lang).toBe("zh-CN");
     expect(metaContent("name", "description")).toBe(SITE_CONTENT.zh.meta.description);
   });

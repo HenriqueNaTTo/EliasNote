@@ -107,6 +107,19 @@ export interface PlatformContent {
 }
 
 export interface SiteContent {
+  beta: {
+    /** Selo curto exibido no header, no rodapé e nos downloads, ex.: "Beta". */
+    badge: string;
+    /** Frase do aviso fixo no topo do site. */
+    message: string;
+    /** Rótulo do link do aviso. */
+    link: string;
+    downloads: {
+      title: string;
+      description: string;
+      items: string[];
+    };
+  };
   meta: {
     titles: Record<TabId, string>;
     /** Ex.: "{page} · Documentação · EliasNote". */

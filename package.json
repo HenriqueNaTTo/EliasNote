@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "node scripts/copy-excalidraw-assets.mjs && vite",
     "build": "node scripts/copy-excalidraw-assets.mjs && tsc --noEmit && vite build",
+    "build:site": "tsc --noEmit && vite build --config vite.config.site.ts",
+    "preview:site": "vite preview --config vite.config.site.ts",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run",

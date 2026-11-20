@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import {
   ArrowUp,
+  ArrowUpRight,
   BookOpen,
+  Check,
+  ChevronDown,
   Download,
+  FlaskConical,
   Home as HomeIcon,
   Info,
   Languages,
@@ -14,6 +18,12 @@ import {
 import { AppMark } from "@/components/brand/AppMark";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Reveal, useReducedMotion } from "@/landing/components/animate";
 import { Container } from "@/landing/components/ui";
 import { Docs } from "@/landing/docs/Docs";
@@ -119,33 +129,68 @@ function TabLink({
   );
 }
 
-/** Seletor de idioma. Um `select` nativo mantém o foco, o teclado e o mobile previsíveis. */
-function LanguageSelect() {
+/** Seletor de idioma com menu próprio: bordas retas, tipografia do site e estado ativo visível. */
+function LanguageMenu() {
   const { locale, content, setLocale } = useLocale();
   const current = getLocaleEntry(locale);
 
   return (
-    <label
-      className="relative inline-flex h-8 items-center gap-1 border border-border bg-card/60 pl-1.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-      title={content.nav.languageAria}
-    >
-      <Languages className="h-3.5 w-3.5 shrink-0" aria-hidden />
-      <select
-        aria-label={content.nav.languageAria}
-        value={locale}
-        onChange={(event) => setLocale(event.target.value as Locale)}
-        className="h-8 max-w-[6.5rem] cursor-pointer appearance-none bg-transparent pr-1 text-[11px] font-medium text-foreground outline-none"
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={content.nav.languageAria}
+          className="group inline-flex h-8 shrink-0 items-center gap-1.5 border border-border bg-card/60 px-1.5 text-[11.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:bg-accent/40 hover:text-foreground data-[state=open]:border-primary/50 data-[state=open]:bg-accent/50 data-[state=open]:text-foreground"
+        >
+          <Languages className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span className="hidden max-w-[7rem] truncate font-medium sm:inline">{current.label}</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-muted-foreground/80 sm:hidden">
+            {current.short}
+          </span>
+          <ChevronDown
+            className="h-3 w-3 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180"
+            aria-hidden
+          />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="min-w-[12.5rem] rounded-none border-border bg-popover p-0 shadow-floating"
       >
-        {LOCALES.map((entry) => (
-          <option key={entry.id} value={entry.id}>
-            {entry.label}
-          </option>
-        ))}
-      </select>
-      <span className="pointer-events-none pr-1.5 font-mono text-[9px] uppercase text-muted-foreground/70" aria-hidden>
-        {current.short}
-      </span>
-    </label>
+        <p className="border-b border-border px-2.5 py-1.5 text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {content.nav.language}
+        </p>
+        <div className="p-1">
+          {LOCALES.map((entry) => {
+            const active = entry.id === locale;
+            return (
+              <DropdownMenuItem
+                key={entry.id}
+                onSelect={() => setLocale(entry.id)}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-none border-l-2 px-2 py-1.5 text-[12px] transition-colors",
+                  active
+                    ? "border-l-primary bg-primary/10 font-medium text-foreground focus:bg-primary/15 [&_svg]:text-primary"
+                    : "border-l-transparent text-muted-foreground focus:bg-accent/60 focus:text-foreground",
+                )}
+              >
+                <span
+                  className={cn(
+                    "grid h-4 w-7 shrink-0 place-items-center border font-mono text-[8.5px] uppercase tracking-[0.06em]",
+                    active ? "border-primary/40 text-primary" : "border-border text-muted-foreground/80",
+                  )}
+                >
+                  {entry.short}
+                </span>
+                <span className="min-w-0 flex-1 truncate">{entry.label}</span>
+                {active ? <Check className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              </DropdownMenuItem>
+            );
+          })}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -169,7 +214,9 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
               <AppMark className="h-4 w-4" />
             </span>
             <span className="text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
-            <Badge variant="outline">v{APP_VERSION}</Badge>
+            <Badge variant="warning" className="normal-case tracking-normal">
+              {c.beta.badge} · v{APP_VERSION}
+            </Badge>
           </div>
           <p className="mt-3 max-w-sm text-[12px] leading-relaxed text-muted-foreground">{c.footer.summary}</p>
           <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -381,6 +428,29 @@ export function LandingApp() {
         className="landing-header sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl"
         data-scrolled={scrolled ? "true" : "false"}
       >
+        {/* Aviso permanente: o app ainda não é 1.0. */}
+        <div className="border-b border-amber-500/30 bg-amber-500/10">
+          <Container className="flex h-8 items-center gap-2 text-[11px] text-amber-800 dark:text-amber-200">
+            <span className="inline-flex shrink-0 items-center gap-1 border border-amber-600/40 bg-amber-500/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
+              <FlaskConical className="h-2.5 w-2.5" aria-hidden />
+              {c.beta.badge}
+            </span>
+            <p className="min-w-0 flex-1 truncate">{c.beta.message}</p>
+            <a
+              href={RELEASES_PAGE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="group hidden shrink-0 items-center gap-1 font-medium underline-offset-2 hover:underline sm:inline-flex"
+            >
+              {c.beta.link}
+              <ArrowUpRight
+                className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                aria-hidden
+              />
+            </a>
+          </Container>
+        </div>
+
         <Container className="flex h-14 items-center gap-2 sm:gap-3">
           <a
             href="#principal"
@@ -395,8 +465,8 @@ export function LandingApp() {
               <span className="block text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
               <span className="hidden text-[10px] text-muted-foreground sm:block">{c.nav.brandSubtitle}</span>
             </span>
-            <Badge variant="outline" className="ml-1 hidden md:inline-flex">
-              v{APP_VERSION}
+            <Badge variant="warning" className="ml-1 hidden normal-case tracking-normal md:inline-flex">
+              {c.beta.badge} · v{APP_VERSION}
             </Badge>
           </a>
 
@@ -435,7 +505,7 @@ export function LandingApp() {
               ))}
             </div>
 
-            <LanguageSelect />
+            <LanguageMenu />
 
             <Button
               variant="ghost"

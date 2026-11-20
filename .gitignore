@@ -1,6 +1,7 @@
 node_modules/
 dist/
 dist-ssr/
+dist-site/
 *.local
 .DS_Store
 Thumbs.db

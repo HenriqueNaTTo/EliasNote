@@ -2,6 +2,22 @@ import type { SiteContent } from "@/landing/i18n/types";
 import { esDocs } from "@/landing/i18n/locales/es/docs";
 
 export const esSite: SiteContent = {
+  beta: {
+    badge: "Beta",
+    message:
+      "EliasNote está en desarrollo (beta): las funciones, los atajos y el formato de los datos aún pueden cambiar entre versiones.",
+    link: "Seguir las versiones",
+    downloads: {
+      title: "Versión en desarrollo",
+      description:
+        "Esta es una beta pública: la app ya es estable para el uso diario, pero la interfaz, los atajos y el formato de los datos todavía cambian entre versiones.",
+      items: [
+        "Haz una copia de seguridad antes de actualizar: Backups → Crear instantánea.",
+        "Las funciones pueden cambiar o reorganizarse sin aviso previo.",
+        "¿Encontraste un problema? Abre una incidencia con los pasos para reproducirlo.",
+      ],
+    },
+  },
   meta: {
     titles: {
       principal: "EliasNote — canvas infinito, 100% sin conexión",

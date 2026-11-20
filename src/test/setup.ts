@@ -41,3 +41,19 @@ if (typeof window !== "undefined") {
     URL.revokeObjectURL = () => undefined;
   }
 }
+
+// jsdom não implementa as APIs de ponteiro usadas pelos menus do Radix.
+if (typeof Element !== "undefined") {
+  if (typeof Element.prototype.hasPointerCapture !== "function") {
+    Element.prototype.hasPointerCapture = () => false;
+  }
+  if (typeof Element.prototype.setPointerCapture !== "function") {
+    Element.prototype.setPointerCapture = () => undefined;
+  }
+  if (typeof Element.prototype.releasePointerCapture !== "function") {
+    Element.prototype.releasePointerCapture = () => undefined;
+  }
+  if (typeof Element.prototype.scrollIntoView !== "function") {
+    Element.prototype.scrollIntoView = () => undefined;
+  }
+}

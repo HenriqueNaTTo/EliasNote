@@ -2,6 +2,22 @@ import type { SiteContent } from "@/landing/i18n/types";
 import { enDocs } from "@/landing/i18n/locales/en/docs";
 
 export const enSite: SiteContent = {
+  beta: {
+    badge: "Beta",
+    message:
+      "EliasNote is in development (beta): features, shortcuts and the data format may still change between versions.",
+    link: "Follow releases",
+    downloads: {
+      title: "Version in development",
+      description:
+        "This is a public beta: the app is already stable for daily use, but the interface, the shortcuts and the data format still change between versions.",
+      items: [
+        "Back up before updating: Backups → Create snapshot.",
+        "Features may change or be reorganised without prior notice.",
+        "Found a problem? Open an issue with the steps to reproduce it.",
+      ],
+    },
+  },
   meta: {
     titles: {
       principal: "EliasNote — infinite canvas, 100% offline",

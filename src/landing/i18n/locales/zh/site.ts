@@ -2,6 +2,21 @@ import type { SiteContent } from "@/landing/i18n/types";
 import { zhDocs } from "@/landing/i18n/locales/zh/docs";
 
 export const zhSite: SiteContent = {
+  beta: {
+    badge: "Beta",
+    message: "EliasNote 仍在开发中（beta）：功能、快捷键和数据格式可能随版本变化。",
+    link: "关注版本发布",
+    downloads: {
+      title: "开发中的版本",
+      description:
+        "这是公开测试版：应用已可用于日常使用，但界面、快捷键和数据格式仍会随版本变化。",
+      items: [
+        "更新前请先备份：备份 → 创建快照。",
+        "功能可能在不另行通知的情况下调整或重新组织。",
+        "遇到问题？请附上复现步骤开一个 issue。",
+      ],
+    },
+  },
   meta: {
     titles: {
       principal: "EliasNote —— 无限画布，100% 离线",

@@ -1,4 +1,4 @@
-import { Apple, ArrowUpRight, Cpu, Download, Github, Info, Monitor, Terminal } from "lucide-react";
+import { Apple, ArrowUpRight, Cpu, Download, FlaskConical, Github, Info, Monitor, Terminal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Reveal } from "@/landing/components/animate";
@@ -34,6 +34,9 @@ export function Downloads() {
       <PageHeader eyebrow={c.header.eyebrow} title={c.header.title} description={c.header.description}>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="success">{format(c.version, { version: APP_VERSION })}</Badge>
+          <Badge variant="warning" className="normal-case tracking-normal">
+            {content.beta.badge}
+          </Badge>
           <Badge variant="outline">{c.free}</Badge>
           <a
             href={RELEASES_PAGE_URL}
@@ -48,6 +51,33 @@ export function Downloads() {
       </PageHeader>
 
       <Container className="py-8 sm:py-12">
+        <Reveal variant="fade">
+          <section
+            aria-labelledby="beta-notice"
+            className="mb-4 flex gap-3 border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5"
+          >
+            <span className="grid h-8 w-8 shrink-0 place-items-center border border-amber-600/40 bg-amber-500/15 text-amber-700 dark:text-amber-300">
+              <FlaskConical className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <h2 id="beta-notice" className="text-[13px] font-semibold tracking-tight">
+                {content.beta.downloads.title}
+              </h2>
+              <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                {content.beta.downloads.description}
+              </p>
+              <ul className="mt-2 space-y-1">
+                {content.beta.downloads.items.map((item) => (
+                  <li key={item} className="flex gap-2 text-[12px] leading-relaxed text-muted-foreground">
+                    <span className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-amber-500" aria-hidden />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </Reveal>
+
         <div className="grid gap-3 md:grid-cols-3">
           {PLATFORM_META.map((platform, index) => {
             const text = c.platforms[platform.id];
