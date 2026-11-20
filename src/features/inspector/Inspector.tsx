@@ -32,7 +32,7 @@ import type {
   NodeColor,
   Priority,
 } from "@/core/domain/types";
-import { COLOR_OPTIONS, CONNECTOR_COLORS, NODE_LABELS, PRIORITY_LABELS, nodeTexts } from "@/core/domain/constants";
+import { COLOR_OPTIONS, CONNECTOR_COLORS, DEFAULT_SETTINGS, NODE_LABELS, PRIORITY_LABELS, nodeTexts } from "@/core/domain/constants";
 import { parseRef, refForBoard, refForNode } from "@/core/domain/refs";
 import { boardStats } from "@/core/domain/tree";
 import { nodeDisplayTitle } from "@/core/search/search";
@@ -61,46 +61,104 @@ import {
 import { NodeTypeIcon } from "@/features/nodes/nodeUi";
 import { openDialogs } from "@/features/shell/dialogActions";
 
+/** Largura mínima/máxima do inspector e quanto o canvas precisa manter livre. */
+const INSPECTOR_MIN_WIDTH = 240;
+const INSPECTOR_MAX_WIDTH = 520;
+const CANVAS_MIN_WIDTH = 360;
+
+function clampInspectorWidth(value: number, viewportWidth: number): number {
+  const available = Math.max(
+    INSPECTOR_MIN_WIDTH,
+    Math.min(INSPECTOR_MAX_WIDTH, viewportWidth - CANVAS_MIN_WIDTH - 280),
+  );
+  return Math.round(Math.min(available, Math.max(INSPECTOR_MIN_WIDTH, value)));
+}
+
 export function Inspector() {
   const open = useAppStore((state) => state.settings.inspectorOpen);
+  const width = useAppStore((state) => state.settings.inspectorWidth);
   const tab = useAppStore((state) => state.inspectorTab);
   const setTab = useAppStore((state) => state.setInspectorTab);
   const updateSettings = useAppStore((state) => state.updateSettings);
   const board = useActiveBoard();
   const selectedNodes = useSelectedNodes();
   const selectedConnectors = useAppStore((state) => state.selectedConnectors);
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window === "undefined" ? 1440 : window.innerWidth,
+  );
+
+  // Em janelas estreitas o painel encolhe junto, mantendo o canvas utilizável.
+  useEffect(() => {
+    const onResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   if (!open) return null;
 
   const connector = board && selectedConnectors[0] ? board.connectors[selectedConnectors[0]] : undefined;
+  const currentWidth = clampInspectorWidth(width || DEFAULT_SETTINGS.inspectorWidth, viewportWidth);
 
   return (
-    <aside className="flex w-[306px] shrink-0 flex-col border-l border-border bg-background">
-      <div className="flex h-11 shrink-0 items-center gap-2 border-b border-border px-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">Inspector</span>
-        <div className="ml-auto flex items-center gap-1">
-          <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>
-            <TabsList className="h-7 rounded-none bg-muted/60 p-0.5">
-              <TabsTrigger value="props" className="px-2 py-0.5 text-[10px]">
-                Propriedades
-              </TabsTrigger>
-              <TabsTrigger value="references" className="px-2 py-0.5 text-[10px]">
-                Refs
-              </TabsTrigger>
-              <TabsTrigger value="comments" className="px-2 py-0.5 text-[10px]">
-                Comentários
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            onClick={() => updateSettings({ inspectorOpen: false })}
-            aria-label="Fechar inspector"
-          >
-            <PanelRightClose className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+    <aside
+      className="relative flex shrink-0 flex-col border-l border-border bg-background"
+      style={{ width: currentWidth }}
+    >
+      <div
+        role="separator"
+        aria-label="Redimensionar inspector"
+        aria-orientation="vertical"
+        className="group/resize absolute -left-1 top-0 z-20 h-full w-2 cursor-col-resize"
+        onPointerDown={(event) => {
+          event.preventDefault();
+          const startX = event.clientX;
+          const startWidth = currentWidth;
+          const onMove = (moveEvent: PointerEvent) => {
+            const next = clampInspectorWidth(startWidth - (moveEvent.clientX - startX), window.innerWidth);
+            useAppStore.getState().updateSettings({ inspectorWidth: next });
+          };
+          const onUp = () => {
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
+          };
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
+        }}
+        onDoubleClick={() => updateSettings({ inspectorWidth: DEFAULT_SETTINGS.inspectorWidth })}
+        title="Arraste para redimensionar · duplo clique restaura"
+      >
+        <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-transparent transition-colors group-hover/resize:bg-primary/40" />
+      </div>
+
+      <div className="flex h-10 shrink-0 items-center gap-2 border-b border-border px-3">
+        <span className="min-w-0 flex-1 truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Inspector
+        </span>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={() => updateSettings({ inspectorOpen: false })}
+          aria-label="Fechar inspector"
+          className="shrink-0"
+        >
+          <PanelRightClose className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+
+      <div className="shrink-0 border-b border-border px-2 py-1.5">
+        <Tabs value={tab} onValueChange={(value) => setTab(value as typeof tab)}>
+          <TabsList className="grid h-7 w-full grid-cols-3 gap-0.5 rounded-none bg-muted/60 p-0.5">
+            <TabsTrigger value="props" className="min-w-0 truncate px-1 text-[10px]">
+              Propriedades
+            </TabsTrigger>
+            <TabsTrigger value="references" className="min-w-0 truncate px-1 text-[10px]">
+              Refs
+            </TabsTrigger>
+            <TabsTrigger value="comments" className="min-w-0 truncate px-1 text-[10px]">
+              Comentários
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
@@ -287,7 +345,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
         {node.locked ? <Badge variant="outline">Bloqueado</Badge> : null}
       </div>
 
-      <div className="mt-2 flex items-center gap-1">
+      <div className="mt-2 flex flex-wrap items-center gap-1">
         <IconAction label="Duplicar" onClick={() => duplicateNodes([node.id])}>
           <Copy />
         </IconAction>
@@ -733,9 +791,9 @@ function NumberField({
 
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-lg bg-muted/60 px-2 py-1.5 text-center">
-      <p className="text-[13px] font-semibold tabular-nums">{value}</p>
-      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">{label}</p>
+    <div className="min-w-0 rounded-lg bg-muted/60 px-2 py-1.5 text-center">
+      <p className="truncate text-[13px] font-semibold tabular-nums">{value}</p>
+      <p className="truncate text-[9px] uppercase tracking-wide text-muted-foreground">{label}</p>
     </div>
   );
 }

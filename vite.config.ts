@@ -1,8 +1,12 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import path from "node:path";
+import { readFileSync } from "node:fs";
 
 const host = process.env.TAURI_DEV_HOST;
+const packageVersion = JSON.parse(
+  readFileSync(path.resolve(__dirname, "package.json"), "utf8"),
+) as { version: string };
 
 export default defineConfig({
   plugins: [react()],
@@ -43,6 +47,7 @@ export default defineConfig({
   },
   define: {
     "process.env.IS_PREACT": JSON.stringify("false"),
+    __APP_VERSION__: JSON.stringify(packageVersion.version),
   },
   test: {
     environment: "jsdom",

@@ -40,6 +40,14 @@ sem duplicar nomes.
 O workflow roda `scripts/set-version.mjs` com a tag antes do build, então os artefatos saem com a
 versão da tag mesmo que os manifestos estejam desatualizados no commit.
 
+## Atualização no app
+
+Depois que a release é publicada, quem já tem o EliasNote instalado passa a ver o botão **Atualizar**
+no canto superior direito (ele consulta `https://api.github.com/repos/HenriqueNaTTo/EliasNote/releases/latest`
+ao abrir e a cada 6 horas). O clique abre a página da release no navegador; a verificação manual fica em
+**Configurações → Sobre**, junto da versão instalada. Releases marcadas como pré-release não são
+oferecidas como atualização, porque a API `latest` só devolve a versão estável mais recente.
+
 ## Disparo manual
 
 Actions → **Release** → *Run workflow* → informe uma tag que já exista no repositório (ex.: `v0.2.0`).

@@ -20,7 +20,8 @@ Aplicativo desktop **local-first** de organização visual inspirado no Milanote
 - **Exportação/importação**: PNG, PDF, Markdown, JSON do quadro ou workspace; importa JSON, Markdown, `.excalidraw` e arquivos.
 - **Cofre Obsidian**: importa pastas, notas, frontmatter, tags, wiki-links clicáveis, anexos, `.canvas` com conectores e `.excalidraw` para um workspace novo (veja [docs/OBSIDIAN.md](docs/OBSIDIAN.md)).
 - **Temas claro/escuro/sistema**, 6 cores de destaque, densidade, escala de UI, textura do canvas e atalhos remapeáveis.
-- **Interface premium**: sidebar com árvore, abas, inspector contextual, barra flutuante, overlays e toasts.
+- **Interface premium**: sidebar com árvore, abas, inspector contextual redimensionável (largura salva), barra flutuante, overlays e toasts.
+- **Atualizações**: consulta a última release no GitHub e mostra o botão **Atualizar** no topo quando há versão mais nova.
 
 ## Como executar
 

@@ -22,6 +22,8 @@ import { downloadText } from "@/core/media/attachments";
 import { suggestedFilename } from "@/features/export/boardExport";
 import { SHORTCUTS, comboFromEvent, findShortcutConflicts, formatCombo } from "@/lib/hotkeys";
 import { cn, formatBytes } from "@/lib/utils";
+import { checkForUpdates, getUpdateState, resolveAppVersion, useUpdate } from "@/features/update/updateService";
+import { openExternal } from "@/lib/platform";
 import type { AccentColor, AppSettings, CanvasTexture, ThemeMode } from "@/core/domain/types";
 import { AppMark } from "@/components/brand/AppMark";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -655,15 +657,71 @@ function DataSection({
 }
 
 function AboutSection({ totals }: { totals: { boards: number; nodes: number; workspaces: number } }) {
+  const { status, info, currentVersion } = useUpdate();
+  const [version, setVersion] = useState<string | null>(currentVersion);
+  const [checking, setChecking] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void resolveAppVersion().then((value) => {
+      if (active) setVersion(value);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const verify = async () => {
+    setChecking(true);
+    try {
+      await checkForUpdates({ force: true });
+      const next = getUpdateState();
+      if (next.status === "available" && next.info) {
+        toast.success(`Nova versão v${next.info.version} disponível`, {
+          description: "Abra a release no GitHub para baixar o instalador.",
+          action: { label: "Abrir", onClick: () => void openExternal(next.info?.url ?? "") },
+        });
+      } else if (next.status === "up-to-date") {
+        toast.success("Você está na versão mais recente", {
+          description: `v${next.currentVersion ?? version ?? "—"}`,
+        });
+      } else {
+        toast.error("Não foi possível verificar agora", {
+          description: next.error ?? "Sem conexão com o GitHub.",
+        });
+      }
+    } finally {
+      setChecking(false);
+    }
+  };
+
   return (
     <>
       <div className="flex items-center gap-3">
         <div className="grid h-11 w-11 place-items-center rounded-xl border border-border bg-card text-foreground">
           <AppMark className="h-6 w-6" />
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-sm font-semibold">EliasNote</p>
-          <p className="text-[10.5px] text-muted-foreground">v0.1.0 · canvas local-first</p>
+          <p className="text-[10.5px] text-muted-foreground">
+            {version ? `v${version}` : "—"} · canvas local-first
+          </p>
+        </div>
+        <div className="ml-auto shrink-0">
+          {status === "available" && info ? (
+            <Button
+              size="xs"
+              className="gap-1.5"
+              onClick={() => void openExternal(info.url)}
+            >
+              <Download className="h-3 w-3" /> Atualizar para v{info.version}
+            </Button>
+          ) : (
+            <Button size="xs" variant="outline" onClick={() => void verify()} disabled={checking || status === "checking"}>
+              <RotateCcw className={cn("h-3 w-3", (checking || status === "checking") && "animate-spin")} />
+              {checking || status === "checking" ? "Verificando…" : "Verificar atualizações"}
+            </Button>
+          )}
         </div>
       </div>
 

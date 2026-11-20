@@ -67,6 +67,7 @@
 - Exportação Markdown (colunas, tarefas, notas) e JSON (backup reimportável).
 - Importação de JSON de quadro/workspace/fragmento, Markdown, `.excalidraw` e anexos.
 - Importação de cofre Obsidian: hierarquia de pastas em quadros, notas com frontmatter/tags, wiki-links clicáveis com referências, anexos locais, `.canvas` (texto, links, arquivos, grupos e arestas) e `.excalidraw`.
+- Atualizações: o app consulta a última release do GitHub ao abrir (e a cada 6 h); quando existe versão mais nova, aparece o botão **Atualizar** no topo direito, que abre a página da release. Em **Configurações → Sobre** há a versão instalada e a verificação manual.
 
 ## Obsidian
 
@@ -82,6 +83,7 @@ O menu **Arquivo → Cofre do Obsidian** (ou **Importar → Importar cofre do Ob
 ## Dados e configurações
 
 - Visual inspirado no Milanote: canvas cinza neutro, cartões brancos, notas coloridas sem cabeçalho, quadros em tiles coloridos, colunas transparentes, conectores finos com rótulos escuros e cantos retos em toda a interface.
+- Painel lateral direito (inspector) redimensionável por arraste na borda, com largura salva entre sessões, duplo clique para restaurar e encolhimento automático em janelas estreitas.
 - Autosave incremental com indicador de status, armazenamento identificado (SQLite/IndexedDB).
 - Backups automáticos por intervalo configurável e manuais, com retenção e restauração.
 - Tema claro/escuro/sistema, cor de destaque, textura do canvas, densidade, escala de UI, sombra dos elementos, minimapa e rótulos de conectores.

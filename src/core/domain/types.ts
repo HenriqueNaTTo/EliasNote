@@ -197,6 +197,8 @@ export interface AppSettings {
   authorName: string;
   shortcuts: Record<string, string>;
   sidebarWidth: number;
+  /** Largura do painel lateral direito (inspector), em px. */
+  inspectorWidth: number;
   inspectorOpen: boolean;
   /** Último backup automático, em epoch ms. */
   lastBackupAt?: number;

@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { openDialogs } from "./dialogActions";
+import { UpdateButton } from "@/features/update/UpdateButton";
 
 const TAB_DOT: Record<string, string> = {
   none: "bg-muted-foreground/40",
@@ -155,6 +156,8 @@ export function TopBar() {
       </div>
 
       <div className="flex shrink-0 items-center gap-0.5" data-tauri-drag-region={undefined}>
+        <UpdateButton />
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="ghost" size="icon-sm" onClick={() => openDialogs.search()} aria-label="Busca global">

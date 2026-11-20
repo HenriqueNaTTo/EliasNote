@@ -104,6 +104,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   authorName: "Você",
   shortcuts: {},
   sidebarWidth: 272,
+  inspectorWidth: 306,
   inspectorOpen: true,
   visualVersion: 2,
 };
