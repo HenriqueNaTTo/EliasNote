@@ -29,6 +29,7 @@ function item(key: string, type: NodeType, x: number, y: number, options: ItemOp
   const defaults: Record<NodeType, { w: number; h: number }> = {
     note: { w: 300, h: 240 },
     text: { w: 280, h: 64 },
+    code: { w: 460, h: 280 },
     card: { w: 260, h: 160 },
     task: { w: 280, h: 64 },
     checklist: { w: 290, h: 210 },
@@ -81,6 +82,17 @@ const column = (key: string, x: number, y: number, title: string, color: NodeCol
 
 const drawing = (key: string, x: number, y: number, title: string) =>
   item(key, "drawing", x, y, { fields: { title } });
+
+const code = (
+  key: string,
+  x: number,
+  y: number,
+  title: string,
+  content: string,
+  language: string,
+  color: NodeColor = "none",
+  h = 220,
+) => item(key, "code", x, y, { color, h, fields: { title, content, language } });
 
 export const TEMPLATES: TemplateDefinition[] = [
   {
@@ -291,6 +303,148 @@ export const TEMPLATES: TemplateDefinition[] = [
       ],
     }),
   },
+  {
+    id: "gdd",
+    name: "Documento de jogo (GDD)",
+    description: "Visão, pilares, sistemas e um par de snippets para começar o documento do jogo.",
+    category: "jogo",
+    accent: "mint",
+    build: () => ({
+      title: "GDD",
+      items: [
+        item("heading", "text", 100, 40, { fields: { content: "Game Design Document" } }),
+        note(
+          "vision",
+          100,
+          136,
+          "Visão e pitch",
+          "**Gênero:**\n**Plataforma:**\n**Público:**\n\nUma frase que resume a experiência.",
+          "amber",
+          220,
+        ),
+        note("pillars", 440, 136, "Pilares de design", "- Pilar 1\n- Pilar 2\n- Pilar 3", "sky", 220),
+        column("systems", 780, 136, "Sistemas", "mint", [
+          checklist("system-list", 0, 0, "Sistemas do jogo", ["Movimento", "Combate", "Economia", "Progressão"]),
+          note("loop", 0, 0, "Loop principal", "Ação → recompensa → novo desafio.", "mint", 150),
+        ]),
+        code(
+          "player",
+          100,
+          400,
+          "player.gd",
+          "extends CharacterBody2D\n\n@export var speed := 220.0\n@export var gravity := 980.0\n\nfunc _physics_process(delta: float) -> void:\n\tvelocity.y += gravity * delta\n\tmove_and_slide()",
+          "gdscript",
+        ),
+        code(
+          "balance",
+          620,
+          400,
+          "balance.json",
+          '{\n  "enemy_hp": 40,\n  "player_damage": 8,\n  "crit_chance": 0.15\n}',
+          "json",
+        ),
+        note("refs", 100, 680, "Referências", "Jogos, artigos e vídeos que inspiram este projeto.", "sand", 180),
+      ],
+    }),
+  },
+  {
+    id: "level-design",
+    name: "Design de nível",
+    description: "Objetivo, beats do nível, checklist de legibilidade e o mapa desenhado.",
+    category: "jogo",
+    accent: "lilac",
+    build: () => ({
+      title: "Design de nível",
+      items: [
+        item("heading", "text", 100, 40, { fields: { content: "Design de nível" } }),
+        note("goal", 100, 136, "Objetivo do nível", "O que o jogador aprende ou sente aqui?", "sky", 180),
+        column("beats", 440, 136, "Beats", "lilac", [
+          card("b1", 0, 0, "Entrada", "Primeira leitura do espaço", "lilac"),
+          card("b2", 0, 0, "Tensão", "Desafio principal", "lilac"),
+          card("b3", 0, 0, "Recompensa", "Fechamento do beat", "lilac"),
+        ]),
+        checklist("checks", 780, 136, "Checklist de nível", [
+          "Rota principal legível",
+          "Rotas opcionais",
+          "Pontos de interesse",
+        ]),
+        drawing("map", 100, 380, "Mapa do nível"),
+        code(
+          "spawn",
+          620,
+          380,
+          "spawn_table.json",
+          '[\n  { "enemy": "slime", "x": 12, "y": 4 },\n  { "enemy": "bat", "x": 18, "y": 2 }\n]',
+          "json",
+        ),
+      ],
+    }),
+  },
+  {
+    id: "systems",
+    name: "Sistemas e mecânicas",
+    description: "Regras, estados e snippets do sistema (GDScript e shader) com casos de teste.",
+    category: "jogo",
+    accent: "sky",
+    build: () => ({
+      title: "Sistemas",
+      items: [
+        item("heading", "text", 100, 40, { fields: { content: "Sistemas e mecânicas" } }),
+        note("rules", 100, 136, "Regras", "O que o sistema faz — e o que ele **não** faz.", "amber", 180),
+        column("states", 440, 136, "Estados", "sky", [
+          card("s1", 0, 0, "Idle", "Estado inicial", "sky"),
+          card("s2", 0, 0, "Run", "Movimento e leitura", "sky"),
+          card("s3", 0, 0, "Hit", "Reação e invulnerabilidade", "sky"),
+        ]),
+        checklist("tests", 780, 136, "Casos de teste", ["Dano letal", "Invulnerabilidade", "Reset de estado"]),
+        code(
+          "state-machine",
+          100,
+          380,
+          "state_machine.gd",
+          "enum State { IDLE, RUN, HIT }\n\nvar current: State = State.IDLE\n\nfunc transition(next: State) -> void:\n\tcurrent = next",
+          "gdscript",
+        ),
+        code(
+          "damage",
+          620,
+          380,
+          "damage.hlsl",
+          "float3 ApplyHit(float3 color, float amount) {\n    return color * (1.0 - saturate(amount));\n}",
+          "glsl",
+        ),
+      ],
+    }),
+  },
+  {
+    id: "game-sprint",
+    name: "Sprint de jogo",
+    description: "Backlog, em progresso e feito, com meta do sprint e comando de build.",
+    category: "jogo",
+    accent: "rose",
+    build: () => ({
+      title: "Sprint de jogo",
+      items: [
+        column("backlog", 100, 100, "Backlog", "slate", [
+          task("s1", 0, 0, "Prototipar a mecânica principal", "high"),
+          task("s2", 0, 0, "Arte do primeiro inimigo"),
+        ]),
+        column("doing", 460, 100, "Em progresso", "sky", [task("s3", 0, 0, "Balancear dano e vida", "high")]),
+        column("done", 820, 100, "Feito", "mint", [task("s4", 0, 0, "Setup do projeto e do build")]),
+        note("goal", 100, 520, "Meta do sprint", "O que precisa estar jogável no fim do sprint?", "amber", 180),
+        code(
+          "build",
+          620,
+          520,
+          "build.cmd",
+          'godot --headless --export-release "Windows Desktop" build/game.exe',
+          "bash",
+          "none",
+          220,
+        ),
+      ],
+    }),
+  },
 ];
 
 export function getTemplate(id: string): TemplateDefinition | undefined {
@@ -301,6 +455,7 @@ export function templateCategories(): { id: TemplateDefinition["category"]; labe
   return [
     { id: "planejamento", label: "Planejamento" },
     { id: "criativo", label: "Criativo" },
+    { id: "jogo", label: "Jogo" },
     { id: "projeto", label: "Projeto" },
     { id: "estudo", label: "Estudo" },
     { id: "pessoal", label: "Pessoal" },
@@ -387,6 +542,7 @@ export function boardToTemplatePayload(board: Board, name?: string): TemplatePay
     if (node.content) fields.content = node.content;
     if (node.description) fields.description = node.description;
     if (node.label) fields.label = node.label;
+    if (node.language) fields.language = node.language;
     if (node.done !== undefined) fields.done = node.done;
     if (node.due) fields.due = node.due;
     if (node.priority) fields.priority = node.priority;

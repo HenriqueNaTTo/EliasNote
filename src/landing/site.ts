@@ -22,7 +22,7 @@ export const ACTIONS_URL = `${REPO_URL}/actions`;
 export const DOCS_URL = `${REPO_URL}/tree/main/docs`;
 export const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
 export const EXCALIDRAW_URL = "https://excalidraw.com";
-export const APP_VERSION = "0.2.0";
+export const APP_VERSION = "0.2.2";
 
 /** Ordem das abas no header e no rodapé. */
 export const TAB_IDS: readonly TabId[] = [
@@ -129,6 +129,7 @@ export interface ElementMeta {
 export const ELEMENT_META: ElementMeta[] = [
   { id: "nota", dot: "bg-amber-400" },
   { id: "texto", dot: "bg-slate-400" },
+  { id: "codigo", dot: "bg-sky-400" },
   { id: "cartao", dot: "bg-sky-400" },
   { id: "tarefa", dot: "bg-rose-400" },
   { id: "checklist", dot: "bg-emerald-400" },

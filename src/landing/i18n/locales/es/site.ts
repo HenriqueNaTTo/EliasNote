@@ -181,6 +181,10 @@ export const esSite: SiteContent = {
       "Semana",
       "Guion",
       "Retrospectiva",
+      "GDD",
+      "Diseño de nivel",
+      "Sistemas y mecánicas",
+      "Sprint de juego",
     ],
   },
   features: {
@@ -328,6 +332,16 @@ export const esSite: SiteContent = {
         description:
           "Deshacer y rehacer con transacciones: un arrastre es una entrada y la escritura se agrupa de forma inteligente.",
       },
+      "codigo-snippets": {
+        title: "Código con resaltado",
+        description:
+          "Bloques de código en el canvas con resaltado para GDScript, C#, shaders, JSON y YAML, lenguaje inferido por la extensión del título y copia en un clic.",
+      },
+      "modelos-jogo": {
+        title: "Plantillas para game dev",
+        description:
+          "GDD, diseño de nivel, sistemas y mecánicas y sprint de juego, ya con fragmentos de GDScript, JSON y shader.",
+      },
     },
     elements: {
       eyebrow: "Elementos",
@@ -378,6 +392,11 @@ export const esSite: SiteContent = {
         "desenho-nota": {
           name: "Dibujo en nota",
           description: "Vincula un dibujo a la nota: la miniatura aparece en la tarjeta y abre el editor.",
+        },
+        codigo: {
+          name: "Código",
+          description:
+            "Bloque monoespaciado con resaltado (GDScript, C#, shaders, JSON, YAML), copia rápida y lenguaje por la extensión.",
         },
       },
     },

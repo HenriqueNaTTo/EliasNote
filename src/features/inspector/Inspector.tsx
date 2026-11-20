@@ -37,6 +37,8 @@ import { parseRef, refForBoard, refForNode } from "@/core/domain/refs";
 import { boardStats } from "@/core/domain/tree";
 import { nodeDisplayTitle } from "@/core/search/search";
 import { cn, formatBytes, formatDate, timeAgo } from "@/lib/utils";
+import { AUTO_LANGUAGE, CODE_LANGUAGES, languageLabel, resolveLanguage } from "@/lib/code";
+import { toast } from "sonner";
 import { openExternal } from "@/lib/platform";
 import { downloadBlob, saveAttachment } from "@/core/media/attachments";
 import { suggestedFilename } from "@/features/export/boardExport";
@@ -478,7 +480,57 @@ function NodeSpecificPanel({
   const updateNode = useAppStore((state) => state.updateNode);
   const toggleTask = useAppStore((state) => state.toggleTask);
 
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(node.content ?? "");
+      toast.success("Código copiado");
+    } catch {
+      toast.error("Não foi possível copiar o código");
+    }
+  };
+
   switch (node.type) {
+    case "code":
+      return (
+        <>
+          <SectionTitle>Linguagem</SectionTitle>
+          <select
+            value={node.language ?? AUTO_LANGUAGE}
+            onChange={(event) =>
+              updateNode(node.id, { language: event.target.value }, { label: "Linguagem do código" })
+            }
+            className="h-8 w-full rounded-lg border border-input bg-background px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+            aria-label="Linguagem do código"
+          >
+            <option value={AUTO_LANGUAGE}>Automático (pela extensão do título)</option>
+            {CODE_LANGUAGES.map((language) => (
+              <option key={language.id} value={language.id}>
+                {language.label}
+              </option>
+            ))}
+          </select>
+
+          <SectionTitle>Código</SectionTitle>
+          <Textarea
+            value={node.content ?? ""}
+            onChange={(event) =>
+              updateNode(node.id, { content: event.target.value }, { label: "Editar código" })
+            }
+            placeholder="Cole ou escreva o código…"
+            spellCheck={false}
+            className="min-h-[160px] font-mono text-[11px] leading-relaxed"
+          />
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <p className="text-[10px] leading-snug text-muted-foreground">
+              Realce atual: {languageLabel(resolveLanguage(node))}. Renomeie o título (ex.:{" "}
+              <code>player.gd</code>) para inferir a linguagem.
+            </p>
+            <Button variant="outline" size="xs" className="shrink-0" onClick={() => void copyCode()}>
+              <Copy className="h-3 w-3" /> Copiar
+            </Button>
+          </div>
+        </>
+      );
     case "text":
       return (
         <>

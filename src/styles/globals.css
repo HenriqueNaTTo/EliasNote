@@ -531,3 +531,105 @@
 .node-surface {
   border-radius: 2px;
 }
+
+/* ---------------------------------------------------------------------------
+   Realce de código (highlight.js) — paleta própria, legível nos dois temas
+--------------------------------------------------------------------------- */
+:root {
+  --code-bg: #f6f8fa;
+  --code-fg: #1f2328;
+  --code-border: #d8dee6;
+  --code-keyword: #cf222e;
+  --code-string: #0a3069;
+  --code-number: #0550ae;
+  --code-comment: #6e7781;
+  --code-title: #8250df;
+  --code-built: #953800;
+  --code-type: #116329;
+  --code-attr: #0550ae;
+  --code-meta: #6e7781;
+}
+.dark {
+  --code-bg: #0d1117;
+  --code-fg: #e6edf3;
+  --code-border: #30363d;
+  --code-keyword: #ff7b72;
+  --code-string: #a5d6ff;
+  --code-number: #79c0ff;
+  --code-comment: #8b949e;
+  --code-title: #d2a8ff;
+  --code-built: #ffa657;
+  --code-type: #7ee787;
+  --code-attr: #79c0ff;
+  --code-meta: #8b949e;
+}
+
+.code-node {
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  box-shadow: inset 0 3px 0 0 var(--node-accent);
+}
+
+.markdown pre {
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--code-border);
+}
+
+.hljs {
+  color: var(--code-fg);
+  background: transparent;
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-template-tag,
+.hljs-meta .hljs-keyword {
+  color: var(--code-keyword);
+}
+.hljs-string,
+.hljs-regexp,
+.hljs-char.escape_ {
+  color: var(--code-string);
+}
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: var(--code-number);
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-title.class_,
+.hljs-section {
+  color: var(--code-title);
+}
+.hljs-built_in,
+.hljs-literal {
+  color: var(--code-built);
+}
+.hljs-type,
+.hljs-params,
+.hljs-class .hljs-title {
+  color: var(--code-type);
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-property,
+.hljs-variable.language_ {
+  color: var(--code-attr);
+}
+.hljs-meta {
+  color: var(--code-meta);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 700;
+}

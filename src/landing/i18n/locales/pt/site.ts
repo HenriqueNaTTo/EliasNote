@@ -181,6 +181,10 @@ export const ptSite: SiteContent = {
       "Semana",
       "Roteiro",
       "Retrospectiva",
+      "GDD",
+      "Design de nível",
+      "Sistemas e mecânicas",
+      "Sprint de jogo",
     ],
   },
   features: {
@@ -327,6 +331,16 @@ export const ptSite: SiteContent = {
         description:
           "Undo e redo com transações: um arraste é uma entrada, e a digitação é agrupada de forma inteligente.",
       },
+      "codigo-snippets": {
+        title: "Código com realce",
+        description:
+          "Blocos de código no canvas com realce para GDScript, C#, shader, JSON e YAML, linguagem inferida pela extensão do título e cópia em um clique.",
+      },
+      "modelos-jogo": {
+        title: "Modelos para game dev",
+        description:
+          "GDD, design de nível, sistemas e mecânicas e sprint de jogo, já com snippets de GDScript, JSON e shader preenchidos.",
+      },
     },
     elements: {
       eyebrow: "Elementos",
@@ -377,6 +391,11 @@ export const ptSite: SiteContent = {
         "desenho-nota": {
           name: "Desenho em nota",
           description: "Vincule um desenho à nota: a miniatura aparece no cartão e abre o editor.",
+        },
+        codigo: {
+          name: "Código",
+          description:
+            "Bloco monoespaçado com realce (GDScript, C#, shader, JSON, YAML), cópia rápida e linguagem pela extensão.",
         },
       },
     },

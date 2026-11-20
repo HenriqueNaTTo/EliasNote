@@ -11,6 +11,7 @@ export function toolToNodeType(tool: string): string | null {
   switch (tool) {
     case "note":
     case "text":
+    case "code":
     case "card":
     case "task":
     case "checklist":

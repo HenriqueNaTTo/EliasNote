@@ -15,6 +15,7 @@ const FILTERS: { id: NodeType | "all"; label: string }[] = [
   { id: "all", label: "Tudo" },
   { id: "note", label: "Notas" },
   { id: "text", label: "Textos" },
+  { id: "code", label: "Código" },
   { id: "task", label: "Tarefas" },
   { id: "checklist", label: "Checklists" },
   { id: "board", label: "Quadros" },

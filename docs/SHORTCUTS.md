@@ -20,6 +20,7 @@
 | --- | --- |
 | Nova nota | `N` |
 | Novo texto livre | `Shift + T` |
+| Novo código | `Shift + C` |
 | Novo cartão | `C` |
 | Nova tarefa | `T` |
 | Novo checklist | `L` |

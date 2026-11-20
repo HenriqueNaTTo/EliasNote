@@ -19,7 +19,8 @@
 
 | Elemento | Recursos |
 | --- | --- |
-| Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores |
+| Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores; blocos ``` de código ganham realce automático |
+| Código | Bloco monoespaçado com realce (GDScript, C#, C/C++, shader GLSL/HLSL, Lua, Python, JS/TS, JSON, YAML, shell, XML), linguagem inferida pela extensão do título, cópia com um clique e edição inline |
 | Texto | Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores |
 | Cartão | Título, descrição, etiqueta e cores |
 | Tarefa | Concluir, prioridade, prazo, Enter cria a próxima tarefa |
@@ -61,7 +62,7 @@
 ## Produtividade
 
 - Undo/redo com agrupamento inteligente; `Ctrl/Cmd+Z` e `Ctrl/Cmd+Shift+Z` (ou `Ctrl+Y`).
-- Templates embutidos: brainstorm, projeto, kanban, ata de reunião, pesquisa, moodboard, semana, roteiro e retrospectiva.
+- Templates embutidos: brainstorm, projeto, kanban, ata de reunião, pesquisa, moodboard, semana, roteiro, retrospectiva e a categoria **Jogo** (GDD, design de nível, sistemas e mecânicas, sprint de jogo) com snippets de GDScript, JSON e shader.
 - Salvar o quadro atual como modelo reutilizável (payload serializável, persiste entre sessões).
 - Exportação PNG/PDF do quadro inteiro com enquadramento automático e restauração do zoom.
 - Exportação Markdown (colunas, tarefas, notas) e JSON (backup reimportável).

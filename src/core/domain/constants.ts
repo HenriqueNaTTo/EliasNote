@@ -6,6 +6,7 @@ export const SNAPSHOT_VERSION = 1;
 export const NODE_WIDTHS: Record<NodeType, { w: number; h: number; minW: number; minH: number }> = {
   note: { w: 280, h: 220, minW: 160, minH: 110 },
   text: { w: 280, h: 72, minW: 60, minH: 32 },
+  code: { w: 460, h: 280, minW: 220, minH: 120 },
   card: { w: 260, h: 170, minW: 150, minH: 90 },
   task: { w: 280, h: 64, minW: 180, minH: 56 },
   checklist: { w: 280, h: 220, minW: 180, minH: 110 },
@@ -22,6 +23,7 @@ export const NODE_WIDTHS: Record<NodeType, { w: number; h: number; minW: number;
 export const NODE_LABELS: Record<NodeType, string> = {
   note: "Nota",
   text: "Texto",
+  code: "Código",
   card: "Cartão",
   task: "Tarefa",
   checklist: "Checklist",
@@ -118,6 +120,7 @@ export const COLUMN_MIN_HEIGHT = 220;
 export const NODE_ICONS: Record<NodeType, string> = {
   note: "sticky-note",
   text: "type",
+  code: "code-2",
   card: "square",
   task: "check-square",
   checklist: "list-checks",

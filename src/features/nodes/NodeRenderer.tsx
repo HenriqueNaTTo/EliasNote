@@ -1,6 +1,7 @@
 import type { CanvasNode } from "@/core/domain/types";
 import { CardNode } from "./CardNode";
 import { ChecklistNode } from "./ChecklistNode";
+import { CodeNode } from "./CodeNode";
 import { DrawingNode } from "./DrawingNode";
 import { FileNode, ImageNode, LinkNode, VideoNode } from "./MediaNodes";
 import { NoteNode } from "./NoteNode";
@@ -22,6 +23,8 @@ export function NodeRenderer({ node, editing, selected }: NodeRendererProps) {
       return <NoteNode {...props} />;
     case "text":
       return <TextNode {...props} />;
+    case "code":
+      return <CodeNode {...props} />;
     case "card":
       return <CardNode {...props} />;
     case "task":

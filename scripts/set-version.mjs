@@ -46,12 +46,38 @@ function updateCargoToml(relativePath) {
   return true;
 }
 
+/** Atualiza a versão exibida no site (src/landing/site.ts). */
+function updateSiteVersion() {
+  const file = join(root, "src/landing/site.ts");
+  const source = readFileSync(file, "utf8");
+  const next = source.replace(/(export const APP_VERSION = ")[^"]+(")/, `$1${version}$2`);
+  if (next === source) return false;
+  writeFileSync(file, next, "utf8");
+  return true;
+}
+
+/** Atualiza a entrada do próprio pacote no Cargo.lock (as dependências não mudam). */
+function updateCargoLock(relativePath, packageName) {
+  const file = join(root, relativePath);
+  const source = readFileSync(file, "utf8");
+  const pattern = new RegExp(
+    `(\\[\\[package\\]\\]\\r?\\nname = "${packageName}"\\r?\\nversion = ")[^"]+(")`,
+  );
+  const next = source.replace(pattern, `$1${version}$2`);
+  if (next === source) return false;
+  writeFileSync(file, next, "utf8");
+  return true;
+}
+
 const changed = [
   ["package.json", updateJson("package.json")],
   ["src-tauri/tauri.conf.json", updateJson("src-tauri/tauri.conf.json")],
   ["src-tauri/Cargo.toml", updateCargoToml("src-tauri/Cargo.toml")],
   ["setup/src-tauri/tauri.conf.json", updateJson("setup/src-tauri/tauri.conf.json")],
   ["setup/src-tauri/Cargo.toml", updateCargoToml("setup/src-tauri/Cargo.toml")],
+  ["src/landing/site.ts", updateSiteVersion()],
+  ["src-tauri/Cargo.lock", updateCargoLock("src-tauri/Cargo.lock", "eliasnote")],
+  ["setup/src-tauri/Cargo.lock", updateCargoLock("setup/src-tauri/Cargo.lock", "eliasnote-setup")],
 ]
   .filter(([, updated]) => updated)
   .map(([name]) => name);
@@ -61,4 +87,4 @@ if (changed.length === 0) {
 } else {
   console.log(`[version] ${version} aplicada em: ${changed.join(", ")}`);
 }
-console.log("[version] lembre de atualizar os Cargo.lock no próximo build do Rust.");
+console.log("[version] site (APP_VERSION) e Cargo.lock sincronizados com a versão.");

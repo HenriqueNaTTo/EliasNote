@@ -1,7 +1,7 @@
 {
   "name": "eliasnote",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "description": "EliasNote - organizacao visual local-first inspirada em Milanote, com canvas infinito e Excalidraw nativo",
   "scripts": {
@@ -45,6 +45,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
     "dompurify": "^3.2.0",
+    "highlight.js": "^11.12.0",
     "html-to-image": "^1.11.11",
     "idb": "^8.0.0",
     "immer": "^10.1.1",

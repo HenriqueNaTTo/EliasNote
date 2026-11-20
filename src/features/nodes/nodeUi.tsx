@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   CheckSquare,
+  Code2,
   Columns3,
   FileText,
   Globe,
@@ -20,6 +21,7 @@ import { cn } from "@/lib/utils";
 export const NODE_ICONS: Record<NodeType, LucideIcon> = {
   note: StickyNote,
   text: Type,
+  code: Code2,
   card: Square,
   task: CheckSquare,
   checklist: ListChecks,
@@ -69,6 +71,8 @@ export function nodeDisplayName(type: NodeType): string {
       return "Nota";
     case "text":
       return "Texto";
+    case "code":
+      return "Código";
     case "card":
       return "Cartão";
     case "task":

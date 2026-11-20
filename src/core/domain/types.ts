@@ -5,6 +5,7 @@ export type ID = string;
 export type NodeType =
   | "note"
   | "text"
+  | "code"
   | "card"
   | "task"
   | "checklist"
@@ -77,6 +78,8 @@ export interface CanvasNode {
   content?: string;
   description?: string;
   label?: string;
+  /** Linguagem do nó de código (`auto` = inferir pela extensão do título). */
+  language?: string;
 
   // Tarefas
   done?: boolean;
@@ -211,6 +214,7 @@ export type ToolId =
   | "pan"
   | "note"
   | "text"
+  | "code"
   | "card"
   | "task"
   | "checklist"
@@ -267,7 +271,7 @@ export interface TemplateDefinition {
   id: string;
   name: string;
   description: string;
-  category: "planejamento" | "criativo" | "projeto" | "estudo" | "pessoal";
+  category: "planejamento" | "criativo" | "projeto" | "estudo" | "pessoal" | "jogo";
   accent: NodeColor;
   /** Modelos salvos pelo usuário carregam o payload serializável. */
   payload?: TemplatePayload;

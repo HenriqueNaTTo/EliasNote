@@ -52,6 +52,10 @@ export function createNode(boardId: string, seed: NodeSeed): CanvasNode {
     case "text":
       node.content = node.content ?? "";
       break;
+    case "code":
+      node.content = node.content ?? "";
+      node.language = node.language ?? "auto";
+      break;
     case "card":
       node.title = node.title ?? "Novo cartão";
       node.description = node.description ?? "";

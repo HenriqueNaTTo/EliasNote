@@ -50,6 +50,23 @@ describe("exportação", () => {
     expect(markdown).toContain("Publicar release");
   });
 
+  it("exporta nós de código como bloco cercado com a linguagem", () => {
+    const test = makePayload();
+    const board = test.payload.boards[test.boardId];
+    addNodeToPayload(test, {
+      type: "code",
+      x: 0,
+      y: 0,
+      title: "player.gd",
+      content: "func _ready(): pass",
+      language: "gdscript",
+    });
+    const markdown = boardToMarkdown(board);
+    expect(markdown).toContain("### player.gd");
+    expect(markdown).toContain("```gdscript");
+    expect(markdown).toContain("func _ready(): pass");
+  });
+
   it("interpreta fragmentos de elementos e arquivos markdown", () => {
     const fragment = JSON.stringify({
       nodes: [

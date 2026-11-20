@@ -68,6 +68,13 @@ function nodeMarkdown(node: CanvasNode, depth: number): string {
       }
       break;
     }
+    case "code": {
+      if (!node.content?.trim()) break;
+      const fence = node.language && node.language !== "auto" ? node.language : "";
+      if (node.title?.trim()) lines.push(`${indent}### ${title}`);
+      lines.push(`${indent}\`\`\`${fence}`, node.content.trim(), `${indent}\`\`\``);
+      break;
+    }
     case "card": {
       lines.push(`${indent}### ${title}`);
       if (node.description?.trim()) lines.push("", node.description.trim());

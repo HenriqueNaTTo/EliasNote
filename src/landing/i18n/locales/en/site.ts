@@ -181,6 +181,10 @@ export const enSite: SiteContent = {
       "Week",
       "Script",
       "Retrospective",
+      "GDD",
+      "Level design",
+      "Systems and mechanics",
+      "Game sprint",
     ],
   },
   features: {
@@ -327,6 +331,16 @@ export const enSite: SiteContent = {
         description:
           "Undo and redo with transactions: one drag is one entry, and typing is grouped intelligently.",
       },
+      "codigo-snippets": {
+        title: "Syntax-highlighted code",
+        description:
+          "Code blocks on the canvas with highlighting for GDScript, C#, shaders, JSON and YAML, language inferred from the title extension and one-click copy.",
+      },
+      "modelos-jogo": {
+        title: "Game dev templates",
+        description:
+          "GDD, level design, systems and mechanics and game sprint, already filled with GDScript, JSON and shader snippets.",
+      },
     },
     elements: {
       eyebrow: "Elements",
@@ -377,6 +391,11 @@ export const enSite: SiteContent = {
         "desenho-nota": {
           name: "Drawing in a note",
           description: "Link a drawing to the note: the thumbnail appears on the card and opens the editor.",
+        },
+        codigo: {
+          name: "Code",
+          description:
+            "Monospace block with highlighting (GDScript, C#, shaders, JSON, YAML), quick copy and language from the file extension.",
         },
       },
     },

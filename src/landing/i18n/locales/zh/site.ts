@@ -163,7 +163,7 @@ export const zhSite: SiteContent = {
       primary: "立即下载",
       secondary: "在 GitHub 查看",
     },
-    templates: ["头脑风暴", "项目", "看板", "会议记录", "调研", "情绪板", "周计划", "脚本", "复盘"],
+    templates: ["头脑风暴", "项目", "看板", "会议记录", "调研", "情绪板", "周计划", "脚本", "复盘", "GDD", "关卡设计", "系统与机制", "游戏冲刺"],
   },
   features: {
     header: {
@@ -284,6 +284,15 @@ export const zhSite: SiteContent = {
         title: "可靠的历史记录",
         description: "带事务的撤销与重做：一次拖动是一条记录，输入内容会智能合并。",
       },
+      "codigo-snippets": {
+        title: "语法高亮代码",
+        description:
+          "画布上的代码块，支持 GDScript、C#、着色器、JSON 和 YAML 高亮，根据标题扩展名自动识别语言，一键复制。",
+      },
+      "modelos-jogo": {
+        title: "游戏开发模板",
+        description: "GDD、关卡设计、系统与机制、游戏冲刺，已内置 GDScript、JSON 和着色器片段。",
+      },
     },
     elements: {
       eyebrow: "元素",
@@ -319,6 +328,10 @@ export const zhSite: SiteContent = {
         "desenho-nota": {
           name: "笔记内绘图",
           description: "把绘图关联到笔记：缩略图显示在卡片里，点击即可打开编辑器。",
+        },
+        codigo: {
+          name: "代码",
+          description: "等宽代码块，支持语法高亮（GDScript、C#、着色器、JSON、YAML）、快速复制，并按扩展名识别语言。",
         },
       },
     },

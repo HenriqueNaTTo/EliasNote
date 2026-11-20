@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   CheckSquare,
+  Code2,
   Columns3,
   Hand,
   ImagePlus,
@@ -34,6 +35,7 @@ const TOOLS: { id: ToolId; label: string; shortcut?: string; icon: typeof Sticky
   { id: "pan", label: "Mover canvas", shortcut: "H", icon: Hand },
   { id: "note", label: "Nota", shortcut: "N", icon: StickyNote },
   { id: "text", label: "Texto", shortcut: "⇧T", icon: Type },
+  { id: "code", label: "Código", shortcut: "⇧C", icon: Code2 },
   { id: "card", label: "Cartão", shortcut: "C", icon: Square },
   { id: "task", label: "Tarefa", shortcut: "T", icon: CheckSquare },
   { id: "checklist", label: "Checklist", shortcut: "L", icon: ListChecks },

@@ -22,7 +22,7 @@ export interface SerializedTemplate {
   id: string;
   name: string;
   description: string;
-  category: "planejamento" | "criativo" | "projeto" | "estudo" | "pessoal";
+  category: "planejamento" | "criativo" | "projeto" | "estudo" | "pessoal" | "jogo";
   accent: string;
   payload: TemplatePayload;
 }

@@ -108,6 +108,9 @@ export function ColumnNode({ node }: NodeProps) {
             <DropdownMenuItem onClick={() => addChild("text")}>
               <NodeTypeIcon type="text" /> Texto
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addChild("code")}>
+              <NodeTypeIcon type="code" /> Código
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => addChild("task")}>
               <NodeTypeIcon type="task" /> Tarefa
             </DropdownMenuItem>

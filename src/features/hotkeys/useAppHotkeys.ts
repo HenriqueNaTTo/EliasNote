@@ -32,7 +32,7 @@ function createNodeAtCenter(type: NodeType): void {
     y: Math.round(center.y - size.h / 2 + stagger),
   });
   if (id && type === "drawing") state.openDrawing(id);
-  if (id && type === "text") state.setEditingNode(id);
+  if (id && (type === "text" || type === "code")) state.setEditingNode(id);
 }
 
 function openSelected(): void {
@@ -56,6 +56,9 @@ function runAction(actionId: string): void {
       break;
     case "new-text":
       createNodeAtCenter("text");
+      break;
+    case "new-code":
+      createNodeAtCenter("code");
       break;
     case "new-card":
       createNodeAtCenter("card");

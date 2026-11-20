@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TEMPLATES, boardToTemplatePayload, instantiateTemplate } from "./templates";
+import { TEMPLATES, boardToTemplatePayload, instantiateTemplate, templateCategories } from "./templates";
 import { createBoard, createWorkspace } from "./factories";
 import { TEMPLATE_PAYLOAD } from "@/test/fixtures";
 import type { CanvasNode } from "./types";
@@ -36,6 +36,23 @@ describe("templates", () => {
       for (const node of nodes) {
         expect(Number.isFinite(node.x)).toBe(true);
         expect(node.w).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("traz templates de jogo com snippets prontos", () => {
+    const gameTemplates = TEMPLATES.filter((template) => template.category === "jogo");
+    expect(gameTemplates.length).toBeGreaterThanOrEqual(4);
+    expect(templateCategories().some((category) => category.id === "jogo")).toBe(true);
+
+    for (const template of gameTemplates) {
+      const target = board();
+      const { nodes } = instantiateTemplate(target, template.build(), { x: 0, y: 0 });
+      const codeNodes = nodes.filter((node) => node.type === "code");
+      expect(codeNodes.length).toBeGreaterThan(0);
+      for (const node of codeNodes) {
+        expect(node.content?.length ?? 0).toBeGreaterThan(0);
+        expect(node.language).toBeTruthy();
       }
     }
   });
