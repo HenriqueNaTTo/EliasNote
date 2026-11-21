@@ -13,8 +13,26 @@ release do GitHub.
 
 ## Publicar uma versão
 
+Um comando faz tudo (checks, bump, commit, tag, push e acompanhamento do workflow):
+
 ```bash
-npm run version:set 0.2.0          # sincroniza package.json, tauri.conf.json e Cargo.toml
+npm run release -- "feat: descrição da mudança"
+npm run release -- "feat: recurso novo" --minor   # incremento minor
+npm run release -- --version 1.0.0                # versão explícita
+npm run release -- --dry-run                      # só mostra o plano, sem alterar nada
+```
+
+O script `scripts/release.mjs` valida branch/sincronia/conflitos, roda `typecheck`, `npm test`,
+`npm run build` e `npm run build:site` (mais `cargo check --locked` quando há arquivos Rust alterados),
+sincroniza a versão nos manifestos/site/`Cargo.lock`, cria o commit e a tag `vX.Y.Z`, empurra
+`main --follow-tags` e acompanha o run do GitHub até o fim, listando os assets da release.
+Use `--skip-checks` / `--skip-cargo` só em emergências e defina `GITHUB_TOKEN` para elevar o limite
+da API do GitHub.
+
+**Fluxo manual** (equivalente, para quando precisar quebrar em etapas):
+
+```bash
+npm run version:set 0.2.0          # sincroniza manifestos, site (APP_VERSION) e Cargo.lock
 git commit -am "chore: release v0.2.0"
 git tag v0.2.0
 git push origin main --follow-tags

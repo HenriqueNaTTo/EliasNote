@@ -19,24 +19,26 @@ npm run tauri build -- --bundles nsis   # instalador Windows local
 
 Sempre que uma mudança alterar comportamento, UI, conteúdo ou documentação de forma perceptível:
 
-1. **Verificar**: `npm run typecheck`, `npm test` e `npm run build`. Se mexeu no Rust (`src-tauri`, `setup/src-tauri`), rode `cargo check --locked` na pasta correspondente. Se mexeu no site, rode `npm run build:site`.
-2. **Atualizar as infos do site** quando a mudança for visível para o usuário:
+1. **Atualizar as infos do site** quando a mudança for visível para o usuário:
    - `src/landing/data.ts` — catálogo de funcionalidades (`FEATURE_META`).
    - `src/landing/site.ts` — `ELEMENT_META`, atalhos e `APP_VERSION` (o script de versão atualiza `APP_VERSION`).
    - `src/landing/i18n/locales/{pt,en,es,zh}/site.ts` — textos dos 4 idiomas (o teste de estrutura cobra todos).
    - `docs/FEATURES.md`, `docs/SHORTCUTS.md`, `README.md` conforme o caso.
-3. **Commit** descritivo em português (ex.: `feat: ...`, `fix: ...`, `docs: ...`).
-4. **Subir a versão** para o próximo número (patch por padrão; minor quando o recurso é novo):
+2. **Publicar com o script único** — ele roda tudo e acompanha o workflow:
    ```bash
-   npm run version:set 0.2.2
+   npm run release -- "feat: descrição da mudança"
+   npm run release -- "feat: recurso novo" --minor   # recurso novo
+   npm run release -- --dry-run                      # só o plano, sem alterar nada
    ```
-   O script sincroniza `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, `setup/src-tauri/*`, `src/landing/site.ts` e os dois `Cargo.lock`.
-5. **Tag + push** (dispara o workflow de release do GitHub):
-   ```bash
-   git tag -a v0.2.2 -m "EliasNote v0.2.2"
-   git push origin main --follow-tags
-   ```
-6. **Acompanhar o workflow** até o fim e confirmar os assets da release (`gh` pode não existir no ambiente; use a API do GitHub com `Invoke-RestMethod`). Os instaladores vão para a release; o site (Vercel) é publicado pelo push na `main`.
+   O `scripts/release.mjs` valida branch/sincronia/conflitos, roda `typecheck` + testes + build do app +
+   build do site (`cargo check --locked` quando há `.rs` alterado), sincroniza a versão nos dois
+   `tauri.conf.json`, nos dois `Cargo.toml`, nos dois `Cargo.lock` e no `APP_VERSION` do site, cria o
+   commit e a tag `vX.Y.Z`, empurra `main --follow-tags` e acompanha o run até listar os assets.
+   Defina `GITHUB_TOKEN` para elevar o limite da API do GitHub.
+3. **Fluxo manual** (só se precisar quebrar em etapas): `npm run version:set 0.2.2` → `git commit` →
+   `git tag -a v0.2.2 -m "EliasNote v0.2.2"` → `git push origin main --follow-tags` → acompanhar o run.
+4. O site (Vercel) é publicado pelo push na `main`. Se o script avisar que nada em `src/landing` mudou,
+   revise as infos do site antes de divulgar a release.
 
 Detalhes e ajustes da matriz de plataformas: `docs/RELEASE.md`.
 

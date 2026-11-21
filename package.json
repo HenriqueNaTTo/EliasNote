@@ -1,7 +1,7 @@
 {
   "name": "eliasnote",
   "private": true,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "type": "module",
   "description": "EliasNote - organizacao visual local-first inspirada em Milanote, com canvas infinito e Excalidraw nativo",
   "scripts": {
@@ -19,6 +19,8 @@
     "setup:build": "node scripts/build-setup.mjs",
     "assets": "node scripts/copy-excalidraw-assets.mjs",
     "version:set": "node scripts/set-version.mjs",
+    "release": "node scripts/release.mjs",
+    "release:dry": "node scripts/release.mjs --dry-run",
     "tauri": "tauri"
   },
   "dependencies": {

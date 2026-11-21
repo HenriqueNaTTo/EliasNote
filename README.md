@@ -65,11 +65,13 @@ A arte da marca fica em `public/logoNova.png`. `npm run icons` gera as máscaras
 ## Release
 
 ```bash
-npm run version:set 0.2.0          # sincroniza package.json, tauri.conf.json e Cargo.toml
-git commit -am "chore: release v0.2.0"
-git tag v0.2.0
-git push origin main --follow-tags
+npm run release -- "feat: descrição da mudança"
 ```
+
+Um comando faz o pacote inteiro: checks (typecheck/testes/build/build do site), bump de versão nos
+manifestos + site + `Cargo.lock`, commit, tag `vX.Y.Z`, push de `main --follow-tags` e acompanhamento
+do workflow até a release sair com os instaladores. Use `--minor`, `--version x.y.z` ou `--dry-run`
+conforme o caso.
 
 A tag `v*` dispara o workflow `.github/workflows/release.yml`: typecheck + testes + build, criação da
 release e compilação paralela para **Windows** (`.msi`/`.exe`), **Linux** (`.AppImage`/`.deb`) e
