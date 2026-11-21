@@ -27,7 +27,8 @@ O script `scripts/release.mjs` valida branch/sincronia/conflitos, roda `typechec
 sincroniza a versão nos manifestos/site/`Cargo.lock`, cria o commit e a tag `vX.Y.Z`, empurra
 `main --follow-tags` e acompanha o run do GitHub até o fim, listando os assets da release.
 Use `--skip-checks` / `--skip-cargo` só em emergências e defina `GITHUB_TOKEN` para elevar o limite
-da API do GitHub.
+da API do GitHub. Sem token, se o limite estourar o script espera a janela e retoma; se não conseguir
+acompanhar, avisa e termina sem falhar (a release e o push já aconteceram).
 
 **Fluxo manual** (equivalente, para quando precisar quebrar em etapas):
 

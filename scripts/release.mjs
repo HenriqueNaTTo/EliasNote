@@ -214,7 +214,11 @@ async function api(path) {
     },
   });
   if (response.status === 403 || response.status === 429) {
-    throw new Error("limite de requisições do GitHub atingido (defina GITHUB_TOKEN)");
+    const reset = Number(response.headers.get("x-ratelimit-reset") ?? 0) * 1000;
+    const retryAfter = Number(response.headers.get("retry-after") ?? 0) * 1000;
+    const error = new Error("limite de requisições do GitHub atingido (defina GITHUB_TOKEN)");
+    error.rateLimitUntil = reset || Date.now() + retryAfter || Date.now() + 60000;
+    throw error;
   }
   if (!response.ok) throw new Error(`GitHub ${response.status} em ${path}`);
   return response.json();
@@ -222,9 +226,27 @@ async function api(path) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+/**
+ * Executa uma chamada da API esperando a janela do limite quando ela estoura.
+ * Libera o processo de falhar por completo: o acompanhamento é só conveniência.
+ */
+async function withRateLimit(deadline, task) {
+  for (;;) {
+    try {
+      return await task();
+    } catch (error) {
+      if (!error.rateLimitUntil) throw error;
+      const wait = Math.max(5000, error.rateLimitUntil - Date.now()) + 2000;
+      if (Date.now() + wait > deadline) throw error;
+      warn(`limite da API atingido: aguardando ${Math.ceil(wait / 1000)}s para retomar`);
+      await sleep(wait);
+    }
+  }
+}
+
 async function findRun(tag, deadline) {
   while (Date.now() < deadline) {
-    const runs = await api("/actions/runs?per_page=20");
+    const runs = await withRateLimit(deadline, () => api("/actions/runs?per_page=20"));
     const run = runs.workflow_runs?.find(
       (candidate) => candidate.head_branch === tag || candidate.display_title?.includes(tag),
     );
@@ -254,11 +276,11 @@ async function watchWorkflow(tag, timeoutMinutes) {
 
   while (Date.now() < deadline) {
     tick += 1;
-    if (tick > 1) await sleep(20000);
-    run = await api(`/actions/runs/${run.id}`);
+    if (tick > 1) await sleep(30000);
+    run = await withRateLimit(deadline, () => api(`/actions/runs/${run.id}`));
 
     if (tick % 3 === 1) {
-      const { jobs } = await api(`/actions/runs/${run.id}/jobs`);
+      const { jobs } = await withRateLimit(deadline, () => api(`/actions/runs/${run.id}/jobs`));
       const lines = (jobs ?? []).map(
         (job) => `${job.name}: ${job.status}${job.conclusion ? ` (${JOB_LABELS[job.conclusion] ?? job.conclusion})` : ""}`,
       );
@@ -286,7 +308,7 @@ async function watchWorkflow(tag, timeoutMinutes) {
 
 async function describeRelease(tag) {
   try {
-    const release = await api(`/releases/tags/${tag}`);
+    const release = await withRateLimit(Date.now() + 3 * 60 * 1000, () => api(`/releases/tags/${tag}`));
     step("Release publicada");
     info(release.html_url);
     for (const asset of release.assets ?? []) {
@@ -406,11 +428,17 @@ async function main() {
     return;
   }
 
-  const runUrl = await watchWorkflow(tag, options.timeoutMinutes);
+  let runUrl = "";
+  try {
+    runUrl = await watchWorkflow(tag, options.timeoutMinutes);
+  } catch (error) {
+    warn(`acompanhamento interrompido: ${error instanceof Error ? error.message : String(error)}`);
+    warn(`a release já foi enviada; acompanhe em https://github.com/${repository}/actions`);
+  }
   await describeRelease(tag);
 
   step("Release concluída");
-  info(`workflow: ${runUrl}`);
+  info(`workflow: ${runUrl || `https://github.com/${repository}/actions`}`);
   info(`release: https://github.com/${repository}/releases/tag/${tag}`);
 }
 
