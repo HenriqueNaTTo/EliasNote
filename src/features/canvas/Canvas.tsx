@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LayoutTemplate, Plus, Sparkles } from "lucide-react";
 import { DEFAULT_VIEWPORT, rectFromPoints, rectsIntersect, screenToWorld, type Point, type Rect } from "@/lib/geometry";
 import { nodeRect, visibleNodes as filterVisible } from "@/core/domain/layout";
+import { collectBoardTags, visibleNodeIdsForTag } from "@/core/domain/tags";
 import { useAppStore } from "@/core/store";
 import { activeBoard } from "@/core/store/helpers";
 import { useActiveBoard, useRenderNodes, useViewport } from "@/core/store/selectors";
@@ -15,6 +16,7 @@ import { CanvasToolbar } from "./CanvasToolbar";
 import { CanvasControls } from "./CanvasControls";
 import { CanvasDropOverlay } from "./CanvasDropOverlay";
 import { BoardHeader } from "./BoardHeader";
+import { TagFilter } from "./TagFilter";
 import type { ConnectorDraft } from "./canvasTypes";
 import type { ID, NodeType } from "@/core/domain/types";
 import { openDialogs } from "@/features/shell/dialogActions";
@@ -44,6 +46,10 @@ export function Canvas() {
   const selection = useAppStore((state) => state.selection);
   const selectedConnectors = useAppStore((state) => state.selectedConnectors);
   const settings = useAppStore((state) => state.settings);
+  const tagFilter = useAppStore((state) =>
+    boardId ? state.tagFilters[boardId] ?? null : null,
+  );
+  const setTagFilter = useAppStore((state) => state.setTagFilter);
 
   const ordered = useRenderNodes(board);
   const [marquee, setMarquee] = useState<Rect | null>(null);
@@ -53,6 +59,23 @@ export function Canvas() {
   const [dropActive, setDropActive] = useState(false);
 
   const nodeCount = board ? Object.keys(board.nodes).length : 0;
+  const boardTags = useMemo(() => (board ? collectBoardTags(board) : []), [board]);
+  const tagVisibleIds = useMemo(
+    () => (board && tagFilter ? visibleNodeIdsForTag(board, tagFilter) : null),
+    [board, tagFilter],
+  );
+
+  useEffect(() => {
+    if (!board || !tagFilter) return;
+    if (!boardTags.some((option) => option.key === tagFilter)) {
+      setTagFilter(board.id, null);
+    }
+  }, [board, boardTags, tagFilter, setTagFilter]);
+
+  useEffect(() => {
+    useAppStore.getState().clearSelection();
+  }, [tagFilter]);
+
   const collapsedParents = useMemo(() => {
     const ids = new Set<ID>();
     for (const node of Object.values(board?.nodes ?? {})) {
@@ -63,7 +86,10 @@ export function Canvas() {
 
   const visible = useMemo(() => {
     if (!board) return [];
-    const withoutCollapsed = ordered.filter((node) => !(node.parentId && collapsedParents.has(node.parentId)));
+    const withoutCollapsed = ordered.filter((node) => {
+      if (node.parentId && collapsedParents.has(node.parentId)) return false;
+      return !tagVisibleIds || tagVisibleIds.has(node.id);
+    });
     if (!size.width || !size.height) return withoutCollapsed;
     const world = {
       x: -viewport.x / viewport.zoom,
@@ -72,7 +98,7 @@ export function Canvas() {
       h: size.height / viewport.zoom,
     };
     return filterVisible(withoutCollapsed, world, 260);
-  }, [board, ordered, collapsedParents, size.width, size.height, viewport]);
+  }, [board, ordered, collapsedParents, size.width, size.height, viewport, tagVisibleIds]);
 
   const localPoint = useCallback((clientX: number, clientY: number): Point => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -211,6 +237,7 @@ export function Canvas() {
       const hits = Object.values(currentBoard.nodes)
         .filter((node) => !node.hidden && !node.locked && rectsIntersect(nodeRect(node), world))
         .filter((node) => !(node.parentId && currentBoard.nodes[node.parentId]?.collapsed))
+        .filter((node) => !tagVisibleIds || tagVisibleIds.has(node.id))
         .map((node) => node.id);
       currentState.select(Array.from(new Set([...base, ...hits])));
     };
@@ -345,6 +372,7 @@ export function Canvas() {
         const tolerance = 12 / viewportRef.current.zoom;
         const target = Object.values(boardNow.nodes)
           .filter((candidate) => candidate.id !== nodeId && !candidate.hidden)
+          .filter((candidate) => !tagVisibleIds || tagVisibleIds.has(candidate.id))
           .sort((a, b) => b.z - a.z)
           .find(
             (candidate) =>
@@ -440,6 +468,7 @@ export function Canvas() {
             draft={connectorDraft}
             selectedConnectors={selectedConnectors}
             showLabels={settings.showConnectorLabels}
+            visibleNodeIds={tagVisibleIds}
           />
           {visible.map((node) => (
             <CanvasNodeView
@@ -462,10 +491,15 @@ export function Canvas() {
       ) : null}
 
       <BoardHeader board={board} />
+      <TagFilter
+        board={board}
+        value={tagFilter}
+        onChange={(tag) => setTagFilter(board.id, tag)}
+      />
 
       {nodeCount === 0 && !dropActive ? <EmptyBoard /> : null}
 
-      <CanvasControls board={board} />
+      <CanvasControls board={board} visibleNodeIds={tagVisibleIds} />
       <CanvasToolbar />
 
       {activeTool !== "select" && activeTool !== "pan" ? (

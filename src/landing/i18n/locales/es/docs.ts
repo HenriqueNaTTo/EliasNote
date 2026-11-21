@@ -168,6 +168,7 @@ export const esDocs: DocsContent = {
                 "Búsqueda global en todos los workspaces con puntuación por campo y filtros por tipo.",
                 "Los resultados muestran un fragmento, el tipo y la ruta del tablero; Enter abre y centra el elemento.",
                 "Panel de tareas (`Ctrl/Cmd+Shift+P`) reúne tareas de todos los tableros, con fechas límite, prioridad, filtros y apertura en el canvas.",
+                "Etiquetas editables en el inspector, con sugerencias del tablero, y filtro por etiqueta en el canvas; el filtro es una vista temporal y no altera los datos.",
                 "Referencias bidireccionales: añade tableros o elementos en `Refs`; los backlinks listan quién apunta al elemento actual.",
               ],
             },

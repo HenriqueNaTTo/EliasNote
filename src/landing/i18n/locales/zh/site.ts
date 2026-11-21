@@ -256,6 +256,10 @@ export const zhSite: SiteContent = {
         title: "任务面板",
         description: "把所有画板的截止日期、优先级和任务集中在一个列表中：一键完成或打开画布上的元素。",
       },
+      etiquetas: {
+        title: "标签与筛选",
+        description: "在检查器中添加标签，复用画板中的建议，并按标签筛选画布，不改变数据。",
+      },
       referencias: {
         title: "引用与反向链接",
         description: "在 Refs 中指向画板和元素，并在反向链接面板中查看谁引用了当前条目。",

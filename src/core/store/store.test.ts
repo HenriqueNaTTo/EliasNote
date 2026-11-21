@@ -72,6 +72,17 @@ describe("store: elementos e histórico", () => {
     expect(board.nodes[childId].y).toBe(childYBefore + 40);
   });
 
+  it("seleciona apenas elementos visíveis quando há filtro de etiqueta", () => {
+    const { store, test } = setup();
+    const combat = store.getState().addNode("note", { x: 0, y: 0 }, { fields: { tags: ["combate"] } }) as string;
+    store.getState().addNode("note", { x: 100, y: 0 }, { fields: { tags: ["arte"] } });
+
+    store.getState().setTagFilter(test.boardId, "combate");
+    store.getState().selectAll();
+    expect(store.getState().selection).toEqual([combat]);
+    expect(store.getState().selectedConnectors).toEqual([]);
+  });
+
   it("remove coluna junto com os filhos e conectores associados", () => {
     const { store, test } = setup();
     const columnId = store.getState().addNode("column", { x: 100, y: 100 }) as string;

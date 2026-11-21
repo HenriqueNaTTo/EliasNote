@@ -164,6 +164,7 @@ export const enDocs: DocsContent = {
                 "Global search across all workspaces with scoring per field and filters by type.",
                 "Results show the snippet, the type and the board path; Enter opens and centers the element.",
                 "Task panel (`Ctrl/Cmd+Shift+P`) gathers tasks from every board, with due dates, priority, filters and opening on the canvas.",
+                "Editable tags in the inspector, with board suggestions, and a canvas tag filter; the filter is a temporary view and does not change the data.",
                 "Two-way references: add boards or elements in `Refs`; backlinks list what points to the current item.",
               ],
             },

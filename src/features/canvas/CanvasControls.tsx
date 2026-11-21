@@ -12,17 +12,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Board } from "@/core/domain/types";
+import type { Board, ID } from "@/core/domain/types";
 import { Minimap } from "./Minimap";
 import { fitBoardToView, zoomBy, zoomTo } from "./viewportActions";
 
-export function CanvasControls({ board }: { board: Board }) {
+export function CanvasControls({
+  board,
+  visibleNodeIds,
+}: {
+  board: Board;
+  visibleNodeIds?: ReadonlySet<ID> | null;
+}) {
   const viewport = useViewport(board.id);
   const showMinimap = useAppStore((state) => state.settings.showMinimap);
 
   return (
     <div data-canvas-ui className="absolute bottom-4 right-4 z-20 flex flex-col items-end gap-2">
-      {showMinimap ? <Minimap board={board} /> : null}
+      {showMinimap ? <Minimap board={board} visibleNodeIds={visibleNodeIds} /> : null}
       <div className="glass-panel flex items-center gap-0.5 rounded-xl border border-border p-1 shadow-panel">
         <Tooltip>
           <TooltipTrigger asChild>

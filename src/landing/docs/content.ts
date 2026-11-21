@@ -129,6 +129,7 @@ const FEATURES_PAGE: DocPage = {
             "Busca global em todos os workspaces com pontuação por campo e filtros por tipo.",
             "Resultados mostram trecho, tipo e caminho do quadro; Enter abre e centraliza o elemento.",
             "Painel de tarefas (`Ctrl/Cmd+Shift+P`) reúne tarefas de todos os quadros, com prazos, prioridade, filtros e abertura no canvas.",
+            "Etiquetas editáveis no inspector, com sugestões do quadro, e filtro por etiqueta no canvas; o filtro é uma visão temporária e não altera os dados.",
             "Referências bidirecionais: adicione quadros ou elementos em `Refs`; backlinks listam quem aponta para o item atual.",
           ],
         },

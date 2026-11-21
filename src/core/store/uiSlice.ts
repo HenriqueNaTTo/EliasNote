@@ -10,6 +10,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
   canvasSize: { width: 0, height: 0 },
   sidebarCollapsed: false,
   dialog: null,
+  tagFilters: {},
   nodeTransfer: null,
   nodeDrag: null,
   dropFlash: null,
@@ -98,6 +99,13 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
     set((draft) => {
       if (draft.dialog === "drawing") draft.drawingNodeId = null;
       draft.dialog = null;
+    });
+  },
+
+  setTagFilter: (boardId, tag) => {
+    set((draft) => {
+      if (tag) draft.tagFilters[boardId] = tag;
+      else delete draft.tagFilters[boardId];
     });
   },
 
@@ -219,6 +227,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       draft.editingNodeId = null;
       draft.drawingNodeId = null;
       draft.dialog = null;
+      draft.tagFilters = {};
       draft.nodeTransfer = null;
       draft.nodeDrag = null;
       draft.dropFlash = null;

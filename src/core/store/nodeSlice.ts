@@ -22,6 +22,7 @@ import {
   createNode,
 } from "@/core/domain/factories";
 import { parseRef, refForBoard, refForNode } from "@/core/domain/refs";
+import { visibleNodeIdsForTag } from "@/core/domain/tags";
 import { isDescendantOf } from "@/core/domain/tree";
 import {
   activeBoard,
@@ -581,13 +582,24 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
   },
 
   selectAll: () => {
-    const board = activeBoard(get());
+    const state = get();
+    const board = activeBoard(state);
     if (!board) return;
+    const filter = state.tagFilters[board.id] ?? null;
+    const allowed = filter ? visibleNodeIdsForTag(board, filter) : null;
     set((draft) => {
       draft.selection = Object.values(board.nodes)
         .filter((node) => !node.hidden && !node.locked)
+        .filter((node) => !allowed || allowed.has(node.id))
         .map((node) => node.id);
-      draft.selectedConnectors = Object.keys(board.connectors);
+      draft.selectedConnectors = Object.values(board.connectors)
+        .filter((connector) => {
+          if (!allowed) return true;
+          if (connector.from.nodeId && !allowed.has(connector.from.nodeId)) return false;
+          if (connector.to.nodeId && !allowed.has(connector.to.nodeId)) return false;
+          return true;
+        })
+        .map((connector) => connector.id);
     });
   },
 

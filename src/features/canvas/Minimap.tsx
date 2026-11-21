@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Board } from "@/core/domain/types";
+import type { Board, ID } from "@/core/domain/types";
 import { useAppStore } from "@/core/store";
 import { useViewport } from "@/core/store/selectors";
 import { nodesBounds } from "@/core/domain/layout";
@@ -10,12 +10,24 @@ const MAP_WIDTH = 168;
 const MAP_HEIGHT = 108;
 
 /** Minimapa com todos os elementos e o retângulo do viewport atual. */
-export function Minimap({ board }: { board: Board }) {
+export function Minimap({
+  board,
+  visibleNodeIds,
+}: {
+  board: Board;
+  visibleNodeIds?: ReadonlySet<ID> | null;
+}) {
   const viewport = useViewport(board.id);
   const size = useAppStore((state) => state.canvasSize);
   const viewRect = useMemo(() => viewportWorldRect(viewport, size), [viewport, size]);
 
-  const nodes = useMemo(() => Object.values(board.nodes).filter((node) => !node.hidden), [board.nodes]);
+  const nodes = useMemo(
+    () =>
+      Object.values(board.nodes).filter(
+        (node) => !node.hidden && (!visibleNodeIds || visibleNodeIds.has(node.id)),
+      ),
+    [board.nodes, visibleNodeIds],
+  );
   const bounds = useMemo(() => nodesBounds(nodes), [nodes]);
 
   const union = useMemo(() => {

@@ -296,6 +296,11 @@ export const ptSite: SiteContent = {
         description:
           "Prazos, prioridades e tarefas de todos os quadros em uma lista única: conclua ou abra o elemento no canvas com um clique.",
       },
+      etiquetas: {
+        title: "Etiquetas e filtros",
+        description:
+          "Adicione etiquetas pelo inspector, reutilize sugestões do quadro e filtre o canvas por etiqueta sem alterar os dados.",
+      },
       referencias: {
         title: "Referências e backlinks",
         description:

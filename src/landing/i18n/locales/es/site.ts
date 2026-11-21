@@ -297,6 +297,11 @@ export const esSite: SiteContent = {
         description:
           "Fechas límite, prioridades y tareas de todos los tableros en una sola lista: complétalas o abre el elemento en el canvas con un clic.",
       },
+      etiquetas: {
+        title: "Etiquetas y filtros",
+        description:
+          "Añade etiquetas desde el inspector, reutiliza sugerencias del tablero y filtra el canvas por etiqueta sin alterar los datos.",
+      },
       referencias: {
         title: "Referencias y enlaces entrantes",
         description:

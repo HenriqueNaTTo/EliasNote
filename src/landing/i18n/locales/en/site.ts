@@ -296,6 +296,11 @@ export const enSite: SiteContent = {
         description:
           "Due dates, priorities and tasks from every board in one list: complete them or open the element on the canvas in one click.",
       },
+      etiquetas: {
+        title: "Tags and filters",
+        description:
+          "Add tags in the inspector, reuse board suggestions and filter the canvas by tag without changing your data.",
+      },
       referencias: {
         title: "References and backlinks",
         description:

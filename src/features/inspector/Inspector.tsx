@@ -61,6 +61,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NodeTypeIcon } from "@/features/nodes/nodeUi";
+import { TagEditor } from "./TagEditor";
 import { TextFormatBar } from "@/features/nodes/TextFormatBar";
 import { openDialogs } from "@/features/shell/dialogActions";
 
@@ -297,20 +298,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
   const sendToBack = useAppStore((state) => state.sendToBack);
   const openDrawing = useAppStore((state) => state.openDrawing);
   const openBoard = useAppStore((state) => state.openBoard);
-  const [tags, setTags] = useState((node.tags ?? []).join(", "));
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setTags((node.tags ?? []).join(", "));
-  }, [node.id, node.tags]);
-
-  const commitTags = () => {
-    const parsed = tags
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter(Boolean);
-    updateNode(node.id, { tags: parsed.length ? parsed : undefined }, { label: "Editar etiquetas" });
-  };
 
   const replaceMedia = async (file: File | undefined) => {
     if (!file) return;
@@ -452,17 +440,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
       </div>
 
       <SectionTitle>Etiquetas</SectionTitle>
-      <Input
-        value={tags}
-        onChange={(event) => setTags(event.target.value)}
-        onBlur={commitTags}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") commitTags();
-        }}
-        placeholder="ideias, referência, urgente"
-        className="h-8 text-xs"
-      />
-      <p className="mt-1 text-[10px] text-muted-foreground">Separe etiquetas por vírgula.</p>
+      <TagEditor node={node} />
 
       {node.type === "comment" ? <CommentControls node={node} /> : null}
     </div>

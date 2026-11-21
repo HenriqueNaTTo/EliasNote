@@ -190,6 +190,8 @@ export interface UiSlice {
   canvasSize: Size;
   sidebarCollapsed: boolean;
   dialog: DialogKind | null;
+  /** Filtro de etiqueta ativo por quadro (chave normalizada, efêmero). */
+  tagFilters: Record<ID, string | null>;
   /** Elementos escolhidos para mover/copiar entre quadros (diálogo aberto). */
   nodeTransfer: { nodeIds: ID[]; mode: NodeTransferMode } | null;
   openNodeTransfer: (nodeIds: ID[], mode: NodeTransferMode) => void;
@@ -219,6 +221,7 @@ export interface UiSlice {
   toggleSidebar: () => void;
   openDialog: (dialog: DialogKind) => void;
   closeDialog: () => void;
+  setTagFilter: (boardId: ID, tag: string | null) => void;
   setSettingsSection: (section: UiSlice["settingsSection"]) => void;
   setInspectorTab: (tab: UiSlice["inspectorTab"]) => void;
   setStatus: (status: SaveStatus, error?: string | null) => void;

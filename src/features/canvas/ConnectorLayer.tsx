@@ -12,6 +12,8 @@ interface ConnectorLayerProps {
   draft: ConnectorDraft | null;
   selectedConnectors: ID[];
   showLabels: boolean;
+  /** Quando um filtro de etiqueta está ativo, esconde conectores de nós filtrados. */
+  visibleNodeIds?: ReadonlySet<ID> | null;
 }
 
 interface ResolvedEndpoints {
@@ -51,15 +53,21 @@ function resolveEndpoints(connector: Connector, board: Board): ResolvedEndpoints
 }
 
 /** Desenha conectores e setas em coordenadas do mundo. */
-export function ConnectorLayer({ board, draft, selectedConnectors, showLabels }: ConnectorLayerProps) {
+export function ConnectorLayer({ board, draft, selectedConnectors, showLabels, visibleNodeIds }: ConnectorLayerProps) {
   const selectConnector = useAppStore((state) => state.selectConnector);
   const connectors = useMemo(() => Object.values(board.connectors), [board.connectors]);
   const resolved = useMemo(
     () =>
       connectors
+        .filter((connector) => {
+          if (!visibleNodeIds) return true;
+          if (connector.from.nodeId && !visibleNodeIds.has(connector.from.nodeId)) return false;
+          if (connector.to.nodeId && !visibleNodeIds.has(connector.to.nodeId)) return false;
+          return true;
+        })
         .map((connector) => ({ connector, geometry: resolveEndpoints(connector, board) }))
         .filter(({ geometry }) => Number.isFinite(geometry.from.x) && Number.isFinite(geometry.to.x)),
-    [connectors, board],
+    [connectors, board, visibleNodeIds],
   );
 
   return (

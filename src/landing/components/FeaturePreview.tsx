@@ -496,6 +496,48 @@ function TaskOverviewScene() {
   );
 }
 
+function TagsScene() {
+  return (
+    <PreviewShell tab="Etiquetas" sidebar={false}>
+      <div className="landing-canvas absolute inset-0 p-2">
+        <MiniNode tone="amber" className="absolute left-[4%] top-[8%] w-[45%]">
+          <p className="text-[5.5px] font-semibold leading-none">Sistema de combate</p>
+          <p className="mt-0.5 text-[4px] opacity-70">Dano, vida e cadência</p>
+          <div className="mt-1 flex flex-wrap gap-0.5">
+            <MiniChip active>#combate</MiniChip>
+            <MiniChip>#urgente</MiniChip>
+          </div>
+        </MiniNode>
+        <MiniNode tone="sky" className="absolute bottom-[16%] left-[10%] w-[38%]">
+          <p className="text-[5px] font-semibold leading-none">Direção de arte</p>
+          <div className="mt-1 flex gap-0.5">
+            <MiniChip>#arte</MiniChip>
+          </div>
+        </MiniNode>
+        <div className="absolute right-[4%] top-[12%] w-[43%] border border-border bg-popover p-1 shadow-panel">
+          <div className="flex items-center gap-0.5 border-b border-border pb-0.5">
+            <span className="text-[4.5px] text-primary">▾</span>
+            <span className="text-[4.5px] font-semibold">Filtrar por etiqueta</span>
+          </div>
+          <div className="mt-1 space-y-0.5">
+            <div className="flex items-center justify-between border border-primary bg-primary/10 px-1 py-0.5 text-[4px] text-primary">
+              <span>#combate</span>
+              <span>1</span>
+            </div>
+            <div className="flex items-center justify-between border border-border px-1 py-0.5 text-[4px] text-muted-foreground">
+              <span>#arte</span>
+              <span>1</span>
+            </div>
+          </div>
+        </div>
+        <span className="absolute bottom-2 left-1/2 -translate-x-1/2 border border-border bg-popover px-1 py-0.5 text-[4px] text-muted-foreground shadow-sm">
+          Filtro de visão · dados intactos
+        </span>
+      </div>
+    </PreviewShell>
+  );
+}
+
 function MediaScene() {
   return (
     <PreviewShell tab="Referências" sidebar={false}>
@@ -1057,6 +1099,8 @@ function sceneFor(feature: FeatureMeta) {
       return <SearchScene />;
     case "painel-tarefas":
       return <TaskOverviewScene />;
+    case "etiquetas":
+      return <TagsScene />;
     case "referencias":
       return <ReferencesScene />;
     case "modelos":
