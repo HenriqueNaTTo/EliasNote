@@ -336,6 +336,11 @@ export const enSite: SiteContent = {
         description:
           "Code blocks on the canvas with highlighting for GDScript, C#, shaders, JSON and YAML, language inferred from the title extension and one-click copy.",
       },
+      "texto-formatado": {
+        title: "Styled text",
+        description:
+          "Bold, italic, underline, strikethrough, text sizes from 10 to 96 px, sans, serif or mono families and alignment — on the floating bar, in the inspector or with Ctrl+B, Ctrl+I and Ctrl+U.",
+      },
       "modelos-jogo": {
         title: "Game dev templates",
         description:
@@ -358,7 +363,7 @@ export const enSite: SiteContent = {
         },
         texto: {
           name: "Text",
-          description: "Free text straight on the canvas, with no card: it grows with the content and supports colors.",
+          description: "Free text straight on the canvas, with no card: it grows with the content, supports colors and takes bold, italic, size, font and alignment.",
         },
         cartao: { name: "Card", description: "Title, description, tag and color to group references and summaries." },
         tarefa: {

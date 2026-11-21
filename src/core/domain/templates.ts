@@ -543,6 +543,13 @@ export function boardToTemplatePayload(board: Board, name?: string): TemplatePay
     if (node.description) fields.description = node.description;
     if (node.label) fields.label = node.label;
     if (node.language) fields.language = node.language;
+    if (node.fontSize !== undefined) fields.fontSize = node.fontSize;
+    if (node.bold !== undefined) fields.bold = node.bold;
+    if (node.italic !== undefined) fields.italic = node.italic;
+    if (node.underline !== undefined) fields.underline = node.underline;
+    if (node.strike !== undefined) fields.strike = node.strike;
+    if (node.fontFamily) fields.fontFamily = node.fontFamily;
+    if (node.align) fields.align = node.align;
     if (node.done !== undefined) fields.done = node.done;
     if (node.due) fields.due = node.due;
     if (node.priority) fields.priority = node.priority;

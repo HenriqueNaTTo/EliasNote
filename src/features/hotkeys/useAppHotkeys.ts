@@ -166,6 +166,7 @@ function runAction(actionId: string): void {
 export function useAppHotkeys(): void {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) return;
       const state = useAppStore.getState();
       const editing = isEditableTarget(event.target);
 

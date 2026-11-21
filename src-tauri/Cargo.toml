@@ -1,6 +1,6 @@
 [package]
 name = "eliasnote"
-version = "0.2.3"
+version = "0.2.4"
 description = "EliasNote - organizacao visual local-first"
 authors = ["EliasNote"]
 edition = "2021"

@@ -24,6 +24,7 @@ import {
   PenTool,
   Search,
   StickyNote,
+  Type,
   Undo2,
   Wand2,
 } from "lucide-react";
@@ -53,6 +54,7 @@ export const FEATURE_META: FeatureMeta[] = [
   { id: "tipos-de-elementos", category: "elementos", icon: StickyNote },
   { id: "notas-markdown", category: "elementos", icon: NotebookPen },
   { id: "codigo-snippets", category: "elementos", icon: Code2 },
+  { id: "texto-formatado", category: "elementos", icon: Type },
   { id: "tarefas-checklists", category: "elementos", icon: ListChecks },
   { id: "midia-local", category: "elementos", icon: Image },
   { id: "colunas", category: "elementos", icon: Columns3 },

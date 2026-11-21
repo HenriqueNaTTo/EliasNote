@@ -23,6 +23,7 @@ import { isDescendantOf } from "@/core/domain/tree";
 import { useAppStore } from "@/core/store";
 import { activeBoard, activeBoardId } from "@/core/store/helpers";
 import { NodeRenderer } from "@/features/nodes/NodeRenderer";
+import { TextFormatBar } from "@/features/nodes/TextFormatBar";
 import { cn, plural } from "@/lib/utils";
 import {
   ContextMenu,
@@ -338,6 +339,10 @@ export const CanvasNodeView = memo(function CanvasNodeView({
 
           {selected ? (
             <div className="pointer-events-none absolute -inset-[2px] rounded-none ring-2 ring-primary/80" />
+          ) : null}
+
+          {selected && node.type === "text" && !node.locked ? (
+            <TextFormatBar node={node} className="absolute -top-9 left-0 z-20" />
           ) : null}
 
           {node.locked ? (

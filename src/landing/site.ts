@@ -22,7 +22,7 @@ export const ACTIONS_URL = `${REPO_URL}/actions`;
 export const DOCS_URL = `${REPO_URL}/tree/main/docs`;
 export const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
 export const EXCALIDRAW_URL = "https://excalidraw.com";
-export const APP_VERSION = "0.2.3";
+export const APP_VERSION = "0.2.4";
 
 /** Ordem das abas no header e no rodapé. */
 export const TAB_IDS: readonly TabId[] = [

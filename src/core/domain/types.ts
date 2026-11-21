@@ -20,6 +20,12 @@ export type NodeType =
 
 export type NodeColor = "none" | "amber" | "rose" | "sky" | "mint" | "lilac" | "sand" | "slate";
 
+/** Família tipográfica do texto avulso. */
+export type TextFontFamily = "sans" | "serif" | "mono";
+
+/** Alinhamento horizontal do texto avulso. */
+export type TextAlign = "left" | "center" | "right";
+
 /** Transporte de elementos entre quadros: mover remove da origem, copiar mantém. */
 export type NodeTransferMode = "move" | "copy";
 
@@ -80,6 +86,15 @@ export interface CanvasNode {
   label?: string;
   /** Linguagem do nó de código (`auto` = inferir pela extensão do título). */
   language?: string;
+
+  // Formatação do texto avulso (`text`)
+  fontSize?: number;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strike?: boolean;
+  fontFamily?: TextFontFamily;
+  align?: TextAlign;
 
   // Tarefas
   done?: boolean;

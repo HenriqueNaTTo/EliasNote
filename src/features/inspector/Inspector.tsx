@@ -61,6 +61,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NodeTypeIcon } from "@/features/nodes/nodeUi";
+import { TextFormatBar } from "@/features/nodes/TextFormatBar";
 import { openDialogs } from "@/features/shell/dialogActions";
 
 /** Largura mínima/máxima do inspector e quanto o canvas precisa manter livre. */
@@ -541,10 +542,14 @@ function NodeSpecificPanel({
               updateNode(node.id, { content: event.target.value }, { label: "Editar texto" })
             }
             placeholder="Escreva algo…"
+            style={{ fontSize: `${node.fontSize ?? 14}px` }}
             className="min-h-[96px] text-xs leading-relaxed"
           />
+          <SectionTitle>Formatação</SectionTitle>
+          <TextFormatBar node={node} variant="panel" />
           <p className="mt-1 text-[10px] text-muted-foreground">
-            Texto livre sobre o canvas, sem moldura de cartão. Duplo clique no elemento para editar.
+            Texto livre sobre o canvas, sem moldura de cartão. Duplo clique no elemento para editar;
+            dentro da escrita valem Ctrl+B, Ctrl+I, Ctrl+U, Ctrl+Shift+X e Ctrl+= / Ctrl+-.
           </p>
         </>
       );

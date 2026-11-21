@@ -7,7 +7,7 @@ Aplicativo desktop **local-first** de organização visual inspirado no Milanote
 ## O que está pronto
 
 - **Canvas infinito** com zoom/pan por mouse, trackpad e barra de espaço, culling de elementos visíveis, minimapa, encaixe em grade e seleção múltipla com caixa.
-- **Elementos**: nota Markdown, texto livre, **bloco de código com realce** (GDScript, C#, shader, JSON, YAML…), cartão, tarefa, checklist com progresso, imagem, vídeo, arquivo, link, quadro aninhado, coluna, comentário local e desenho Excalidraw.
+- **Elementos**: nota Markdown, texto livre com **negrito, itálico, tamanho, fonte e alinhamento**, **bloco de código com realce** (GDScript, C#, shader, JSON, YAML…), cartão, tarefa, checklist com progresso, imagem, vídeo, arquivo, link, quadro aninhado, coluna, comentário local e desenho Excalidraw.
 - **Colunas inteligentes**: arraste elementos para dentro, reordene, recolha, redimensione e mova a coluna inteira com os filhos.
 - **Imagens por arraste**: solte arquivos sobre uma nota para anexá-los com miniatura dentro do cartão ou sobre um quadro aninhado para enviá-los ao quadro filho.
 - **Conectores e setas**: curva, reta ou cotovelo; rótulos, cores, tracejado e setas nas pontas.

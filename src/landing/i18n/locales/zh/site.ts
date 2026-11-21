@@ -289,6 +289,11 @@ export const zhSite: SiteContent = {
         description:
           "画布上的代码块，支持 GDScript、C#、着色器、JSON 和 YAML 高亮，根据标题扩展名自动识别语言，一键复制。",
       },
+      "texto-formatado": {
+        title: "可排版文本",
+        description:
+          "粗体、斜体、下划线、删除线，10 到 96 像素的字号，无衬线、衬线或等宽字体，以及对齐方式——浮动工具条、检查器或 Ctrl+B、Ctrl+I、Ctrl+U 都能设置。",
+      },
       "modelos-jogo": {
         title: "游戏开发模板",
         description: "GDD、关卡设计、系统与机制、游戏冲刺，已内置 GDScript、JSON 和着色器片段。",
@@ -310,7 +315,7 @@ export const zhSite: SiteContent = {
         },
         texto: {
           name: "文本",
-          description: "直接在画布上的自由文本，没有卡片：随内容增长，可设颜色。",
+          description: "直接在画布上的自由文本，没有卡片：随内容增长，可设颜色，并支持粗体、斜体、字号、字体和对齐。",
         },
         cartao: { name: "卡片", description: "标题、描述、标签和颜色，用于归组参考与摘要。" },
         tarefa: {

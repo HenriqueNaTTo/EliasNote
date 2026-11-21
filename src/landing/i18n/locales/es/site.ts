@@ -337,6 +337,11 @@ export const esSite: SiteContent = {
         description:
           "Bloques de código en el canvas con resaltado para GDScript, C#, shaders, JSON y YAML, lenguaje inferido por la extensión del título y copia en un clic.",
       },
+      "texto-formatado": {
+        title: "Texto con estilo",
+        description:
+          "Negrita, cursiva, subrayado, tachado, tamaños de 10 a 96 px, fuente sans, serif o mono y alineación — en la barra flotante, en el inspector o con Ctrl+B, Ctrl+I y Ctrl+U.",
+      },
       "modelos-jogo": {
         title: "Plantillas para game dev",
         description:
@@ -359,7 +364,7 @@ export const esSite: SiteContent = {
         },
         texto: {
           name: "Texto",
-          description: "Texto libre directamente en el canvas, sin tarjeta: crece con el contenido y admite colores.",
+          description: "Texto libre directamente en el canvas, sin tarjeta: crece con el contenido, admite colores y negrita, cursiva, tamaño, fuente y alineación.",
         },
         cartao: { name: "Tarjeta", description: "Título, descripción, etiqueta y color para agrupar referencias y resúmenes." },
         tarefa: {

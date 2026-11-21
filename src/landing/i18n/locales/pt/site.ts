@@ -336,6 +336,11 @@ export const ptSite: SiteContent = {
         description:
           "Blocos de código no canvas com realce para GDScript, C#, shader, JSON e YAML, linguagem inferida pela extensão do título e cópia em um clique.",
       },
+      "texto-formatado": {
+        title: "Texto com estilo",
+        description:
+          "Negrito, itálico, sublinhado, riscado, tamanho de 10 a 96 px, fonte sans, serifa ou mono e alinhamento — na barra flutuante, no inspector ou por Ctrl+B, Ctrl+I e Ctrl+U.",
+      },
       "modelos-jogo": {
         title: "Modelos para game dev",
         description:
@@ -358,7 +363,7 @@ export const ptSite: SiteContent = {
         },
         texto: {
           name: "Texto",
-          description: "Texto livre direto no canvas, sem cartão: cresce com o conteúdo e aceita cores.",
+          description: "Texto livre direto no canvas, sem cartão: cresce com o conteúdo, aceita cores e ganha negrito, itálico, tamanho, fonte e alinhamento.",
         },
         cartao: { name: "Cartão", description: "Título, descrição, etiqueta e cor para agrupar referências e resumos." },
         tarefa: {

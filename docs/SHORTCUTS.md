@@ -60,6 +60,19 @@
 | Backups | `Mod + Shift + B` |
 | Configurações | `Mod + ,` |
 
+## Formatação de texto
+
+Valem enquanto o **texto avulso** está em edição (o mesmo formato que a barra flutuante e o inspector aplicam):
+
+| Ação | Atalho |
+| --- | --- |
+| Negrito | `Mod + B` |
+| Itálico | `Mod + I` |
+| Sublinhado | `Mod + U` |
+| Riscado | `Mod + Shift + X` |
+| Aumentar fonte | `Mod + =` |
+| Diminuir fonte | `Mod + -` |
+
 Atalhos de uma letra são ignorados enquanto você digita em campos de texto. Combinações com `Mod` continuam ativas para desfazer, salvar e buscar.
 
 > No navegador, alguns atalhos do sistema (como `Ctrl+W` e `Ctrl+Tab`) podem ser interceptados. No app Tauri eles funcionam normalmente.

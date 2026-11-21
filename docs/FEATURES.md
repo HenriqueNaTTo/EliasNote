@@ -21,7 +21,7 @@
 | --- | --- |
 | Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores; blocos ``` de código ganham realce automático |
 | Código | Bloco monoespaçado com realce (GDScript, C#, C/C++, shader GLSL/HLSL, Lua, Python, JS/TS, JSON, YAML, shell, XML), linguagem inferida pela extensão do título, cópia com um clique e edição inline |
-| Texto | Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores |
+| Texto | Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores. Formatação por elemento com negrito, itálico, sublinhado, riscado, tamanho da fonte (10–96 px), família tipográfica (sans, serifa, mono) e alinhamento — pela barra flutuante ao selecionar ou pelo inspector |
 | Cartão | Título, descrição, etiqueta e cores |
 | Tarefa | Concluir, prioridade, prazo, Enter cria a próxima tarefa |
 | Checklist | Itens editáveis, progresso, adicionar/remover, concluir |
