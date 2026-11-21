@@ -33,13 +33,20 @@ function resolveEndpoints(connector: Connector, board: Board): ResolvedEndpoints
   const from = fromNode ? anchorPoint(nodeRect(fromNode), toCenter) : fromCenter;
   const to = toNode ? anchorPoint(nodeRect(toNode), fromCenter) : toCenter;
   const geometry = connectorGeometry(from, to, { kind: connector.kind });
+
+  // Setas de pontas ancoradas apontam para o centro do elemento, não para o canto.
+  const startAngle = fromNode
+    ? Math.atan2(fromCenter.y - from.y, fromCenter.x - from.x)
+    : geometry.startAngle + Math.PI;
+  const endAngle = toNode ? Math.atan2(toCenter.y - to.y, toCenter.x - to.x) : geometry.endAngle;
+
   return {
     from,
     to,
     path: geometry.path,
     labelPoint: geometry.mid,
-    startAngle: geometry.startAngle,
-    endAngle: geometry.endAngle,
+    startAngle,
+    endAngle,
   };
 }
 
@@ -112,7 +119,7 @@ export function ConnectorLayer({ board, draft, selectedConnectors, showLabels }:
             ) : null}
             {connector.arrowStart ? (
               <path
-                d={arrowHeadPath(geometry.from, geometry.startAngle + Math.PI, 8)}
+                d={arrowHeadPath(geometry.from, geometry.startAngle, 8)}
                 fill="none"
                 stroke={stroke}
                 strokeWidth={1.8}

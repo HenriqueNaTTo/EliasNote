@@ -157,15 +157,21 @@ export function snapToGrid(value: number, grid: number): number {
   return Math.round(value / grid) * grid;
 }
 
-/** Ponto de ancoragem na borda do retângulo mais próxima do alvo. */
+/** Ponto onde a reta do centro até o alvo cruza a borda do retângulo. */
 export function anchorPoint(rect: Rect, target: Point): Point {
   const center = centerOf(rect);
   const dx = target.x - center.x;
   const dy = target.y - center.y;
-  if (Math.abs(dx) >= Math.abs(dy)) {
-    return { x: dx >= 0 ? rect.x + rect.w : rect.x, y: clamp(dy + center.y, rect.y, rect.y + rect.h) };
-  }
-  return { x: clamp(target.x, rect.x, rect.x + rect.w), y: dy >= 0 ? rect.y + rect.h : rect.y };
+  if (dx === 0 && dy === 0) return center;
+
+  const halfWidth = rect.w / 2;
+  const halfHeight = rect.h / 2;
+  const scaleX = dx === 0 ? Number.POSITIVE_INFINITY : halfWidth / Math.abs(dx);
+  const scaleY = dy === 0 ? Number.POSITIVE_INFINITY : halfHeight / Math.abs(dy);
+  // A menor escala positiva é exatamente a borda que a reta centro→alvo cruza.
+  const scale = Math.min(scaleX, scaleY, 1);
+
+  return { x: center.x + dx * scale, y: center.y + dy * scale };
 }
 
 function clamp(value: number, min: number, max: number): number {

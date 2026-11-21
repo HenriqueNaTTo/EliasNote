@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  anchorPoint,
+  centerOf,
   connectorGeometry,
   fitViewport,
   rectFromPoints,
@@ -48,6 +50,24 @@ describe("geometria do canvas", () => {
     expect(rectsIntersect({ x: 0, y: 0, w: 100, h: 100 }, { x: 200, y: 200, w: 50, h: 50 })).toBe(false);
     const rect = rectFromPoints({ x: 100, y: 100 }, { x: 40, y: 20 });
     expect(rect).toEqual({ x: 40, y: 20, w: 60, h: 80 });
+  });
+
+  it("ancora conectores na interseção da reta até o centro do elemento", () => {
+    const rect = { x: 0, y: 0, w: 100, h: 400 };
+    const center = centerOf(rect);
+    const target = { x: 200, y: 100 };
+    const anchor = anchorPoint(rect, target);
+
+    expect(anchor.x).toBeCloseTo(100, 6);
+    expect(anchor.y).toBeCloseTo(166.6667, 3);
+    expect(anchor.y - center.y).toBeCloseTo(((target.y - center.y) / (target.x - center.x)) * (anchor.x - center.x), 6);
+  });
+
+  it("não prende a âncora no canto em alvos diagonais", () => {
+    const rect = { x: 0, y: 0, w: 100, h: 400 };
+    const anchor = anchorPoint(rect, { x: 200, y: 500 });
+    expect(anchor).toEqual({ x: 100, y: 300 });
+    expect(anchor.y).not.toBe(400);
   });
 
   it("gera curva e seta com pontos válidos", () => {

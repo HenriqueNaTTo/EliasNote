@@ -173,6 +173,18 @@ export function Canvas() {
     window.addEventListener("pointerup", onUp);
   };
 
+  /** Pan com espaço, botão do meio ou ferramenta mão funciona também sobre elementos. */
+  const handleSurfacePointerDownCapture = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "touch" && event.isPrimary === false) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("[data-canvas-ui]")) return;
+    const wantsPan = event.button === 1 || (event.button === 0 && (spaceHeld || activeTool === "pan"));
+    if (!wantsPan) return;
+    event.preventDefault();
+    event.stopPropagation();
+    startPan(event);
+  };
+
   const startMarquee = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!boardId) return;
     const state = useAppStore.getState();
@@ -330,15 +342,16 @@ export function Canvas() {
         const boardNow = activeBoard(latest);
         if (!boardNow) return;
         const point = getWorldPoint(event.clientX, event.clientY);
+        const tolerance = 12 / viewportRef.current.zoom;
         const target = Object.values(boardNow.nodes)
           .filter((candidate) => candidate.id !== nodeId && !candidate.hidden)
           .sort((a, b) => b.z - a.z)
           .find(
             (candidate) =>
-              point.x >= candidate.x &&
-              point.x <= candidate.x + candidate.w &&
-              point.y >= candidate.y &&
-              point.y <= candidate.y + candidate.h,
+              point.x >= candidate.x - tolerance &&
+              point.x <= candidate.x + candidate.w + tolerance &&
+              point.y >= candidate.y - tolerance &&
+              point.y <= candidate.y + candidate.h + tolerance,
           );
         if (target) {
           latest.addConnector({ nodeId, x: 0, y: 0 }, { nodeId: target.id, x: 0, y: 0 });
@@ -378,10 +391,11 @@ export function Canvas() {
           backgroundPosition: `${viewport.x}px ${viewport.y}px`,
         };
 
+  const panMode = spaceHeld || activeTool === "pan";
   const cursorClass =
     panning
       ? "cursor-grabbing"
-      : spaceHeld || activeTool === "pan"
+      : panMode
         ? "cursor-grab"
         : activeTool === "connector"
           ? "cursor-crosshair"
@@ -390,8 +404,11 @@ export function Canvas() {
   return (
     <div
       ref={containerRef}
-      className={`relative h-full w-full overflow-hidden ${textureClass} ${cursorClass}`}
+      className={`relative h-full w-full overflow-hidden ${textureClass} ${cursorClass} ${
+        panMode && !panning ? "canvas-pan-mode" : ""
+      } ${panning ? "canvas-panning" : ""}`}
       style={backgroundStyle}
+      onPointerDownCapture={handleSurfacePointerDownCapture}
       onPointerDown={handleSurfacePointerDown}
       onDoubleClick={handleDoubleClick}
       onDragOverCapture={(event) => {

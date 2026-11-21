@@ -507,6 +507,14 @@
 .canvas-grabbing {
   cursor: grabbing;
 }
+.canvas-pan-mode #canvas-export-surface,
+.canvas-pan-mode #canvas-export-surface * {
+  cursor: grab !important;
+}
+.canvas-panning #canvas-export-surface,
+.canvas-panning #canvas-export-surface * {
+  cursor: grabbing !important;
+}
 .resize-handle {
   opacity: 0;
   transition: opacity 0.12s ease;

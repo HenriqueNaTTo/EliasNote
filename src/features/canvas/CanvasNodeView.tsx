@@ -148,9 +148,12 @@ export const CanvasNodeView = memo(function CanvasNodeView({
         return { boardId: tile.childBoardId, mode: altKey ? "copy" : "move" };
       }
 
-      const row = (document.elementFromPoint(clientX, clientY) as HTMLElement | null)?.closest<HTMLElement>(
-        "[data-board-drop]",
-      );
+      const row =
+        typeof document.elementFromPoint === "function"
+          ? (document.elementFromPoint(clientX, clientY) as HTMLElement | null)?.closest<HTMLElement>(
+              "[data-board-drop]",
+            )
+          : null;
       const rowBoardId = row?.dataset.boardDrop;
       if (rowBoardId && !refuses(rowBoardId)) {
         return { boardId: rowBoardId, mode: "move" };
