@@ -301,6 +301,11 @@ export const ptSite: SiteContent = {
         description:
           "Adicione etiquetas pelo inspector, reutilize sugestões do quadro e filtre o canvas por etiqueta sem alterar os dados.",
       },
+      apresentacao: {
+        title: "Modo apresentação",
+        description:
+          "Esconde sidebar, topbar, inspector e controles, enquadra o quadro e navega pela árvore do workspace com setas ou botões.",
+      },
       referencias: {
         title: "Referências e backlinks",
         description:
@@ -421,6 +426,7 @@ export const ptSite: SiteContent = {
       actions: {
         busca: "Busca global",
         tarefas: "Painel de tarefas",
+        apresentar: "Modo apresentação",
         "nova-nota": "Nova nota",
         "nova-tarefa": "Nova tarefa",
         desenho: "Novo desenho Excalidraw",

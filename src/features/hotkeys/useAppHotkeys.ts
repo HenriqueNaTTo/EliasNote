@@ -21,6 +21,7 @@ const ALLOWED_WHILE_EDITING = new Set([
   "toggle-theme",
   "export",
   "tasks",
+  "present",
 ]);
 
 function createNodeAtCenter(type: NodeType): void {
@@ -158,6 +159,9 @@ function runAction(actionId: string): void {
     case "tasks":
       openDialogs.tasks();
       break;
+    case "present":
+      state.startPresentation();
+      break;
     case "toggle-theme":
       state.toggleTheme();
       break;
@@ -172,6 +176,7 @@ export function useAppHotkeys(): void {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented) return;
       const state = useAppStore.getState();
+      if (state.presentation) return;
       const editing = isEditableTarget(event.target);
 
       // Diálogo de mover/copiar entre quadros bloqueia os atalhos do canvas.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildBoardTree, boardPath, descendantBoardIds, isDescendantOf, orderedChildren, reorderList, boardStats } from "./tree";
+import { buildBoardTree, boardPath, descendantBoardIds, flattenBoardTree, isDescendantOf, orderedChildren, presentationBoardIds, reorderList, boardStats } from "./tree";
 import { createBoard, createNode, createWorkspace } from "./factories";
 
 function fixture() {
@@ -40,6 +40,23 @@ describe("árvore de quadros", () => {
     const list = ["a", "b", "c"];
     expect(reorderList(list, "c", 0)).toEqual(["c", "a", "b"]);
     expect(list).toEqual(["a", "b", "c"]);
+  });
+
+  it("gera a sequência de apresentação em pré-ordem", () => {
+    const { boards, rootA, rootB, child1, child2 } = fixture();
+    const tree = buildBoardTree(boards, rootA.workspaceId);
+    expect(flattenBoardTree(tree).map((board) => board.id)).toEqual([
+      rootA.id,
+      child2.id,
+      child1.id,
+      rootB.id,
+    ]);
+    expect(presentationBoardIds(boards, rootA.workspaceId)).toEqual([
+      rootA.id,
+      child2.id,
+      child1.id,
+      rootB.id,
+    ]);
   });
 
   it("conta tarefas de nós e checklists", () => {

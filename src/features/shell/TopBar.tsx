@@ -12,6 +12,7 @@ import {
   MoreHorizontal,
   PanelRight,
   Plus,
+  Presentation,
   Search,
   Settings,
   Sun,
@@ -59,6 +60,7 @@ export function TopBar() {
   const toggleTheme = useAppStore((state) => state.toggleTheme);
   const inspectorOpen = useAppStore((state) => state.settings.inspectorOpen);
   const updateSettings = useAppStore((state) => state.updateSettings);
+  const startPresentation = useAppStore((state) => state.startPresentation);
 
   const boardOptions = useMemo(
     () =>
@@ -166,6 +168,20 @@ export function TopBar() {
             </Button>
           </TooltipTrigger>
           <TooltipContent>Tarefas de todos os quadros (Ctrl+Shift+P)</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={startPresentation}
+              aria-label="Modo apresentação"
+            >
+              <Presentation className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Modo apresentação (Ctrl+Shift+F)</TooltipContent>
         </Tooltip>
 
         <Tooltip>

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createAppStore } from "@/core/store";
 import { makePayload } from "@/test/fixtures";
+import { createBoard } from "@/core/domain/factories";
 import { refForBoard } from "@/core/domain/refs";
 
 function setup() {
@@ -99,6 +100,52 @@ describe("store: elementos e histórico", () => {
     expect(board.nodes[childId]).toBeUndefined();
     expect(board.nodes[otherId]).toBeDefined();
     expect(Object.keys(board.connectors)).toHaveLength(0);
+  });
+
+  it("apresenta quadros em ordem e restaura tabs, aba e viewports ao sair", () => {
+    const store = createAppStore();
+    const test = makePayload();
+    const second = createBoard({ workspaceId: test.workspaceId, title: "Segundo" });
+    test.payload.boards[second.id] = second;
+    store.getState().hydrate(test.payload);
+    store.getState().setViewport(test.boardId, { x: 123, y: 45, zoom: 1.5 });
+    const originalTabs = store.getState().tabs;
+    const originalTabId = store.getState().activeTabId;
+    const originalViewport = store.getState().viewports[test.boardId];
+
+    store.getState().startPresentation();
+    expect(store.getState().presentation?.boardIds).toEqual([test.boardId, second.id]);
+    expect(store.getState().presentation?.index).toBe(0);
+    expect(store.getState().presentation?.tabs).toHaveLength(1);
+
+    store.getState().presentationNext();
+    expect(store.getState().presentation?.index).toBe(1);
+    expect(store.getState().tabs.find((tab) => tab.id === store.getState().activeTabId)?.boardId).toBe(second.id);
+
+    store.getState().presentationPrevious();
+    expect(store.getState().presentation?.index).toBe(0);
+    expect(store.getState().tabs.find((tab) => tab.id === store.getState().activeTabId)?.boardId).toBe(test.boardId);
+
+    store.getState().stopPresentation();
+    expect(store.getState().presentation).toBeNull();
+    expect(store.getState().tabs).toEqual(originalTabs);
+    expect(store.getState().activeTabId).toBe(originalTabId);
+    expect(store.getState().viewports[test.boardId]).toEqual(originalViewport);
+  });
+
+  it("não avança além do último quadro nem volta antes do primeiro", () => {
+    const store = createAppStore();
+    const test = makePayload();
+    const second = createBoard({ workspaceId: test.workspaceId, title: "Segundo" });
+    test.payload.boards[second.id] = second;
+    store.getState().hydrate(test.payload);
+    store.getState().startPresentation();
+
+    store.getState().presentationPrevious();
+    expect(store.getState().presentation?.index).toBe(0);
+    store.getState().presentationNext();
+    store.getState().presentationNext();
+    expect(store.getState().presentation?.index).toBe(1);
   });
 
   it("duplica a seleção com novos identificadores", () => {

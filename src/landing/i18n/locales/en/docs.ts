@@ -165,6 +165,7 @@ export const enDocs: DocsContent = {
                 "Results show the snippet, the type and the board path; Enter opens and centers the element.",
                 "Task panel (`Ctrl/Cmd+Shift+P`) gathers tasks from every board, with due dates, priority, filters and opening on the canvas.",
                 "Editable tags in the inspector, with board suggestions, and a canvas tag filter; the filter is a temporary view and does not change the data.",
+                "Presentation mode (`Ctrl/Cmd+Shift+F`) hides the interface, fits the board and navigates the workspace tree without editing anything.",
                 "Two-way references: add boards or elements in `Refs`; backlinks list what points to the current item.",
               ],
             },
@@ -266,6 +267,7 @@ export const enDocs: DocsContent = {
               items: [
                 { action: "Global search", keys: [["Mod", "K"]] },
                 { action: "Task panel", keys: [["Mod", "Shift", "P"]] },
+                { action: "Presentation mode", keys: [["Mod", "Shift", "F"]] },
                 { action: "Open/enter the selected board", keys: [["Mod", "Enter"]] },
                 { action: "Close tab", keys: [["Mod", "W"]] },
                 { action: "Next tab", keys: [["Mod", "Tab"]] },

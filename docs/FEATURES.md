@@ -59,6 +59,7 @@
 - Resultados mostram trecho, tipo e caminho do quadro; Enter abre e centraliza o elemento.
 - Painel de tarefas (`Ctrl/Cmd+Shift+P`) reúne tarefas de todos os quadros e workspaces, com prazos, prioridade, agrupamento por urgência, busca e conclusão sem sair da lista.
 - Etiquetas editáveis no inspector com sugestões do quadro, chips removíveis e deduplicação; o filtro por etiqueta no canvas mantém colunas de contexto e não altera os dados.
+- Modo apresentação (`Ctrl/Cmd+Shift+F`) esconde sidebar, topbar, inspector e controles, enquadra o quadro e navega pela árvore do workspace com setas ou botões; é somente leitura e restaura abas/viewports ao sair.
 - Referências bidirecionais: adicione quadros ou elementos em `Refs`; backlinks listam quem aponta para o item atual.
 
 ## Produtividade

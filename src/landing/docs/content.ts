@@ -130,6 +130,7 @@ const FEATURES_PAGE: DocPage = {
             "Resultados mostram trecho, tipo e caminho do quadro; Enter abre e centraliza o elemento.",
             "Painel de tarefas (`Ctrl/Cmd+Shift+P`) reúne tarefas de todos os quadros, com prazos, prioridade, filtros e abertura no canvas.",
             "Etiquetas editáveis no inspector, com sugestões do quadro, e filtro por etiqueta no canvas; o filtro é uma visão temporária e não altera os dados.",
+            "Modo apresentação (`Ctrl/Cmd+Shift+F`) esconde a interface, enquadra o quadro e navega pela árvore do workspace sem editar nada.",
             "Referências bidirecionais: adicione quadros ou elementos em `Refs`; backlinks listam quem aponta para o item atual.",
           ],
         },
@@ -235,6 +236,7 @@ const SHORTCUTS_PAGE: DocPage = {
           items: [
             { action: "Busca global", keys: [["Mod", "K"]] },
             { action: "Painel de tarefas", keys: [["Mod", "Shift", "P"]] },
+            { action: "Modo apresentação", keys: [["Mod", "Shift", "F"]] },
             { action: "Abrir/entrar no quadro selecionado", keys: [["Mod", "Enter"]] },
             { action: "Fechar aba", keys: [["Mod", "W"]] },
             { action: "Próxima aba", keys: [["Mod", "Tab"]] },

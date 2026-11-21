@@ -1,5 +1,6 @@
 import { clampZoom, zoomAtPoint } from "@/lib/geometry";
 import { DEFAULT_SETTINGS } from "@/core/domain/constants";
+import { presentationBoardIds } from "@/core/domain/tree";
 import { createHistoryState } from "./history";
 import { activeBoard, ensureNavigation } from "./helpers";
 import type { AppStoreCreator } from "./slice";
@@ -11,6 +12,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
   sidebarCollapsed: false,
   dialog: null,
   tagFilters: {},
+  presentation: null,
   nodeTransfer: null,
   nodeDrag: null,
   dropFlash: null,
@@ -107,6 +109,80 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       if (tag) draft.tagFilters[boardId] = tag;
       else delete draft.tagFilters[boardId];
     });
+  },
+
+  startPresentation: () => {
+    const state = get();
+    if (state.presentation) return;
+    const active = activeBoard(state);
+    if (!active) return;
+
+    const sequence = presentationBoardIds(state.boards, state.activeWorkspaceId);
+    const boardIds = sequence.includes(active.id) ? sequence : [active.id, ...sequence];
+    const index = Math.max(0, boardIds.indexOf(active.id));
+
+    set((draft) => {
+      draft.presentation = {
+        boardIds,
+        index,
+        tabs: draft.tabs.map((tab) => ({ ...tab })),
+        activeTabId: draft.activeTabId,
+        activeWorkspaceId: draft.activeWorkspaceId,
+        viewports: { ...draft.viewports },
+      };
+      draft.dialog = null;
+      draft.drawingNodeId = null;
+      draft.editingNodeId = null;
+      draft.selection = [];
+      draft.selectedConnectors = [];
+      draft.nodeTransfer = null;
+      draft.nodeDrag = null;
+      draft.dropFlash = null;
+      draft.activeTool = "select";
+    });
+  },
+
+  stopPresentation: () => {
+    const current = get().presentation;
+    if (!current) return;
+    set((draft) => {
+      draft.tabs = current.tabs.map((tab) => ({ ...tab }));
+      draft.activeTabId = current.activeTabId;
+      draft.activeWorkspaceId = current.activeWorkspaceId;
+      draft.viewports = { ...current.viewports };
+      draft.presentation = null;
+      draft.dialog = null;
+      draft.drawingNodeId = null;
+      draft.editingNodeId = null;
+      draft.selection = [];
+      draft.selectedConnectors = [];
+      draft.nodeTransfer = null;
+      draft.nodeDrag = null;
+      draft.dropFlash = null;
+      draft.activeTool = "select";
+    });
+  },
+
+  presentationNext: () => {
+    const current = get().presentation;
+    if (!current) return;
+    const index = Math.min(current.index + 1, current.boardIds.length - 1);
+    if (index === current.index) return;
+    set((draft) => {
+      if (draft.presentation) draft.presentation.index = index;
+    });
+    get().openBoard(current.boardIds[index]);
+  },
+
+  presentationPrevious: () => {
+    const current = get().presentation;
+    if (!current) return;
+    const index = Math.max(current.index - 1, 0);
+    if (index === current.index) return;
+    set((draft) => {
+      if (draft.presentation) draft.presentation.index = index;
+    });
+    get().openBoard(current.boardIds[index]);
   },
 
   openNodeTransfer: (nodeIds, mode) => {
@@ -228,6 +304,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       draft.drawingNodeId = null;
       draft.dialog = null;
       draft.tagFilters = {};
+      draft.presentation = null;
       draft.nodeTransfer = null;
       draft.nodeDrag = null;
       draft.dropFlash = null;

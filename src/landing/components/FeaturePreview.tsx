@@ -538,6 +538,35 @@ function TagsScene() {
   );
 }
 
+function PresentationScene() {
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-[hsl(var(--canvas))]">
+      <div className="landing-canvas absolute inset-0 p-3">
+        <div className="absolute left-[6%] top-[10%] h-[64%] w-[42%] border border-border bg-card p-2 shadow-panel">
+          <p className="text-[6px] font-semibold">Visão do jogo</p>
+          <p className="mt-0.5 text-[4.5px] text-muted-foreground">
+            Um quadro por vez, sem distrações.
+          </p>
+          <div className="mt-2 h-1 w-[78%] bg-primary/20" />
+          <div className="mt-1 h-1 w-[56%] bg-muted-foreground/15" />
+        </div>
+        <div className="absolute bottom-[16%] right-[8%] h-[44%] w-[36%] border border-border bg-card p-2 shadow-panel">
+          <p className="text-[5.5px] font-semibold">Sistemas</p>
+          <p className="mt-1 text-[4px] text-muted-foreground">Dano · vida · progressão</p>
+        </div>
+      </div>
+      <span className="absolute right-2 top-2 border border-border bg-popover px-1.5 py-0.5 text-[4px] text-muted-foreground">
+        Sair · Esc
+      </span>
+      <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1 border border-border bg-popover px-1.5 py-1 shadow-panel">
+        <span className="text-[5px]">‹</span>
+        <span className="text-[4px] font-medium">3 / 7 · Visão do jogo</span>
+        <span className="text-[5px]">›</span>
+      </div>
+    </div>
+  );
+}
+
 function MediaScene() {
   return (
     <PreviewShell tab="Referências" sidebar={false}>
@@ -1101,6 +1130,8 @@ function sceneFor(feature: FeatureMeta) {
       return <TaskOverviewScene />;
     case "etiquetas":
       return <TagsScene />;
+    case "apresentacao":
+      return <PresentationScene />;
     case "referencias":
       return <ReferencesScene />;
     case "modelos":

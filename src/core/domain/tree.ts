@@ -38,6 +38,24 @@ export function buildBoardTree(boards: Record<string, Board>, workspaceId: strin
   return build(null, 0, new Set());
 }
 
+/** Achata a árvore em pré-ordem (pai antes dos filhos). */
+export function flattenBoardTree(nodes: BoardTreeNode[]): Board[] {
+  const result: Board[] = [];
+  const visit = (items: BoardTreeNode[]) => {
+    for (const item of items) {
+      result.push(item.board);
+      visit(item.children);
+    }
+  };
+  visit(nodes);
+  return result;
+}
+
+/** Sequência de quadros de um workspace para o modo apresentação. */
+export function presentationBoardIds(boards: Record<string, Board>, workspaceId: string): string[] {
+  return flattenBoardTree(buildBoardTree(boards, workspaceId)).map((board) => board.id);
+}
+
 export function boardPath(boards: Record<string, Board>, boardId: string): Board[] {
   const path: Board[] = [];
   let current: Board | undefined = boards[boardId];

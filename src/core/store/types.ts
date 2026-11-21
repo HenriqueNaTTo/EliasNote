@@ -36,6 +36,16 @@ export type DialogKind =
   | "about"
   | "board-settings";
 
+export interface PresentationState {
+  boardIds: ID[];
+  index: number;
+  /** Abas, aba ativa e viewports para restaurar ao sair. */
+  tabs: Tab[];
+  activeTabId: ID | null;
+  activeWorkspaceId: ID;
+  viewports: Record<ID, Viewport>;
+}
+
 export interface HistoryState {
   past: HistoryEntry[];
   future: HistoryEntry[];
@@ -192,6 +202,8 @@ export interface UiSlice {
   dialog: DialogKind | null;
   /** Filtro de etiqueta ativo por quadro (chave normalizada, efêmero). */
   tagFilters: Record<ID, string | null>;
+  /** Modo apresentação ativo; guarda o snapshot necessário para sair. */
+  presentation: PresentationState | null;
   /** Elementos escolhidos para mover/copiar entre quadros (diálogo aberto). */
   nodeTransfer: { nodeIds: ID[]; mode: NodeTransferMode } | null;
   openNodeTransfer: (nodeIds: ID[], mode: NodeTransferMode) => void;
@@ -222,6 +234,10 @@ export interface UiSlice {
   openDialog: (dialog: DialogKind) => void;
   closeDialog: () => void;
   setTagFilter: (boardId: ID, tag: string | null) => void;
+  startPresentation: () => void;
+  stopPresentation: () => void;
+  presentationNext: () => void;
+  presentationPrevious: () => void;
   setSettingsSection: (section: UiSlice["settingsSection"]) => void;
   setInspectorTab: (tab: UiSlice["inspectorTab"]) => void;
   setStatus: (status: SaveStatus, error?: string | null) => void;

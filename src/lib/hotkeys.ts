@@ -37,6 +37,7 @@ export const SHORTCUTS: ShortcutDefinition[] = [
   { id: "zoom-out", label: "Diminuir zoom", group: "visualização", combo: "Mod+-" },
   { id: "zoom-reset", label: "Zoom 100%", group: "visualização", combo: "Mod+0" },
   { id: "zoom-fit", label: "Enquadrar quadro", group: "visualização", combo: "Shift+1" },
+  { id: "present", label: "Modo apresentação", group: "visualização", combo: "Mod+Shift+F" },
   { id: "toggle-sidebar", label: "Alternar barra lateral", group: "visualização", combo: "Mod+B" },
   { id: "toggle-inspector", label: "Alternar inspector", group: "visualização", combo: "Mod+Shift+I" },
   { id: "save-now", label: "Salvar agora", group: "arquivo", combo: "Mod+S" },

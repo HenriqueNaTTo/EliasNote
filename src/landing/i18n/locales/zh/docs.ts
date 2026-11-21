@@ -161,6 +161,7 @@ export const zhDocs: DocsContent = {
                 "结果显示片段、类型和画板路径；回车打开并居中该元素。",
                 "任务面板（`Ctrl/Cmd+Shift+P`）汇总所有画板的任务，支持截止日期、优先级、筛选和在画布中打开。",
                 "检查器中可编辑标签，支持画板建议，并可按标签筛选画布；筛选是临时视图，不改变数据。",
+                "演示模式（`Ctrl/Cmd+Shift+F`）隐藏界面，适应画板，并浏览工作区的画板树，不修改任何内容。",
                 "双向引用：在 `Refs` 中添加画板或元素；反向链接列出指向当前条目的位置。",
               ],
             },
@@ -262,6 +263,7 @@ export const zhDocs: DocsContent = {
               items: [
                 { action: "全局搜索", keys: [["Mod", "K"]] },
                 { action: "任务面板", keys: [["Mod", "Shift", "P"]] },
+                { action: "演示模式", keys: [["Mod", "Shift", "F"]] },
                 { action: "打开/进入所选画板", keys: [["Mod", "Enter"]] },
                 { action: "关闭标签页", keys: [["Mod", "W"]] },
                 { action: "下一个标签页", keys: [["Mod", "Tab"]] },

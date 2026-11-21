@@ -14,6 +14,8 @@ interface ConnectorLayerProps {
   showLabels: boolean;
   /** Quando um filtro de etiqueta está ativo, esconde conectores de nós filtrados. */
   visibleNodeIds?: ReadonlySet<ID> | null;
+  /** Apresentação: desenha setas sem permitir seleção/edição. */
+  readOnly?: boolean;
 }
 
 interface ResolvedEndpoints {
@@ -53,7 +55,7 @@ function resolveEndpoints(connector: Connector, board: Board): ResolvedEndpoints
 }
 
 /** Desenha conectores e setas em coordenadas do mundo. */
-export function ConnectorLayer({ board, draft, selectedConnectors, showLabels, visibleNodeIds }: ConnectorLayerProps) {
+export function ConnectorLayer({ board, draft, selectedConnectors, showLabels, visibleNodeIds, readOnly = false }: ConnectorLayerProps) {
   const selectConnector = useAppStore((state) => state.selectConnector);
   const connectors = useMemo(() => Object.values(board.connectors), [board.connectors]);
   const resolved = useMemo(
@@ -81,22 +83,30 @@ export function ConnectorLayer({ board, draft, selectedConnectors, showLabels, v
         const selected = selectedConnectors.includes(connector.id);
         const stroke = CONNECTOR_COLORS[connector.color];
         return (
-          <g key={connector.id} className="pointer-events-auto">
+          <g key={connector.id} className={readOnly ? "pointer-events-none" : "pointer-events-auto"}>
             <path
               d={geometry.path}
               fill="none"
               stroke="transparent"
               strokeWidth={16}
               className="cursor-pointer"
-              onPointerDown={(event) => {
-                event.stopPropagation();
-                selectConnector(connector.id);
-              }}
-              onDoubleClick={(event) => {
-                event.stopPropagation();
-                selectConnector(connector.id);
-                useAppStore.getState().setInspectorTab("props");
-              }}
+              onPointerDown={
+                readOnly
+                  ? undefined
+                  : (event) => {
+                      event.stopPropagation();
+                      selectConnector(connector.id);
+                    }
+              }
+              onDoubleClick={
+                readOnly
+                  ? undefined
+                  : (event) => {
+                      event.stopPropagation();
+                      selectConnector(connector.id);
+                      useAppStore.getState().setInspectorTab("props");
+                    }
+              }
             />
             {selected ? (
               <path

@@ -43,6 +43,8 @@ interface CanvasNodeViewProps {
   connectorMode: boolean;
   getWorldPoint: (clientX: number, clientY: number) => Point;
   onStartConnector: (nodeId: ID, clientX: number, clientY: number) => void;
+  /** Modo apresentação: apenas desenha o conteúdo, sem interação. */
+  readOnly?: boolean;
 }
 
 interface DragState {
@@ -77,6 +79,7 @@ export const CanvasNodeView = memo(function CanvasNodeView({
   connectorMode,
   getWorldPoint,
   onStartConnector,
+  readOnly = false,
 }: CanvasNodeViewProps) {
   const selected = useAppStore((state) => state.selection.includes(node.id));
   const editing = useAppStore((state) => state.editingNodeId === node.id);
@@ -310,6 +313,26 @@ export const CanvasNodeView = memo(function CanvasNodeView({
   const setColor = (color: NodeColor) => {
     useAppStore.getState().updateNode(node.id, { color }, { label: "Alterar cor" });
   };
+
+  if (readOnly) {
+    return (
+      <div
+        data-node-id={node.id}
+        className="node-frame presentation-readonly absolute select-none rounded-xl"
+        style={{ left: node.x, top: node.y, width: node.w, height: node.h }}
+      >
+        <div
+          className={cn(
+            "h-full w-full overflow-hidden rounded-none",
+            showShadows && "shadow-node",
+            node.locked && "opacity-95",
+          )}
+        >
+          <NodeRenderer node={node} editing={false} selected={false} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ContextMenu>

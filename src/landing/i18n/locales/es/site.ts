@@ -302,6 +302,11 @@ export const esSite: SiteContent = {
         description:
           "Añade etiquetas desde el inspector, reutiliza sugerencias del tablero y filtra el canvas por etiqueta sin alterar los datos.",
       },
+      apresentacao: {
+        title: "Modo presentación",
+        description:
+          "Oculta la barra lateral, la barra superior, el inspector y los controles, encuadra el tablero y navega por el árbol del workspace con flechas o botones.",
+      },
       referencias: {
         title: "Referencias y enlaces entrantes",
         description:
@@ -422,6 +427,7 @@ export const esSite: SiteContent = {
       actions: {
         busca: "Búsqueda global",
         tarefas: "Panel de tareas",
+        apresentar: "Modo presentación",
         "nova-nota": "Nueva nota",
         "nova-tarefa": "Nueva tarea",
         desenho: "Nuevo dibujo de Excalidraw",

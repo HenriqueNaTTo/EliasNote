@@ -301,6 +301,11 @@ export const enSite: SiteContent = {
         description:
           "Add tags in the inspector, reuse board suggestions and filter the canvas by tag without changing your data.",
       },
+      apresentacao: {
+        title: "Presentation mode",
+        description:
+          "Hides the sidebar, top bar, inspector and controls, fits the board and navigates the workspace tree with arrows or buttons.",
+      },
       referencias: {
         title: "References and backlinks",
         description:
@@ -421,6 +426,7 @@ export const enSite: SiteContent = {
       actions: {
         busca: "Global search",
         tarefas: "Task panel",
+        apresentar: "Presentation mode",
         "nova-nota": "New note",
         "nova-tarefa": "New task",
         desenho: "New Excalidraw drawing",

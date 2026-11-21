@@ -169,6 +169,7 @@ export const esDocs: DocsContent = {
                 "Los resultados muestran un fragmento, el tipo y la ruta del tablero; Enter abre y centra el elemento.",
                 "Panel de tareas (`Ctrl/Cmd+Shift+P`) reúne tareas de todos los tableros, con fechas límite, prioridad, filtros y apertura en el canvas.",
                 "Etiquetas editables en el inspector, con sugerencias del tablero, y filtro por etiqueta en el canvas; el filtro es una vista temporal y no altera los datos.",
+                "Modo presentación (`Ctrl/Cmd+Shift+F`) oculta la interfaz, encuadra el tablero y navega por el árbol del workspace sin editar nada.",
                 "Referencias bidireccionales: añade tableros o elementos en `Refs`; los backlinks listan quién apunta al elemento actual.",
               ],
             },
@@ -270,6 +271,7 @@ export const esDocs: DocsContent = {
               items: [
                 { action: "Búsqueda global", keys: [["Mod", "K"]] },
                 { action: "Panel de tareas", keys: [["Mod", "Shift", "P"]] },
+                { action: "Modo presentación", keys: [["Mod", "Shift", "F"]] },
                 { action: "Abrir/entrar en el tablero seleccionado", keys: [["Mod", "Enter"]] },
                 { action: "Cerrar pestaña", keys: [["Mod", "W"]] },
                 { action: "Pestaña siguiente", keys: [["Mod", "Tab"]] },

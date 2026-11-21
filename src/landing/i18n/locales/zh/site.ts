@@ -260,6 +260,10 @@ export const zhSite: SiteContent = {
         title: "标签与筛选",
         description: "在检查器中添加标签，复用画板中的建议，并按标签筛选画布，不改变数据。",
       },
+      apresentacao: {
+        title: "演示模式",
+        description: "隐藏侧边栏、顶栏、检查器和控件，适应画板，并用方向键或按钮浏览工作区的画板树。",
+      },
       referencias: {
         title: "引用与反向链接",
         description: "在 Refs 中指向画板和元素，并在反向链接面板中查看谁引用了当前条目。",
@@ -355,6 +359,7 @@ export const zhSite: SiteContent = {
       actions: {
         busca: "全局搜索",
         tarefas: "任务面板",
+        apresentar: "演示模式",
         "nova-nota": "新建笔记",
         "nova-tarefa": "新建任务",
         desenho: "新建 Excalidraw 绘图",

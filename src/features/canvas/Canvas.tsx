@@ -33,7 +33,7 @@ const TOOL_TYPES: Partial<Record<string, NodeType>> = {
   comment: "comment",
 };
 
-export function Canvas() {
+export function Canvas({ presentation = false }: { presentation?: boolean }) {
   const board = useActiveBoard();
   const boardId = board?.id ?? null;
   const viewport = useViewport(boardId);
@@ -50,6 +50,7 @@ export function Canvas() {
     boardId ? state.tagFilters[boardId] ?? null : null,
   );
   const setTagFilter = useAppStore((state) => state.setTagFilter);
+  const effectiveTagFilter = presentation ? null : tagFilter;
 
   const ordered = useRenderNodes(board);
   const [marquee, setMarquee] = useState<Rect | null>(null);
@@ -58,11 +59,19 @@ export function Canvas() {
   const [connectorDraft, setConnectorDraft] = useState<ConnectorDraft | null>(null);
   const [dropActive, setDropActive] = useState(false);
 
+  useEffect(() => {
+    if (!presentation) return;
+    setMarquee(null);
+    setConnectorDraft(null);
+    setDropActive(false);
+    setSpaceHeld(false);
+  }, [presentation]);
+
   const nodeCount = board ? Object.keys(board.nodes).length : 0;
   const boardTags = useMemo(() => (board ? collectBoardTags(board) : []), [board]);
   const tagVisibleIds = useMemo(
-    () => (board && tagFilter ? visibleNodeIdsForTag(board, tagFilter) : null),
-    [board, tagFilter],
+    () => (board && effectiveTagFilter ? visibleNodeIdsForTag(board, effectiveTagFilter) : null),
+    [board, effectiveTagFilter],
   );
 
   useEffect(() => {
@@ -260,6 +269,14 @@ export function Canvas() {
     const state = useAppStore.getState();
     if (!board) return;
 
+    if (presentation) {
+      if (event.button === 0 || event.button === 1) {
+        event.preventDefault();
+        startPan(event);
+      }
+      return;
+    }
+
     if (event.button === 1 || spaceHeld || state.activeTool === "pan") {
       event.preventDefault();
       startPan(event);
@@ -293,6 +310,7 @@ export function Canvas() {
   };
 
   const handleDoubleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (presentation) return;
     const target = event.target as HTMLElement;
     if (target.closest("[data-node-id]") || target.closest("[data-canvas-ui]")) return;
     if (!board) return;
@@ -310,7 +328,7 @@ export function Canvas() {
   const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setDropActive(false);
-    if (!board) return;
+    if (!board || presentation) return;
     const point = getWorldPoint(event.clientX, event.clientY);
     const files = Array.from(event.dataTransfer.files ?? []);
     if (files.length === 0) return;
@@ -420,8 +438,11 @@ export function Canvas() {
         };
 
   const panMode = spaceHeld || activeTool === "pan";
-  const cursorClass =
-    panning
+  const cursorClass = presentation
+    ? panning
+      ? "cursor-grabbing"
+      : "cursor-grab"
+    : panning
       ? "cursor-grabbing"
       : panMode
         ? "cursor-grab"
@@ -446,6 +467,10 @@ export function Canvas() {
         }
       }}
       onDragOver={(event) => {
+        if (presentation) {
+          event.preventDefault();
+          return;
+        }
         if (!event.dataTransfer.types.includes("Files")) return;
         event.preventDefault();
         setDropActive(true);
@@ -469,40 +494,44 @@ export function Canvas() {
             selectedConnectors={selectedConnectors}
             showLabels={settings.showConnectorLabels}
             visibleNodeIds={tagVisibleIds}
+            readOnly={presentation}
           />
           {visible.map((node) => (
             <CanvasNodeView
               key={node.id}
               node={node}
               zoom={viewport.zoom}
-              connectorMode={activeTool === "connector"}
+              connectorMode={!presentation && activeTool === "connector"}
               getWorldPoint={getWorldPoint}
               onStartConnector={startConnector}
+              readOnly={presentation}
             />
           ))}
         </div>
       </div>
 
-      {marquee ? (
+      {!presentation && marquee ? (
         <div
           className="pointer-events-none absolute rounded-md border border-primary/70 bg-primary/10"
           style={{ left: marquee.x, top: marquee.y, width: marquee.w, height: marquee.h }}
         />
       ) : null}
 
-      <BoardHeader board={board} />
-      <TagFilter
-        board={board}
-        value={tagFilter}
-        onChange={(tag) => setTagFilter(board.id, tag)}
-      />
+      {!presentation ? <BoardHeader board={board} /> : null}
+      {!presentation ? (
+        <TagFilter
+          board={board}
+          value={tagFilter}
+          onChange={(tag) => setTagFilter(board.id, tag)}
+        />
+      ) : null}
 
-      {nodeCount === 0 && !dropActive ? <EmptyBoard /> : null}
+      {!presentation && nodeCount === 0 && !dropActive ? <EmptyBoard /> : null}
 
-      <CanvasControls board={board} visibleNodeIds={tagVisibleIds} />
-      <CanvasToolbar />
+      {!presentation ? <CanvasControls board={board} visibleNodeIds={tagVisibleIds} /> : null}
+      {!presentation ? <CanvasToolbar /> : null}
 
-      {activeTool !== "select" && activeTool !== "pan" ? (
+      {!presentation && activeTool !== "select" && activeTool !== "pan" ? (
         <div
           className="pointer-events-none absolute bottom-24 left-1/2 z-20 -translate-x-1/2 rounded-full border border-border bg-popover/90 px-3 py-1.5 text-[11px] text-popover-foreground shadow-floating backdrop-blur"
           data-canvas-ui
@@ -513,7 +542,7 @@ export function Canvas() {
         </div>
       ) : null}
 
-      {selection.length > 0 || selectedConnectors.length > 0 ? (
+      {!presentation && (selection.length > 0 || selectedConnectors.length > 0) ? (
         <div
           className="pointer-events-none absolute bottom-24 right-4 z-10 rounded-lg border border-border bg-popover/85 px-2.5 py-1 text-[10px] font-medium text-muted-foreground shadow-sm backdrop-blur"
           data-canvas-ui
@@ -524,25 +553,27 @@ export function Canvas() {
         </div>
       ) : null}
 
-      <CanvasDropOverlay active={dropActive} />
-      <input
-        id="canvas-file-input"
-        type="file"
-        multiple
-        className="hidden"
-        onChange={(event) => {
-          const files = Array.from(event.target.files ?? []);
-          event.target.value = "";
-          if (files.length === 0) return;
-          const state = useAppStore.getState();
-          const vp = state.viewports[board.id] ?? DEFAULT_VIEWPORT;
-          const center = {
-            x: (state.canvasSize.width / 2 - vp.x) / vp.zoom,
-            y: (state.canvasSize.height / 2 - vp.y) / vp.zoom,
-          };
-          void importFiles(files, center);
-        }}
-      />
+      {!presentation ? <CanvasDropOverlay active={dropActive} /> : null}
+      {!presentation ? (
+        <input
+          id="canvas-file-input"
+          type="file"
+          multiple
+          className="hidden"
+          onChange={(event) => {
+            const files = Array.from(event.target.files ?? []);
+            event.target.value = "";
+            if (files.length === 0) return;
+            const state = useAppStore.getState();
+            const vp = state.viewports[board.id] ?? DEFAULT_VIEWPORT;
+            const center = {
+              x: (state.canvasSize.width / 2 - vp.x) / vp.zoom,
+              y: (state.canvasSize.height / 2 - vp.y) / vp.zoom,
+            };
+            void importFiles(files, center);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

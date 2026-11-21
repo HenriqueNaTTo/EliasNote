@@ -16,6 +16,7 @@ Aplicativo desktop **local-first** de organização visual inspirado no Milanote
 - **Busca global** (Ctrl/Cmd+K) em títulos, notas, tarefas, checklists, links, comentários, etiquetas e quadros.
 - **Painel de tarefas** (Ctrl/Cmd+Shift+P) com prazos, prioridades e tarefas de todos os quadros; conclua ou abra o elemento no canvas.
 - **Etiquetas editáveis** no inspector, com sugestões do quadro e filtro por etiqueta no canvas sem alterar os dados.
+- **Modo apresentação** (Ctrl/Cmd+Shift+F) esconde a interface, enquadra o quadro e navega pela árvore do workspace sem editar.
 - **Referências bidirecionais** entre quadros e elementos, com painel de backlinks.
 - **Histórico** undo/redo com transações (um arraste = uma entrada) e coalescência de digitação.
 - **Autosave incremental** por quadro em SQLite (Tauri) ou IndexedDB (navegador), com backups rotativos restauráveis.
@@ -101,6 +102,7 @@ src/
     drawing/          editor Excalidraw e exportações
     inspector/        painel de propriedades, referências e comentários
     tasks/            painel global de tarefas
+    presentation/     modo apresentação e navegação entre quadros
     shell/            sidebar, árvore, abas, diálogos
     search/           command palette global
     templates/        galeria de modelos

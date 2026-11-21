@@ -10,6 +10,7 @@ import { TopBar } from "@/features/shell/TopBar";
 import { Dialogs } from "@/features/shell/Dialogs";
 import { Canvas } from "@/features/canvas/Canvas";
 import { Inspector } from "@/features/inspector/Inspector";
+import { PresentationMode } from "@/features/presentation/PresentationMode";
 import { useTheme } from "@/features/theme/useTheme";
 import { useAppHotkeys } from "@/features/hotkeys/useAppHotkeys";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ let bootstrapped = false;
 
 export default function App() {
   const hydrated = useAppStore((state) => state.hydrated);
+  const presenting = useAppStore((state) => state.presentation !== null);
   const [bootError, setBootError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
   useTheme();
@@ -71,16 +73,16 @@ export default function App() {
   return (
     <TooltipProvider delayDuration={260}>
       <div className="flex h-screen w-screen overflow-hidden bg-background">
-        <Sidebar />
+        {!presenting ? <Sidebar /> : null}
         <main className="flex min-w-0 flex-1 flex-col">
-          <TopBar />
+          {!presenting ? <TopBar /> : null}
           <div className="relative min-h-0 flex-1">
-            <Canvas />
+            <Canvas presentation={presenting} />
           </div>
         </main>
-        <Inspector />
+        {!presenting ? <Inspector /> : null}
       </div>
-      <Dialogs />
+      {presenting ? <PresentationMode /> : <Dialogs />}
       <Toaster position="bottom-right" closeButton richColors theme="system" />
     </TooltipProvider>
   );
