@@ -29,6 +29,7 @@ export const TAB_IDS: readonly TabId[] = [
   "principal",
   "funcionalidades",
   "downloads",
+  "atualizacoes",
   "documentacao",
   "sobre",
   "contato",

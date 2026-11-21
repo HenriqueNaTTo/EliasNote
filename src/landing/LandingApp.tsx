@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Download,
   FlaskConical,
+  History,
   Home as HomeIcon,
   Info,
   Languages,
@@ -35,6 +36,7 @@ import { Contact } from "@/landing/sections/Contact";
 import { Downloads } from "@/landing/sections/Downloads";
 import { Features } from "@/landing/sections/Features";
 import { Home as HomeSection } from "@/landing/sections/Home";
+import { Updates } from "@/landing/sections/Updates";
 import {
   ACCENTS,
   APP_VERSION,
@@ -61,6 +63,7 @@ const TAB_ICONS: Record<TabId, typeof HomeIcon> = {
   principal: HomeIcon,
   funcionalidades: LayoutGrid,
   downloads: Download,
+  atualizacoes: History,
   documentacao: BookOpen,
   sobre: Info,
   contato: Mail,
@@ -214,9 +217,16 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
               <AppMark className="h-4 w-4" />
             </span>
             <span className="text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
-            <Badge variant="warning" className="normal-case tracking-normal">
-              {c.beta.badge} · v{APP_VERSION}
-            </Badge>
+            <a
+              href="#atualizacoes"
+              onClick={navClickHandler("atualizacoes", onNavigate)}
+              aria-label={`${c.beta.badge} · v${APP_VERSION} — ${c.nav.tabs.atualizacoes}`}
+              className="transition-opacity hover:opacity-80"
+            >
+              <Badge variant="warning" className="normal-case tracking-normal">
+                {c.beta.badge} · v{APP_VERSION}
+              </Badge>
+            </a>
           </div>
           <p className="mt-3 max-w-sm text-[12px] leading-relaxed text-muted-foreground">{c.footer.summary}</p>
           <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -437,9 +447,8 @@ export function LandingApp() {
             </span>
             <p className="min-w-0 flex-1 truncate">{c.beta.message}</p>
             <a
-              href={RELEASES_PAGE_URL}
-              target="_blank"
-              rel="noreferrer"
+              href="#atualizacoes"
+              onClick={navClickHandler("atualizacoes", navigate)}
               className="group hidden shrink-0 items-center gap-1 font-medium underline-offset-2 hover:underline sm:inline-flex"
             >
               {c.beta.link}
@@ -452,23 +461,32 @@ export function LandingApp() {
         </div>
 
         <Container className="flex h-14 items-center gap-2 sm:gap-3">
-          <a
-            href="#principal"
-            onClick={navClickHandler("principal", navigate)}
-            className="group flex shrink-0 items-center gap-2"
-            aria-label={c.nav.homeAria}
-          >
-            <span className="grid h-8 w-8 place-items-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
-              <AppMark className="h-4 w-4" />
-            </span>
-            <span className="leading-tight">
-              <span className="block text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
-              <span className="hidden text-[10px] text-muted-foreground sm:block">{c.nav.brandSubtitle}</span>
-            </span>
-            <Badge variant="warning" className="ml-1 hidden normal-case tracking-normal md:inline-flex">
-              {c.beta.badge} · v{APP_VERSION}
-            </Badge>
-          </a>
+          <div className="flex shrink-0 items-center gap-2">
+            <a
+              href="#principal"
+              onClick={navClickHandler("principal", navigate)}
+              className="group flex shrink-0 items-center gap-2"
+              aria-label={c.nav.homeAria}
+            >
+              <span className="grid h-8 w-8 place-items-center rounded-lg border border-border bg-card text-foreground shadow-sm transition-transform duration-300 group-hover:-rotate-3 group-hover:scale-105">
+                <AppMark className="h-4 w-4" />
+              </span>
+              <span className="leading-tight">
+                <span className="block text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
+                <span className="hidden text-[10px] text-muted-foreground sm:block">{c.nav.brandSubtitle}</span>
+              </span>
+            </a>
+            <a
+              href="#atualizacoes"
+              onClick={navClickHandler("atualizacoes", navigate)}
+              aria-label={`${c.beta.badge} · v${APP_VERSION} — ${c.nav.tabs.atualizacoes}`}
+              className="hidden shrink-0 transition-opacity hover:opacity-80 md:inline-flex"
+            >
+              <Badge variant="warning" className="normal-case tracking-normal">
+                {c.beta.badge} · v{APP_VERSION}
+              </Badge>
+            </a>
+          </div>
 
           <nav aria-label={c.nav.sectionsAria} className="ml-2 hidden flex-1 items-center gap-1 xl:flex">
             {TAB_IDS.map((id) => (
@@ -544,6 +562,7 @@ export function LandingApp() {
         {active === "principal" ? <HomeSection onNavigate={navigate} /> : null}
         {active === "funcionalidades" ? <Features /> : null}
         {active === "downloads" ? <Downloads /> : null}
+        {active === "atualizacoes" ? <Updates /> : null}
         {active === "documentacao" ? <Docs docId={docId} onNavigateDoc={navigateDoc} /> : null}
         {active === "sobre" ? <About /> : null}
         {active === "contato" ? <Contact /> : null}

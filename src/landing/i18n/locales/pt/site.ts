@@ -1,12 +1,13 @@
 import type { SiteContent } from "@/landing/i18n/types";
 import { ptDocs } from "@/landing/i18n/locales/pt/docs";
+import { ptUpdates } from "@/landing/i18n/locales/pt/updates";
 
 export const ptSite: SiteContent = {
   beta: {
     badge: "Beta",
     message:
       "EliasNote está em desenvolvimento (beta): recursos, atalhos e o formato dos dados ainda podem mudar entre versões.",
-    link: "Acompanhar releases",
+    link: "Ver atualizações",
     downloads: {
       title: "Versão em desenvolvimento",
       description:
@@ -18,11 +19,13 @@ export const ptSite: SiteContent = {
       ],
     },
   },
+  updates: ptUpdates,
   meta: {
     titles: {
       principal: "EliasNote — canvas infinito, 100% offline",
       funcionalidades: "Funcionalidades · EliasNote",
       downloads: "Downloads · EliasNote",
+      atualizacoes: "Atualizações · EliasNote",
       documentacao: "Documentação · EliasNote",
       sobre: "Sobre · EliasNote",
       contato: "Contato · EliasNote",
@@ -42,6 +45,7 @@ export const ptSite: SiteContent = {
       principal: "Principal",
       funcionalidades: "Funcionalidades",
       downloads: "Downloads",
+      atualizacoes: "Atualizações",
       documentacao: "Documentação",
       sobre: "Sobre",
       contato: "Contato",

@@ -1,11 +1,12 @@
 import type { SiteContent } from "@/landing/i18n/types";
 import { zhDocs } from "@/landing/i18n/locales/zh/docs";
+import { zhUpdates } from "@/landing/i18n/locales/zh/updates";
 
 export const zhSite: SiteContent = {
   beta: {
     badge: "Beta",
     message: "EliasNote 仍在开发中（beta）：功能、快捷键和数据格式可能随版本变化。",
-    link: "关注版本发布",
+    link: "查看更新",
     downloads: {
       title: "开发中的版本",
       description:
@@ -17,11 +18,13 @@ export const zhSite: SiteContent = {
       ],
     },
   },
+  updates: zhUpdates,
   meta: {
     titles: {
       principal: "EliasNote —— 无限画布，100% 离线",
       funcionalidades: "功能 · EliasNote",
       downloads: "下载 · EliasNote",
+      atualizacoes: "更新 · EliasNote",
       documentacao: "文档 · EliasNote",
       sobre: "关于 · EliasNote",
       contato: "联系 · EliasNote",
@@ -41,6 +44,7 @@ export const zhSite: SiteContent = {
       principal: "首页",
       funcionalidades: "功能",
       downloads: "下载",
+      atualizacoes: "更新",
       documentacao: "文档",
       sobre: "关于",
       contato: "联系",

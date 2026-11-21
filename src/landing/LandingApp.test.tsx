@@ -80,6 +80,22 @@ describe("landing page do EliasNote", () => {
     expect(screen.getByRole("heading", { level: 1, name: /fale direto com o projeto/i })).toBeInTheDocument();
   });
 
+  it("abre a página de atualizações pelo selo beta e lista as releases", () => {
+    renderSite();
+
+    const badge = screen.getAllByRole("link", { name: /Beta · v/ })[0];
+    fireEvent.click(badge);
+
+    expect(window.location.hash).toBe("#atualizacoes");
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Tudo o que mudou, versão por versão." }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Modo apresentação" })).toBeInTheDocument();
+    expect(screen.getByText("v0.5.0")).toBeInTheDocument();
+    expect(screen.getByText("v0.2.0")).toBeInTheDocument();
+    expect(screen.getAllByText("Abrir release")).toHaveLength(10);
+  });
+
   it("mostra a prévia da funcionalidade ao focar e ao passar o mouse", async () => {
     renderSite();
     openTab("Funcionalidades");

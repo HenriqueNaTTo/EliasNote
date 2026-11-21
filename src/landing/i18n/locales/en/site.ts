@@ -1,12 +1,13 @@
 import type { SiteContent } from "@/landing/i18n/types";
 import { enDocs } from "@/landing/i18n/locales/en/docs";
+import { enUpdates } from "@/landing/i18n/locales/en/updates";
 
 export const enSite: SiteContent = {
   beta: {
     badge: "Beta",
     message:
       "EliasNote is in development (beta): features, shortcuts and the data format may still change between versions.",
-    link: "Follow releases",
+    link: "View updates",
     downloads: {
       title: "Version in development",
       description:
@@ -18,11 +19,13 @@ export const enSite: SiteContent = {
       ],
     },
   },
+  updates: enUpdates,
   meta: {
     titles: {
       principal: "EliasNote — infinite canvas, 100% offline",
       funcionalidades: "Features · EliasNote",
       downloads: "Downloads · EliasNote",
+      atualizacoes: "Updates · EliasNote",
       documentacao: "Documentation · EliasNote",
       sobre: "About · EliasNote",
       contato: "Contact · EliasNote",
@@ -42,6 +45,7 @@ export const enSite: SiteContent = {
       principal: "Home",
       funcionalidades: "Features",
       downloads: "Downloads",
+      atualizacoes: "Updates",
       documentacao: "Documentation",
       sobre: "About",
       contato: "Contact",

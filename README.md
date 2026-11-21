@@ -52,7 +52,7 @@ No primeiro `npm run dev`/`build`, as fontes do Excalidraw são copiadas para `p
 
 ## Landing page
 
-A página de divulgação é uma segunda entrada do Vite (`landing.html` + `src/landing`), com o mesmo Tailwind, os mesmos tokens de tema e a mesma marca do app. Tem abas **Principal**, **Funcionalidades**, **Downloads**, **Sobre** e **Contato**, alternância de tema, seletor de cor de destaque e um formulário que gera uma issue pré-preenchida no GitHub (sem backend). Na aba Funcionalidades, cada cartão abre uma prévia da interface ao passar o mouse ou focar pelo teclado.
+A página de divulgação é uma segunda entrada do Vite (`landing.html` + `src/landing`), com o mesmo Tailwind, os mesmos tokens de tema e a mesma marca do app. Tem abas **Principal**, **Funcionalidades**, **Downloads**, **Atualizações**, **Documentação**, **Sobre** e **Contato**, alternância de tema, seletor de cor de destaque e um formulário que gera uma issue pré-preenchida no GitHub (sem backend). O selo **Beta · v…** no header abre a página de atualizações com o histórico de releases; na aba Funcionalidades, cada cartão abre uma prévia da interface ao passar o mouse ou focar pelo teclado.
 
 ```bash
 npm run dev     # http://localhost:1420/landing.html

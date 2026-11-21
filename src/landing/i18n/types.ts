@@ -8,7 +8,14 @@ import type { LucideIcon } from "lucide-react";
 
 export type Locale = "pt" | "en" | "es" | "zh";
 
-export type TabId = "principal" | "funcionalidades" | "downloads" | "documentacao" | "sobre" | "contato";
+export type TabId =
+  | "principal"
+  | "funcionalidades"
+  | "downloads"
+  | "atualizacoes"
+  | "documentacao"
+  | "sobre"
+  | "contato";
 
 export type AccentId = "blue" | "emerald" | "rose" | "amber" | "slate";
 
@@ -25,6 +32,36 @@ export type PlatformId = string;
 export type DataPathId = string;
 
 export type DocId = "funcionalidades" | "atalhos" | "obsidian" | "arquitetura" | "desenvolvimento" | "release";
+
+export type ReleaseId =
+  | "0.2.0"
+  | "0.2.1"
+  | "0.2.2"
+  | "0.2.3"
+  | "0.2.4"
+  | "0.2.5"
+  | "0.2.6"
+  | "0.3.0"
+  | "0.4.0"
+  | "0.5.0";
+
+export type ReleaseKind = "initial" | "feature" | "fix" | "infra";
+
+export interface ReleaseContent {
+  title: string;
+  summary: string;
+  changes: string[];
+}
+
+export interface UpdatesContent {
+  header: { eyebrow: string; title: string; description: string };
+  current: string;
+  allReleases: string;
+  releaseLink: string;
+  changesLabel: string;
+  kindLabels: Record<ReleaseKind, string>;
+  releases: Record<ReleaseId, ReleaseContent>;
+}
 
 /** Textos com `{chave}` substituídos por `format()`. */
 export type Template = string;
@@ -120,6 +157,7 @@ export interface SiteContent {
       items: string[];
     };
   };
+  updates: UpdatesContent;
   meta: {
     titles: Record<TabId, string>;
     /** Ex.: "{page} · Documentação · EliasNote". */
