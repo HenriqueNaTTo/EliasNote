@@ -22,7 +22,7 @@ export const ACTIONS_URL = `${REPO_URL}/actions`;
 export const DOCS_URL = `${REPO_URL}/tree/main/docs`;
 export const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
 export const EXCALIDRAW_URL = "https://excalidraw.com";
-export const APP_VERSION = "0.2.6";
+export const APP_VERSION = "0.3.0";
 
 /** Ordem das abas no header e no rodapé. */
 export const TAB_IDS: readonly TabId[] = [
@@ -111,6 +111,7 @@ export interface ShortcutMeta {
 
 export const SHORTCUT_META: ShortcutMeta[] = [
   { id: "busca", keys: ["Ctrl/Cmd", "K"] },
+  { id: "tarefas", keys: ["Ctrl/Cmd", "Shift", "P"] },
   { id: "nova-nota", keys: ["N"] },
   { id: "nova-tarefa", keys: ["T"] },
   { id: "desenho", keys: ["D"] },

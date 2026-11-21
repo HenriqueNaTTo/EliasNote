@@ -252,6 +252,10 @@ export const zhSite: SiteContent = {
         title: "全局搜索",
         description: "Ctrl/Cmd+K 在标题、笔记、任务、清单、链接、评论、标签和画板中搜索。",
       },
+      "painel-tarefas": {
+        title: "任务面板",
+        description: "把所有画板的截止日期、优先级和任务集中在一个列表中：一键完成或打开画布上的元素。",
+      },
       referencias: {
         title: "引用与反向链接",
         description: "在 Refs 中指向画板和元素，并在反向链接面板中查看谁引用了当前条目。",
@@ -346,6 +350,7 @@ export const zhSite: SiteContent = {
       note: "Ctrl/Cmd 在 macOS 上表示 ⌘。输入文本时单字母快捷键会被忽略。",
       actions: {
         busca: "全局搜索",
+        tarefas: "任务面板",
         "nova-nota": "新建笔记",
         "nova-tarefa": "新建任务",
         desenho: "新建 Excalidraw 绘图",

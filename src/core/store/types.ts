@@ -24,6 +24,7 @@ export type SaveStatus = "idle" | "saving" | "saved" | "error";
 
 export type DialogKind =
   | "search"
+  | "tasks"
   | "settings"
   | "templates"
   | "backups"

@@ -291,6 +291,11 @@ export const ptSite: SiteContent = {
         description:
           "Ctrl/Cmd+K procura em títulos, notas, tarefas, checklists, links, comentários, etiquetas e quadros.",
       },
+      "painel-tarefas": {
+        title: "Painel de tarefas",
+        description:
+          "Prazos, prioridades e tarefas de todos os quadros em uma lista única: conclua ou abra o elemento no canvas com um clique.",
+      },
       referencias: {
         title: "Referências e backlinks",
         description:
@@ -410,6 +415,7 @@ export const ptSite: SiteContent = {
       note: "Ctrl/Cmd representa ⌘ no macOS. Atalhos de uma letra são ignorados enquanto você digita.",
       actions: {
         busca: "Busca global",
+        tarefas: "Painel de tarefas",
         "nova-nota": "Nova nota",
         "nova-tarefa": "Nova tarefa",
         desenho: "Novo desenho Excalidraw",

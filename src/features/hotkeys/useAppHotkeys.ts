@@ -20,6 +20,7 @@ const ALLOWED_WHILE_EDITING = new Set([
   "zoom-reset",
   "toggle-theme",
   "export",
+  "tasks",
 ]);
 
 function createNodeAtCenter(type: NodeType): void {
@@ -153,6 +154,9 @@ function runAction(actionId: string): void {
       break;
     case "search":
       openDialogs.search();
+      break;
+    case "tasks":
+      openDialogs.tasks();
       break;
     case "toggle-theme":
       state.toggleTheme();

@@ -90,7 +90,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
     set((draft) => {
       draft.dialog = dialog;
       if (dialog !== "drawing") draft.drawingNodeId = null;
-      if (dialog === "search" || dialog === "drawing") draft.editingNodeId = null;
+      if (dialog === "search" || dialog === "tasks" || dialog === "drawing") draft.editingNodeId = null;
     });
   },
 

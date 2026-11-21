@@ -159,6 +159,7 @@ export const zhDocs: DocsContent = {
               items: [
                 "在所有工作区中全局搜索，按字段打分并可按类型筛选。",
                 "结果显示片段、类型和画板路径；回车打开并居中该元素。",
+                "任务面板（`Ctrl/Cmd+Shift+P`）汇总所有画板的任务，支持截止日期、优先级、筛选和在画布中打开。",
                 "双向引用：在 `Refs` 中添加画板或元素；反向链接列出指向当前条目的位置。",
               ],
             },
@@ -259,6 +260,7 @@ export const zhDocs: DocsContent = {
               kind: "shortcuts",
               items: [
                 { action: "全局搜索", keys: [["Mod", "K"]] },
+                { action: "任务面板", keys: [["Mod", "Shift", "P"]] },
                 { action: "打开/进入所选画板", keys: [["Mod", "Enter"]] },
                 { action: "关闭标签页", keys: [["Mod", "W"]] },
                 { action: "下一个标签页", keys: [["Mod", "Tab"]] },

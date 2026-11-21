@@ -7,6 +7,7 @@
 | Ação | Atalho |
 | --- | --- |
 | Busca global | `Mod + K` |
+| Painel de tarefas | `Mod + Shift + P` |
 | Abrir/entrar no quadro selecionado | `Mod + Enter` |
 | Fechar aba | `Mod + W` |
 | Próxima aba | `Mod + Tab` |

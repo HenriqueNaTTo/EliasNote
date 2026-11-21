@@ -167,6 +167,7 @@ export const esDocs: DocsContent = {
               items: [
                 "Búsqueda global en todos los workspaces con puntuación por campo y filtros por tipo.",
                 "Los resultados muestran un fragmento, el tipo y la ruta del tablero; Enter abre y centra el elemento.",
+                "Panel de tareas (`Ctrl/Cmd+Shift+P`) reúne tareas de todos los tableros, con fechas límite, prioridad, filtros y apertura en el canvas.",
                 "Referencias bidireccionales: añade tableros o elementos en `Refs`; los backlinks listan quién apunta al elemento actual.",
               ],
             },
@@ -267,6 +268,7 @@ export const esDocs: DocsContent = {
               kind: "shortcuts",
               items: [
                 { action: "Búsqueda global", keys: [["Mod", "K"]] },
+                { action: "Panel de tareas", keys: [["Mod", "Shift", "P"]] },
                 { action: "Abrir/entrar en el tablero seleccionado", keys: [["Mod", "Enter"]] },
                 { action: "Cerrar pestaña", keys: [["Mod", "W"]] },
                 { action: "Pestaña siguiente", keys: [["Mod", "Tab"]] },

@@ -57,6 +57,7 @@
 
 - Busca global em todos os workspaces com pontuação por campo e filtros por tipo.
 - Resultados mostram trecho, tipo e caminho do quadro; Enter abre e centraliza o elemento.
+- Painel de tarefas (`Ctrl/Cmd+Shift+P`) reúne tarefas de todos os quadros e workspaces, com prazos, prioridade, agrupamento por urgência, busca e conclusão sem sair da lista.
 - Referências bidirecionais: adicione quadros ou elementos em `Refs`; backlinks listam quem aponta para o item atual.
 
 ## Produtividade

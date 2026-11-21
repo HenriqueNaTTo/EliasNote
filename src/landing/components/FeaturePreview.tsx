@@ -436,6 +436,66 @@ function TasksScene() {
   );
 }
 
+function TaskOverviewScene() {
+  const rows = [
+    { title: "Corrigir dano do chefe", due: "Atrasada · 14 nov", priority: "Alta", tone: "text-destructive" },
+    { title: "Revisar GDD do nível 2", due: "Hoje", priority: "Média", tone: "text-amber-600" },
+    { title: "Fechar build de teste", due: "Amanhã", priority: "Baixa", tone: "text-muted-foreground" },
+  ];
+  return (
+    <PreviewShell tab="Tarefas" sidebar={false}>
+      <div className="absolute inset-0 bg-background p-2">
+        <div className="flex items-start gap-1 border-b border-border pb-1">
+          <span className="grid h-4 w-4 shrink-0 place-items-center border border-primary/25 bg-primary/10 text-[5px] text-primary">
+            ✓
+          </span>
+          <div className="min-w-0">
+            <p className="text-[5.5px] font-semibold leading-none">Tarefas</p>
+            <p className="mt-0.5 text-[4px] text-muted-foreground">Prazos e prioridades de todos os quadros</p>
+          </div>
+          <span className="ml-auto shrink-0 border border-border px-1 py-0.5 text-[3.8px] text-muted-foreground">
+            Ctrl+Shift+P
+          </span>
+        </div>
+
+        <div className="mt-1 flex gap-0.5 overflow-hidden">
+          <span className="border border-primary bg-primary/10 px-1 py-0.5 text-[3.8px] text-primary">Em aberto 3</span>
+          <span className="border border-border px-1 py-0.5 text-[3.8px] text-muted-foreground">Atrasadas 1</span>
+          <span className="border border-border px-1 py-0.5 text-[3.8px] text-muted-foreground">Hoje 1</span>
+        </div>
+
+        <div className="mt-1 border border-border bg-card">
+          <p className="px-1 pt-1 text-[3.8px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Atrasadas
+          </p>
+          {rows.map((row) => (
+            <div key={row.title} className="flex items-start gap-1 border-b border-border/60 px-1 py-1 last:border-0">
+              <span className="mt-0.5 h-1.5 w-1.5 shrink-0 border border-border" />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-0.5">
+                  <span className="truncate text-[4.5px] font-medium">{row.title}</span>
+                  <span className="ml-auto shrink-0 border border-border px-0.5 text-[3.5px] text-muted-foreground">
+                    {row.priority}
+                  </span>
+                </div>
+                <p className="mt-0.5 flex items-center gap-0.5 text-[3.5px]">
+                  <span className={row.tone}>{row.due}</span>
+                  <span className="text-muted-foreground/50">·</span>
+                  <span className="truncate text-muted-foreground">Projeto / Sistemas</span>
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <span className="absolute bottom-1 right-1 border border-border bg-popover px-1 py-0.5 text-[3.8px] text-muted-foreground">
+          Clique abre no quadro
+        </span>
+      </div>
+    </PreviewShell>
+  );
+}
+
 function MediaScene() {
   return (
     <PreviewShell tab="Referências" sidebar={false}>
@@ -995,6 +1055,8 @@ function sceneFor(feature: FeatureMeta) {
       return <TabsScene />;
     case "busca-global":
       return <SearchScene />;
+    case "painel-tarefas":
+      return <TaskOverviewScene />;
     case "referencias":
       return <ReferencesScene />;
     case "modelos":

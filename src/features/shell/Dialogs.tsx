@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { useAppStore } from "@/core/store";
 import { GlobalSearchDialog } from "@/features/search/GlobalSearchDialog";
+import { TasksDialog } from "@/features/tasks/TasksDialog";
 import { SettingsDialog } from "@/features/settings/SettingsDialog";
 import { TemplatesDialog } from "@/features/templates/TemplatesDialog";
 import { BackupsDialog } from "@/features/backups/BackupsDialog";
@@ -18,6 +19,7 @@ export function Dialogs() {
   return (
     <>
       <GlobalSearchDialog />
+      <TasksDialog />
       <SettingsDialog />
       <TemplatesDialog />
       <BackupsDialog />

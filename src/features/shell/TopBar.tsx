@@ -7,6 +7,7 @@ import {
   FileText,
   FolderOpen,
   Image as ImageIcon,
+  ListTodo,
   Moon,
   MoreHorizontal,
   PanelRight,
@@ -157,6 +158,15 @@ export function TopBar() {
 
       <div className="flex shrink-0 items-center gap-0.5" data-tauri-drag-region={undefined}>
         <UpdateButton />
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon-sm" onClick={() => openDialogs.tasks()} aria-label="Tarefas">
+              <ListTodo className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Tarefas de todos os quadros (Ctrl+Shift+P)</TooltipContent>
+        </Tooltip>
 
         <Tooltip>
           <TooltipTrigger asChild>

@@ -292,6 +292,11 @@ export const esSite: SiteContent = {
         description:
           "Ctrl/Cmd+K busca en títulos, notas, tareas, listas de verificación, enlaces, comentarios, etiquetas y tableros.",
       },
+      "painel-tarefas": {
+        title: "Panel de tareas",
+        description:
+          "Fechas límite, prioridades y tareas de todos los tableros en una sola lista: complétalas o abre el elemento en el canvas con un clic.",
+      },
       referencias: {
         title: "Referencias y enlaces entrantes",
         description:
@@ -411,6 +416,7 @@ export const esSite: SiteContent = {
       note: "Ctrl/Cmd representa ⌘ en macOS. Los atajos de una sola letra se ignoran mientras escribes.",
       actions: {
         busca: "Búsqueda global",
+        tarefas: "Panel de tareas",
         "nova-nota": "Nueva nota",
         "nova-tarefa": "Nueva tarea",
         desenho: "Nuevo dibujo de Excalidraw",

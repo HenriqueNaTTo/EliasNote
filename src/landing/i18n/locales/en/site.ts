@@ -291,6 +291,11 @@ export const enSite: SiteContent = {
         description:
           "Ctrl/Cmd+K searches titles, notes, tasks, checklists, links, comments, tags and boards.",
       },
+      "painel-tarefas": {
+        title: "Task panel",
+        description:
+          "Due dates, priorities and tasks from every board in one list: complete them or open the element on the canvas in one click.",
+      },
       referencias: {
         title: "References and backlinks",
         description:
@@ -410,6 +415,7 @@ export const enSite: SiteContent = {
       note: "Ctrl/Cmd stands for ⌘ on macOS. Single-letter shortcuts are ignored while you type.",
       actions: {
         busca: "Global search",
+        tarefas: "Task panel",
         "nova-nota": "New note",
         "nova-tarefa": "New task",
         desenho: "New Excalidraw drawing",

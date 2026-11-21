@@ -128,6 +128,7 @@ const FEATURES_PAGE: DocPage = {
           items: [
             "Busca global em todos os workspaces com pontuação por campo e filtros por tipo.",
             "Resultados mostram trecho, tipo e caminho do quadro; Enter abre e centraliza o elemento.",
+            "Painel de tarefas (`Ctrl/Cmd+Shift+P`) reúne tarefas de todos os quadros, com prazos, prioridade, filtros e abertura no canvas.",
             "Referências bidirecionais: adicione quadros ou elementos em `Refs`; backlinks listam quem aponta para o item atual.",
           ],
         },
@@ -232,6 +233,7 @@ const SHORTCUTS_PAGE: DocPage = {
           kind: "shortcuts",
           items: [
             { action: "Busca global", keys: [["Mod", "K"]] },
+            { action: "Painel de tarefas", keys: [["Mod", "Shift", "P"]] },
             { action: "Abrir/entrar no quadro selecionado", keys: [["Mod", "Enter"]] },
             { action: "Fechar aba", keys: [["Mod", "W"]] },
             { action: "Próxima aba", keys: [["Mod", "Tab"]] },

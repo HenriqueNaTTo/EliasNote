@@ -14,6 +14,7 @@ Aplicativo desktop **local-first** de organização visual inspirado no Milanote
 - **Excalidraw integrado**: editor em tela cheia com salvamento automático, miniaturas no canvas, biblioteca local, importação `.excalidraw` e exportação PNG/SVG/PDF. O menu **Cena** mescla outra cena (clipboard, arquivo ou outro desenho do workspace) preservando bindings e imagens.
 - **Workspaces e abas** com árvore de quadros arrastável, subquadros recursivos, duplicação e ordenação.
 - **Busca global** (Ctrl/Cmd+K) em títulos, notas, tarefas, checklists, links, comentários, etiquetas e quadros.
+- **Painel de tarefas** (Ctrl/Cmd+Shift+P) com prazos, prioridades e tarefas de todos os quadros; conclua ou abra o elemento no canvas.
 - **Referências bidirecionais** entre quadros e elementos, com painel de backlinks.
 - **Histórico** undo/redo com transações (um arraste = uma entrada) e coalescência de digitação.
 - **Autosave incremental** por quadro em SQLite (Tauri) ou IndexedDB (navegador), com backups rotativos restauráveis.
@@ -98,6 +99,7 @@ src/
     nodes/            componentes de cada tipo de elemento
     drawing/          editor Excalidraw e exportações
     inspector/        painel de propriedades, referências e comentários
+    tasks/            painel global de tarefas
     shell/            sidebar, árvore, abas, diálogos
     search/           command palette global
     templates/        galeria de modelos
