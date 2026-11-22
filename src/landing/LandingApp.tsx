@@ -111,6 +111,15 @@ function updatesClickHandler(onNavigateUpdates: () => void) {
   };
 }
 
+function tabLinkClass(active: boolean) {
+  return cn(
+    "group inline-flex h-8 shrink-0 items-center gap-1.5 border px-2 text-[12px] transition-colors",
+    active
+      ? "border-border bg-muted/70 font-medium text-foreground"
+      : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground",
+  );
+}
+
 function TabLink({
   id,
   label,
@@ -128,16 +137,91 @@ function TabLink({
       href={`#${id}`}
       aria-current={active ? "page" : undefined}
       onClick={navClickHandler(id, onNavigate)}
-      className={cn(
-        "group inline-flex h-8 shrink-0 items-center gap-1.5 border px-2 text-[12px] transition-colors",
-        active
-          ? "border-border bg-muted/70 font-medium text-foreground"
-          : "border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-      )}
+      className={tabLinkClass(active)}
     >
       <Icon className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
       {label}
     </a>
+  );
+}
+
+/** Documentação no topo com Atualizações como subitem do menu. */
+function DocsMenu({
+  active,
+  view,
+  onNavigateDoc,
+  onNavigateUpdates,
+}: {
+  active: boolean;
+  view: SiteRoute["docsView"];
+  onNavigateDoc: (doc: DocId | null) => void;
+  onNavigateUpdates: () => void;
+}) {
+  const c = useContent();
+  const items = [
+    {
+      id: "pages" as const,
+      label: c.nav.tabs.documentacao,
+      icon: BookOpen,
+      onSelect: () => onNavigateDoc(null),
+    },
+    {
+      id: "updates" as const,
+      label: c.nav.tabs.atualizacoes,
+      icon: History,
+      onSelect: onNavigateUpdates,
+    },
+  ];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-current={active ? "page" : undefined}
+          className={cn(tabLinkClass(active), "cursor-pointer")}
+        >
+          <BookOpen className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5" />
+          {c.nav.tabs.documentacao}
+          <ChevronDown
+            className="h-3 w-3 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180"
+            aria-hidden
+          />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        sideOffset={8}
+        className="min-w-[12.5rem] rounded-none border-border bg-popover p-0 shadow-floating"
+      >
+        <p className="border-b border-border px-2.5 py-1.5 text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {c.nav.tabs.documentacao}
+        </p>
+        <div className="p-1">
+          {items.map((item) => {
+            const itemActive = active && view === item.id;
+            const Icon = item.icon;
+            return (
+              <DropdownMenuItem
+                key={item.id}
+                onSelect={item.onSelect}
+                aria-current={itemActive ? "page" : undefined}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-none border-l-2 px-2 py-1.5 text-[12px] transition-colors",
+                  itemActive
+                    ? "border-l-primary bg-primary/10 font-medium text-foreground focus:bg-primary/15 [&_svg]:text-primary"
+                    : "border-l-transparent text-muted-foreground focus:bg-accent/60 focus:text-foreground",
+                )}
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                {itemActive ? <Check className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              </DropdownMenuItem>
+            );
+          })}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -594,9 +678,19 @@ export function LandingApp() {
           </div>
 
           <nav aria-label={c.nav.sectionsAria} className="ml-2 hidden flex-1 items-center gap-1 xl:flex">
-            {TAB_IDS.map((id) => (
-              <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
-            ))}
+            {TAB_IDS.map((id) =>
+              id === "documentacao" ? (
+                <DocsMenu
+                  key={id}
+                  active={active === id}
+                  view={docsView}
+                  onNavigateDoc={navigateDoc}
+                  onNavigateUpdates={navigateUpdates}
+                />
+              ) : (
+                <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
+              ),
+            )}
           </nav>
 
           <div className="ml-auto flex items-center gap-1.5">
@@ -626,9 +720,19 @@ export function LandingApp() {
 
         <div className="border-t border-border/70 xl:hidden">
           <Container className="flex gap-1 overflow-x-auto py-1.5">
-            {TAB_IDS.map((id) => (
-              <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
-            ))}
+            {TAB_IDS.map((id) =>
+              id === "documentacao" ? (
+                <DocsMenu
+                  key={id}
+                  active={active === id}
+                  view={docsView}
+                  onNavigateDoc={navigateDoc}
+                  onNavigateUpdates={navigateUpdates}
+                />
+              ) : (
+                <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
+              ),
+            )}
           </Container>
         </div>
 
@@ -642,12 +746,7 @@ export function LandingApp() {
         {active === "funcionalidades" ? <Features /> : null}
         {active === "downloads" ? <Downloads /> : null}
         {active === "documentacao" ? (
-          <Docs
-            docId={docId}
-            view={docsView}
-            onNavigateDoc={navigateDoc}
-            onNavigateUpdates={navigateUpdates}
-          />
+          <Docs docId={docId} view={docsView} onNavigateDoc={navigateDoc} />
         ) : null}
         {active === "sobre" ? <About /> : null}
         {active === "contato" ? <Contact /> : null}

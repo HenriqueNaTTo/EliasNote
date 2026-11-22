@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  History,
   Info,
   Search,
 } from "lucide-react";
@@ -640,74 +639,20 @@ function DocsHub({ onNavigateDoc }: { onNavigateDoc: (doc: DocId | null) => void
   );
 }
 
-/** Sub-abas de Documentação: as páginas e o histórico de releases no mesmo lugar. */
-function DocsTabs({
-  view,
-  onNavigateDoc,
-  onNavigateUpdates,
-}: {
-  view: DocsView;
-  onNavigateDoc: (doc: DocId | null) => void;
-  onNavigateUpdates: () => void;
-}) {
-  const c = useContent();
-  const tabs = [
-    { id: "pages" as const, label: c.nav.tabs.documentacao, icon: BookOpen, onClick: () => onNavigateDoc(null) },
-    { id: "updates" as const, label: c.nav.tabs.atualizacoes, icon: History, onClick: onNavigateUpdates },
-  ];
-
-  return (
-    <div className="border-b border-border bg-card/30">
-      <Container>
-        <nav aria-label={c.docs.hub.eyebrow} className="flex h-11 items-center gap-1">
-          {tabs.map((tab) => {
-            const active = view === tab.id;
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                aria-current={active ? "page" : undefined}
-                onClick={tab.onClick}
-                className={cn(
-                  "inline-flex h-8 items-center gap-1.5 border-b-2 px-2.5 text-[12px] transition-colors",
-                  active
-                    ? "border-primary font-medium text-foreground"
-                    : "border-transparent text-muted-foreground hover:border-border hover:text-foreground",
-                )}
-              >
-                <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
-      </Container>
-    </div>
-  );
-}
-
 export function Docs({
   docId,
   view,
   onNavigateDoc,
-  onNavigateUpdates,
 }: {
   docId: DocId | null;
   view: DocsView;
   onNavigateDoc: (doc: DocId | null) => void;
-  onNavigateUpdates: () => void;
 }) {
-  return (
-    <>
-      <DocsTabs view={view} onNavigateDoc={onNavigateDoc} onNavigateUpdates={onNavigateUpdates} />
-      {view === "updates" ? (
-        <Updates />
-      ) : docId ? (
-        <DocPageView docId={docId} onNavigateDoc={onNavigateDoc} />
-      ) : (
-        <DocsHub onNavigateDoc={onNavigateDoc} />
-      )}
-    </>
+  return view === "updates" ? (
+    <Updates />
+  ) : docId ? (
+    <DocPageView docId={docId} onNavigateDoc={onNavigateDoc} />
+  ) : (
+    <DocsHub onNavigateDoc={onNavigateDoc} />
   );
 }

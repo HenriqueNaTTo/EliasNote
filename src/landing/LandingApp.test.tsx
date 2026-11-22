@@ -52,6 +52,13 @@ function openTab(name: string) {
   fireEvent.click(screen.getAllByRole("link", { name })[0]);
 }
 
+/** Abre Documentação pelo dropdown do menu superior. */
+async function openDocsPage() {
+  const user = userEvent.setup();
+  await user.click(screen.getAllByRole("button", { name: "Documentação" })[0]);
+  await user.click(await screen.findByRole("menuitem", { name: "Documentação" }));
+}
+
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
   localStorage.clear();
@@ -81,7 +88,7 @@ describe("landing page do EliasNote", () => {
     expect(screen.getByRole("heading", { level: 1, name: /fale direto com o projeto/i })).toBeInTheDocument();
   });
 
-  it("abre atualizações como sub-aba de documentação pelo selo beta", () => {
+  it("abre atualizações como subitem de documentação pelo selo beta", () => {
     renderSite();
 
     const badge = screen.getAllByRole("link", { name: /Beta · v/ })[0];
@@ -91,12 +98,24 @@ describe("landing page do EliasNote", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Tudo o que mudou, versão por versão." }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Atualizações" })).toHaveAttribute("aria-current", "page");
-    expect(screen.getByRole("button", { name: "Documentação" })).not.toHaveAttribute("aria-current");
+    expect(screen.queryByRole("button", { name: "Atualizações" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Modo apresentação" })).toBeInTheDocument();
     expect(screen.getByText("v0.5.0")).toBeInTheDocument();
     expect(screen.getByText("v0.2.0")).toBeInTheDocument();
     expect(screen.getAllByText("Abrir release")).toHaveLength(10);
+  });
+
+  it("abre atualizações pelo submenu de documentação no topo", async () => {
+    const user = userEvent.setup();
+    renderSite();
+
+    await user.click(screen.getAllByRole("button", { name: "Documentação" })[0]);
+    await user.click(await screen.findByRole("menuitem", { name: "Atualizações" }));
+
+    expect(window.location.hash).toBe("#documentacao/atualizacoes");
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Tudo o que mudou, versão por versão." }),
+    ).toBeInTheDocument();
   });
 
   it("troca a cor de destaque pelo dropdown do topo", async () => {
@@ -131,10 +150,10 @@ describe("landing page do EliasNote", () => {
     await waitFor(() => expect(screen.queryByText("Prévia da interface")).not.toBeInTheDocument());
   });
 
-  it("publica a documentação como páginas do site", () => {
+  it("publica a documentação como páginas do site", async () => {
     renderSite();
 
-    openTab("Documentação");
+    await openDocsPage();
     expect(screen.getByRole("heading", { level: 1, name: /documentação inteira/i })).toBeInTheDocument();
     expect(screen.getByText("6 de 6 páginas")).toBeInTheDocument();
 
