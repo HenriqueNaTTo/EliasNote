@@ -440,12 +440,12 @@ export function LandingApp() {
       >
         {/* Aviso permanente: o app ainda não é 1.0. */}
         <div className="border-b border-amber-500/30 bg-amber-500/10">
-          <Container className="flex h-8 items-center gap-2 text-[11px] text-amber-800 dark:text-amber-200">
+          <Container className="flex h-8 items-center justify-center gap-2 text-[11px] text-amber-800 dark:text-amber-200">
             <span className="inline-flex shrink-0 items-center gap-1 border border-amber-600/40 bg-amber-500/15 px-1.5 py-px text-[9px] font-semibold uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
               <FlaskConical className="h-2.5 w-2.5" aria-hidden />
               {c.beta.badge}
             </span>
-            <p className="min-w-0 flex-1 truncate">{c.beta.message}</p>
+            <p className="min-w-0 max-w-[48rem] truncate">{c.beta.message}</p>
             <a
               href="#atualizacoes"
               onClick={navClickHandler("atualizacoes", navigate)}
@@ -460,8 +460,8 @@ export function LandingApp() {
           </Container>
         </div>
 
-        <Container className="flex h-14 items-center gap-2 sm:gap-3">
-          <div className="flex shrink-0 items-center gap-2">
+        <Container className="grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-3">
+          <div className="flex min-w-0 items-center gap-2 justify-self-start">
             <a
               href="#principal"
               onClick={navClickHandler("principal", navigate)}
@@ -488,13 +488,13 @@ export function LandingApp() {
             </a>
           </div>
 
-          <nav aria-label={c.nav.sectionsAria} className="ml-2 hidden flex-1 items-center gap-1 xl:flex">
+          <nav aria-label={c.nav.sectionsAria} className="hidden items-center justify-center gap-1 xl:flex">
             {TAB_IDS.map((id) => (
               <TabLink key={id} id={id} label={c.nav.tabs[id]} active={active === id} onNavigate={navigate} />
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-1.5 justify-self-end">
             <div
               className="hidden items-center gap-1 border border-border bg-card/60 px-1.5 py-1 md:flex"
               role="group"
