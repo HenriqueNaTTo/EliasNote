@@ -8,6 +8,7 @@ import {
   CornerDownRight,
   EyeOff,
   Lock,
+  Maximize2,
   PenTool,
   Trash2,
   Unlock,
@@ -433,6 +434,11 @@ export const CanvasNodeView = memo(function CanvasNodeView({
         <ContextMenuItem onSelect={() => useAppStore.getState().setEditingNode(node.id)}>
           <Upload /> Editar conteúdo
         </ContextMenuItem>
+        {node.type === "note" ? (
+          <ContextMenuItem onSelect={() => useAppStore.getState().openNote(node.id)}>
+            <Maximize2 /> Abrir nota em modal
+          </ContextMenuItem>
+        ) : null}
         <ContextMenuItem onSelect={() => useAppStore.getState().duplicateNodes(useAppStore.getState().selection)}>
           <Copy /> Duplicar
         </ContextMenuItem>

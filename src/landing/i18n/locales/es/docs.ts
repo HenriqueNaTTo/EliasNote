@@ -101,7 +101,7 @@ export const esDocs: DocsContent = {
               columns: ["Elemento", "Recursos"],
               caption: "Tipos de nodo de EliasNote y qué ofrece cada uno",
               rows: [
-                ["Nota", "Markdown con barra de formato, vista previa, recuento de palabras, título y colores"],
+                ["Nota", "Markdown con barra de formato, vista previa, recuento de palabras, título y colores; el botón de expandir abre la nota en un editor grande"],
                 ["Texto", "Texto libre directamente en el canvas, sin tarjeta: doble clic escribe, crece con el contenido y acepta colores"],
                 ["Tarjeta", "Título, descripción, etiqueta y colores"],
                 ["Tarea", "Completar, prioridad, fecha límite, Enter crea la siguiente tarea"],

@@ -5,7 +5,7 @@ export const zhUpdates: UpdatesContent = {
     eyebrow: "更新",
     title: "每个版本的全部变化。",
     description:
-      "EliasNote 的公开更新记录：从首个测试版到演示模式，每个功能、修复和基础设施里程碑都在这里。",
+      "EliasNote 的公开更新记录：从首个测试版到笔记弹窗编辑，每个功能、修复和基础设施里程碑都在这里。",
   },
   current: "当前版本",
   allReleases: "在 GitHub 查看全部",
@@ -18,6 +18,15 @@ export const zhUpdates: UpdatesContent = {
     infra: "基础设施",
   },
   releases: {
+    "0.6.0": {
+      title: "笔记弹窗编辑与更整洁的检查器",
+      summary: "长笔记现在会在大型编辑器中打开，标题和 Markdown 集中在一处。",
+      changes: [
+        "笔记卡片、检查器和右键菜单中新增展开按钮",
+        "带标题和 Markdown 的大型弹窗编辑器，保留自动保存和历史记录",
+        "检查器和搜索中的 HTML 标题会显示为纯文本",
+      ],
+    },
     "0.5.0": {
       title: "演示模式",
       summary: "隐藏应用界面展示画板，并浏览工作区。",

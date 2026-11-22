@@ -5,7 +5,7 @@ export const esUpdates: UpdatesContent = {
     eyebrow: "Actualizaciones",
     title: "Todo lo que cambió, versión por versión.",
     description:
-      "El historial público de EliasNote: cada función, corrección e hito de infraestructura que llegó a las versiones, desde la primera beta hasta el modo presentación.",
+      "El historial público de EliasNote: cada función, corrección e hito de infraestructura que llegó a las versiones, desde la primera beta hasta la edición de notas en modal.",
   },
   current: "Versión actual",
   allReleases: "Ver todas en GitHub",
@@ -18,6 +18,15 @@ export const esUpdates: UpdatesContent = {
     infra: "Infraestructura",
   },
   releases: {
+    "0.6.0": {
+      title: "Notas en modal y un inspector más limpio",
+      summary: "Las notas largas ahora se abren en un editor amplio, con título y Markdown en un solo lugar.",
+      changes: [
+        "Botón de expandir en la tarjeta de la nota, el inspector y el menú contextual",
+        "Editor modal grande con título y Markdown, manteniendo autoguardado e historial",
+        "Los títulos con HTML se muestran como texto limpio en el inspector y la búsqueda",
+      ],
+    },
     "0.5.0": {
       title: "Modo presentación",
       summary: "Presenta un tablero sin la interfaz de la app y recorre el workspace.",

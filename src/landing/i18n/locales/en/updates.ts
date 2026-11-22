@@ -5,7 +5,7 @@ export const enUpdates: UpdatesContent = {
     eyebrow: "Updates",
     title: "Everything that changed, release by release.",
     description:
-      "The public EliasNote history: every feature, fix and infrastructure milestone that shipped, from the first beta to presentation mode.",
+      "The public EliasNote history: every feature, fix and infrastructure milestone that shipped, from the first beta to modal note editing.",
   },
   current: "Current version",
   allReleases: "View all on GitHub",
@@ -18,6 +18,15 @@ export const enUpdates: UpdatesContent = {
     infra: "Infrastructure",
   },
   releases: {
+    "0.6.0": {
+      title: "Modal notes and a cleaner inspector",
+      summary: "Long notes now open in a large editor, with the title and Markdown in one place.",
+      changes: [
+        "Expand button on the note card, inspector and context menu",
+        "Large modal editor with title and Markdown, keeping autosave and history",
+        "HTML titles render as clean text in the inspector and search",
+      ],
+    },
     "0.5.0": {
       title: "Presentation mode",
       summary: "Present a board without the app interface and move through the workspace.",

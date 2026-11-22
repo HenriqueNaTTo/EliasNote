@@ -51,8 +51,24 @@ describe("busca global", () => {
 
   it("normaliza markdown e gera snippets com contexto", () => {
     expect(markdownToSearchText("# Título\n\n- [ ] tarefa **forte**")).toBe("Título tarefa forte");
+    expect(markdownToSearchText('<font color="#fff">Elias Loydson</font>')).toBe("Elias Loydson");
     const snippet = makeSnippet("um texto longo com palavra-chave no meio do conteúdo", "palavra-chave", 40);
     expect(snippet).toContain("palavra-chave");
+  });
+
+  it("não mostra HTML bruto no título derivado da nota", () => {
+    const test = makePayload();
+    const note = addNodeToPayload(test, {
+      type: "note",
+      x: 0,
+      y: 0,
+      title: "",
+      content: '<font color="#fff">Elias Loydson</font>',
+    });
+
+    const result = searchBoards(test.payload.boards, "").find((entry) => entry.id === note.id);
+    expect(result?.title).toBe("Elias Loydson");
+    expect(result?.title).not.toContain("<font");
   });
 
   it("calcula backlinks de quadro e de elemento", () => {

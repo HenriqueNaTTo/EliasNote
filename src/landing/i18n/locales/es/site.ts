@@ -239,7 +239,7 @@ export const esSite: SiteContent = {
       "notas-markdown": {
         title: "Notas Markdown",
         description:
-          "Barra de formato, vista previa, recuento de palabras, título y colores. Suelta una imagen en la nota para incrustar la miniatura.",
+          "Barra de formato, vista previa, recuento de palabras, título y colores. Suelta una imagen en la nota para incrustar la miniatura. El botón de expandir abre la nota en un editor grande.",
       },
       "tarefas-checklists": {
         title: "Tareas y listas de verificación",
@@ -379,7 +379,7 @@ export const esSite: SiteContent = {
       items: {
         nota: {
           name: "Nota",
-          description: "Markdown con barra de formato, vista previa, recuento de palabras, título y colores.",
+          description: "Markdown con barra de formato, vista previa, recuento de palabras, título, colores y edición en modal.",
         },
         texto: {
           name: "Texto",

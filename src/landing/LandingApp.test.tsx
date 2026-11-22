@@ -99,10 +99,12 @@ describe("landing page do EliasNote", () => {
       screen.getByRole("heading", { level: 1, name: "Tudo o que mudou, versão por versão." }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Atualizações" })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Notas em modal e inspector mais limpo" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Modo apresentação" })).toBeInTheDocument();
+    expect(screen.getByText("v0.6.0")).toBeInTheDocument();
     expect(screen.getByText("v0.5.0")).toBeInTheDocument();
     expect(screen.getByText("v0.2.0")).toBeInTheDocument();
-    expect(screen.getAllByText("Abrir release")).toHaveLength(10);
+    expect(screen.getAllByText("Abrir release")).toHaveLength(11);
   });
 
   it("abre atualizações pelo submenu de documentação no topo", async () => {

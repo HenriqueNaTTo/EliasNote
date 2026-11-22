@@ -210,7 +210,7 @@ export const zhSite: SiteContent = {
       },
       "notas-markdown": {
         title: "Markdown 笔记",
-        description: "格式工具栏、预览、字数统计、标题和颜色。把图片拖到笔记上即可嵌入缩略图。",
+        description: "格式工具栏、预览、字数统计、标题和颜色。把图片拖到笔记上即可嵌入缩略图。展开按钮可在大型编辑器中打开笔记。",
       },
       "tarefas-checklists": {
         title: "任务与清单",
@@ -327,7 +327,7 @@ export const zhSite: SiteContent = {
       items: {
         nota: {
           name: "笔记",
-          description: "Markdown，带格式工具栏、预览、字数统计、标题和颜色。",
+          description: "Markdown，带格式工具栏、预览、字数统计、标题、颜色和弹窗编辑。",
         },
         texto: {
           name: "文本",

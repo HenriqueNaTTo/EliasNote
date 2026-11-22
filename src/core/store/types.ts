@@ -33,6 +33,7 @@ export type DialogKind =
   | "import"
   | "obsidian"
   | "drawing"
+  | "note"
   | "about"
   | "board-settings";
 
@@ -120,6 +121,7 @@ export interface NodeSlice {
   activeTool: ToolId;
   editingNodeId: ID | null;
   drawingNodeId: ID | null;
+  noteNodeId: ID | null;
   addNode: (type: NodeType, position: Point, options?: AddNodeOptions) => ID | null;
   addBoardNode: (boardId: ID, position: Point, title?: string) => ID | null;
   updateNode: (nodeId: ID, patch: Partial<CanvasNode>, options?: CommitOptions & { label?: string }) => void;
@@ -139,6 +141,7 @@ export interface NodeSlice {
   setTool: (tool: ToolId) => void;
   setEditingNode: (id: ID | null) => void;
   openDrawing: (nodeId: ID | null) => void;
+  openNote: (nodeId: ID | null) => void;
   updateDrawingScene: (nodeId: ID, scene: DrawingScene, thumbnail?: string | null) => void;
   bringToFront: (ids: ID[]) => void;
   sendToBack: (ids: ID[]) => void;

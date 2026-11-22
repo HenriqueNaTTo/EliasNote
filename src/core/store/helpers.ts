@@ -65,12 +65,14 @@ export function pruneSelection(draft: Draft<AppState>): void {
     draft.selectedConnectors = [];
     draft.editingNodeId = null;
     if (draft.drawingNodeId) draft.drawingNodeId = null;
+    if (draft.noteNodeId) draft.noteNodeId = null;
     return;
   }
   draft.selection = draft.selection.filter((id) => Boolean(board.nodes[id]));
   draft.selectedConnectors = draft.selectedConnectors.filter((id) => Boolean(board.connectors[id]));
   if (draft.editingNodeId && !board.nodes[draft.editingNodeId]) draft.editingNodeId = null;
   if (draft.drawingNodeId && !board.nodes[draft.drawingNodeId]) draft.drawingNodeId = null;
+  if (draft.noteNodeId && !board.nodes[draft.noteNodeId]) draft.noteNodeId = null;
 }
 
 /** Garante que abas, quadro ativo e viewports estejam consistentes com os dados. */

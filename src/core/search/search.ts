@@ -1,7 +1,7 @@
 import type { Board, CanvasNode, EntityRef, ID, NodeType, SearchResult } from "@/core/domain/types";
 import { NODE_LABELS, nodeTexts } from "@/core/domain/constants";
 import { boardPath } from "@/core/domain/tree";
-import { truncate } from "@/lib/utils";
+import { stripHtml, truncate } from "@/lib/utils";
 
 export interface SearchOptions {
   type?: NodeType | "all";
@@ -12,16 +12,17 @@ export interface SearchOptions {
 
 /** Converte markdown em texto simples para indexação e snippets. */
 export function markdownToSearchText(source: string): string {
-  return source
-    .replace(/```[\s\S]*?```/g, " ")
-    .replace(/`([^`]*)`/g, "$1")
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/[*_~>#]/g, "")
-    .replace(/^\s*[-+*]\s+(\[[ xX]\]\s*)?/gm, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  return stripHtml(
+    source
+      .replace(/<[^>]*>/g, " ")
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/`([^`]*)`/g, "$1")
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/[*_~>#]/g, "")
+      .replace(/^\s*[-+*]\s+(\[[ xX]\]\s*)?/gm, ""),
+  );
 }
 
 function scoreField(text: string, query: string, weight: number): number {
@@ -46,13 +47,15 @@ export function makeSnippet(text: string, query: string, max = 120): string {
 }
 
 export function nodeDisplayTitle(node: CanvasNode): string {
-  if (node.title?.trim()) return node.title.trim();
-  if (node.name?.trim()) return node.name.trim();
+  const title = node.title ? stripHtml(node.title) : "";
+  if (title) return title;
+  const name = node.name ? stripHtml(node.name) : "";
+  if (name) return name;
   if (node.content?.trim()) return truncate(markdownToSearchText(node.content), 70);
-  if (node.description?.trim()) return truncate(node.description, 70);
+  if (node.description?.trim()) return truncate(stripHtml(node.description), 70);
   if (node.url?.trim()) return node.url;
   if (node.type === "board") return "Quadro";
-  if (node.items?.length) return truncate(node.items[0].text || "Checklist", 70);
+  if (node.items?.length) return truncate(stripHtml(node.items[0].text || "Checklist"), 70);
   return NODE_LABELS[node.type];
 }
 

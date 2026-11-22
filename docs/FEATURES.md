@@ -10,7 +10,7 @@
 - Duplicar, trazer para frente, enviar para trás, bloquear, ocultar e excluir com desfazer.
 - Mover ou copiar a seleção para outro quadro pelo menu de contexto: colunas vão com os itens, subquadros acompanham o cartão e o conteúdo entra centralizado no destino.
 - Arraste a seleção até um cartão de quadro no canvas ou até a linha do quadro na árvore lateral para mover (segure `Alt` no canvas para copiar); o destino reage ao arraste e pulsa ao receber os elementos.
-- Duplo clique em área vazia cria uma nota; duplo clique em um elemento abre o editor correspondente.
+- Duplo clique em área vazia cria uma nota; duplo clique em um elemento abre o editor correspondente. O botão de expandir no cartão abre a nota em um modal grande para editar título e Markdown.
 - Arraste arquivos do sistema para o canvas: imagens, vídeos, arquivos, Markdown (vira nota), `.excalidraw` (vira desenho) e JSON (importa elementos).
 - Arraste imagens/arquivos para uma **nota**: o anexo é salvo localmente, a miniatura aparece dentro do cartão e o elemento fica ao lado com referência bidirecional.
 - Arraste arquivos para um **quadro aninhado**: eles entram diretamente no quadro filho (com aviso), sem duplicar no quadro atual.
@@ -19,7 +19,7 @@
 
 | Elemento | Recursos |
 | --- | --- |
-| Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores; blocos ``` de código ganham realce automático |
+| Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores; blocos ``` de código ganham realce automático e o botão de expandir abre a nota em um editor modal |
 | Código | Bloco monoespaçado com realce (GDScript, C#, C/C++, shader GLSL/HLSL, Lua, Python, JS/TS, JSON, YAML, shell, XML), linguagem inferida pela extensão do título, cópia com um clique e edição inline |
 | Texto | Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores. Formatação por elemento com negrito, itálico, sublinhado, riscado, tamanho da fonte (10–96 px), família tipográfica (sans, serifa, mono) e alinhamento — pela barra flutuante ao selecionar ou pelo inspector |
 | Cartão | Título, descrição, etiqueta e cores |

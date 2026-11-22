@@ -9,6 +9,7 @@ import { ExportDialog } from "@/features/export/ExportDialog";
 import { ImportDialog } from "@/features/export/ImportDialog";
 import { ObsidianImportDialog } from "@/features/import/ObsidianImportDialog";
 import { NodeTransferDialog } from "@/features/canvas/NodeTransferDialog";
+import { NoteDialog } from "@/features/nodes/NoteDialog";
 
 const DrawingDialog = lazy(() =>
   import("@/features/drawing/DrawingDialog").then((module) => ({ default: module.DrawingDialog })),
@@ -27,6 +28,7 @@ export function Dialogs() {
       <ImportDialog />
       <ObsidianImportDialog />
       <NodeTransferDialog />
+      <NoteDialog />
       {dialog === "drawing" ? (
         <Suspense fallback={null}>
           <DrawingDialog />

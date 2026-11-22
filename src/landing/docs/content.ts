@@ -62,7 +62,7 @@ const FEATURES_PAGE: DocPage = {
           columns: ["Elemento", "Recursos"],
           caption: "Tipos de nós do EliasNote e o que cada um oferece",
           rows: [
-            ["Nota", "Markdown com barra de formatação, prévia, contagem de palavras, título e cores"],
+            ["Nota", "Markdown com barra de formatação, prévia, contagem de palavras, título e cores; o botão de expandir abre a nota em um editor grande"],
             ["Texto", "Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores"],
             ["Cartão", "Título, descrição, etiqueta e cores"],
             ["Tarefa", "Concluir, prioridade, prazo, Enter cria a próxima tarefa"],

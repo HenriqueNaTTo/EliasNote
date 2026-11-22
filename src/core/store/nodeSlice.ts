@@ -49,6 +49,7 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
   activeTool: "select",
   editingNodeId: null,
   drawingNodeId: null,
+  noteNodeId: null,
 
   addNode: (type, position, options: AddNodeOptions = {}) => {
     const state = get();
@@ -243,6 +244,10 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
       if (draft.drawingNodeId && toRemove.includes(draft.drawingNodeId)) {
         draft.drawingNodeId = null;
         if (draft.dialog === "drawing") draft.dialog = null;
+      }
+      if (draft.noteNodeId && toRemove.includes(draft.noteNodeId)) {
+        draft.noteNodeId = null;
+        if (draft.dialog === "note") draft.dialog = null;
       }
     });
   },
@@ -500,6 +505,7 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
           draft.selectedConnectors = draft.selectedConnectors.filter((id) => Boolean(sourceDraft.connectors[id]));
           if (draft.editingNodeId && includedSet.has(draft.editingNodeId)) draft.editingNodeId = null;
           if (draft.drawingNodeId && includedSet.has(draft.drawingNodeId)) draft.drawingNodeId = null;
+          if (draft.noteNodeId && includedSet.has(draft.noteNodeId)) draft.noteNodeId = null;
         }
 
         for (const node of created.values()) targetDraft.nodes[node.id] = node;
@@ -643,7 +649,20 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
   openDrawing: (nodeId) => {
     set((draft) => {
       draft.drawingNodeId = nodeId;
+      draft.noteNodeId = null;
       draft.dialog = nodeId ? "drawing" : null;
+      if (nodeId) {
+        draft.selection = [nodeId];
+        draft.editingNodeId = null;
+      }
+    });
+  },
+
+  openNote: (nodeId) => {
+    set((draft) => {
+      draft.noteNodeId = nodeId;
+      draft.drawingNodeId = null;
+      draft.dialog = nodeId ? "note" : null;
       if (nodeId) {
         draft.selection = [nodeId];
         draft.editingNodeId = null;

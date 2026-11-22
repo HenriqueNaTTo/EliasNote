@@ -13,6 +13,7 @@ import {
   EyeOff,
   Link2,
   Lock,
+  Maximize2,
   MessageCircle,
   PanelRightClose,
   PenTool,
@@ -297,6 +298,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
   const bringToFront = useAppStore((state) => state.bringToFront);
   const sendToBack = useAppStore((state) => state.sendToBack);
   const openDrawing = useAppStore((state) => state.openDrawing);
+  const openNote = useAppStore((state) => state.openNote);
   const openBoard = useAppStore((state) => state.openBoard);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -362,6 +364,12 @@ function NodePanel({ node }: { node: CanvasNode }) {
           <Trash2 />
         </IconAction>
       </div>
+
+      {node.type === "note" ? (
+        <Button variant="subtle" size="sm" className="mt-2 w-full justify-start" onClick={() => openNote(node.id)}>
+          <Maximize2 className="h-3.5 w-3.5" /> Abrir nota em modal
+        </Button>
+      ) : null}
 
       {node.type !== "image" && node.type !== "video" && node.type !== "file" && node.type !== "drawing" && node.type !== "text" ? (
         <>

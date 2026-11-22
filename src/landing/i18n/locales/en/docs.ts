@@ -97,7 +97,7 @@ export const enDocs: DocsContent = {
               columns: ["Element", "Capabilities"],
               caption: "EliasNote node types and what each one offers",
               rows: [
-                ["Note", "Markdown with a formatting bar, preview, word count, title and colors"],
+                ["Note", "Markdown with a formatting bar, preview, word count, title and colors; the expand button opens the note in a large editor"],
                 ["Text", "Free text directly on the canvas, no card: double-click to write, it grows with the content and accepts colors"],
                 ["Card", "Title, description, label and colors"],
                 ["Task", "Complete, priority, due date, Enter creates the next task"],

@@ -239,7 +239,7 @@ export const ptSite: SiteContent = {
       "notas-markdown": {
         title: "Notas Markdown",
         description:
-          "Barra de formatação, prévia, contagem de palavras, título e cores. Solte uma imagem na nota para embutir a miniatura.",
+          "Barra de formatação, prévia, contagem de palavras, título e cores. Solte uma imagem na nota para embutir a miniatura. O botão de expandir abre a nota em um editor grande.",
       },
       "tarefas-checklists": {
         title: "Tarefas e checklists",
@@ -378,7 +378,7 @@ export const ptSite: SiteContent = {
       items: {
         nota: {
           name: "Nota",
-          description: "Markdown com barra de formatação, prévia, contagem de palavras, título e cores.",
+          description: "Markdown com barra de formatação, prévia, contagem de palavras, título, cores e edição em modal.",
         },
         texto: {
           name: "Texto",

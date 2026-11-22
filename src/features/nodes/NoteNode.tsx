@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { FileText, PenTool, Play } from "lucide-react";
+import { FileText, Maximize2, PenTool, Play } from "lucide-react";
 import { toast } from "sonner";
 import { useAppStore } from "@/core/store";
 import { parseRef, refForNode } from "@/core/domain/refs";
 import type { CanvasNode } from "@/core/domain/types";
 import { importFiles, useAttachmentUrl } from "@/core/media/attachments";
 import { focusNode } from "@/features/canvas/viewportActions";
-import { cn } from "@/lib/utils";
+import { cn, stripHtml } from "@/lib/utils";
 import { ImageLightbox } from "./ImageLightbox";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { MarkdownView } from "./MarkdownView";
@@ -20,6 +20,7 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
   const addNode = useAppStore((state) => state.addNode);
   const addReference = useAppStore((state) => state.addReference);
   const openDrawing = useAppStore((state) => state.openDrawing);
+  const openNote = useAppStore((state) => state.openNote);
   const board = useAppStore((state) => {
     const tab = state.tabs.find((candidate) => candidate.id === state.activeTabId);
     return tab ? state.boards[tab.boardId] : undefined;
@@ -80,7 +81,7 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
   return (
     <div
       className={cn(
-        "node-surface relative flex h-full flex-col overflow-hidden rounded-none border",
+        "node-surface group/note relative flex h-full flex-col overflow-hidden rounded-none border",
         nodeColorClass(node.color),
         dropActive && "ring-2 ring-primary ring-offset-1",
       )}
@@ -106,18 +107,40 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
       }}
     >
       <div className={cn("scrollbar-thin flex min-h-0 flex-1 flex-col overflow-auto px-3.5 pb-3.5 pt-3.5", editing && "gap-2")}>
-        {selected && !editing ? (
-          <button
-            type="button"
-            data-no-drag
-            onPointerDown={stopDrag}
-            onClick={createLinkedDrawing}
-            className="absolute right-2 top-2 z-10 grid h-6 w-6 place-items-center rounded-none bg-current/10 opacity-70 transition-opacity hover:opacity-100"
-            title="Criar desenho vinculado a esta nota"
-            aria-label="Criar desenho vinculado"
+        {!editing ? (
+          <div
+            className={cn(
+              "absolute right-2 top-2 z-10 flex items-center gap-1 transition-opacity",
+              selected ? "opacity-100" : "opacity-0 focus-within:opacity-100 group-hover/note:opacity-100",
+            )}
           >
-            <PenTool className="h-3 w-3" />
-          </button>
+            {!node.locked ? (
+              <button
+                type="button"
+                data-no-drag
+                onPointerDown={stopDrag}
+                onClick={() => openNote(node.id)}
+                className="grid h-6 w-6 place-items-center rounded-none bg-current/10 opacity-70 transition-opacity hover:opacity-100"
+                title="Abrir nota em modal"
+                aria-label="Abrir nota em modal"
+              >
+                <Maximize2 className="h-3 w-3" />
+              </button>
+            ) : null}
+            {selected ? (
+              <button
+                type="button"
+                data-no-drag
+                onPointerDown={stopDrag}
+                onClick={createLinkedDrawing}
+                className="grid h-6 w-6 place-items-center rounded-none bg-current/10 opacity-70 transition-opacity hover:opacity-100"
+                title="Criar desenho vinculado a esta nota"
+                aria-label="Criar desenho vinculado"
+              >
+                <PenTool className="h-3 w-3" />
+              </button>
+            ) : null}
+          </div>
         ) : null}
         {editing ? (
           <input
@@ -130,7 +153,9 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
           />
         ) : (
           node.title?.trim() && (
-            <h3 className="mb-1.5 shrink-0 pr-7 text-[15px] font-semibold leading-snug">{node.title}</h3>
+            <h3 className="mb-1.5 shrink-0 pr-16 text-[15px] font-semibold leading-snug">
+              {stripHtml(node.title)}
+            </h3>
           )
         )}
 

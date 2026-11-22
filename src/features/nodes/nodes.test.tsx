@@ -117,6 +117,29 @@ describe("nós do canvas", () => {
     expect(screen.getByLabelText("Criar desenho vinculado")).toBeInTheDocument();
   });
 
+  it("abre a nota em modal pelo botão do cartão", async () => {
+    const test = makePayload();
+    const note = addNodeToPayload(test, { type: "note", x: 0, y: 0, title: "Nota curta", content: "Texto" });
+    useAppStore.getState().hydrate(test.payload);
+
+    function NoteHarness() {
+      const node = useAppStore((state) => state.boards[test.boardId].nodes[note.id]);
+      return <NoteNode node={node} editing={false} selected />;
+    }
+
+    render(
+      <TooltipProvider>
+        <NoteHarness />
+      </TooltipProvider>,
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByLabelText("Abrir nota em modal"));
+
+    expect(useAppStore.getState().dialog).toBe("note");
+    expect(useAppStore.getState().noteNodeId).toBe(note.id);
+  });
+
   it("escreve texto avulso sem moldura de nota", async () => {
     const test = makePayload();
     const text = addNodeToPayload(test, { type: "text", x: 1, y: 1, content: "" });

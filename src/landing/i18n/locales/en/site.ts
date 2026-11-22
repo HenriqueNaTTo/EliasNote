@@ -239,7 +239,7 @@ export const enSite: SiteContent = {
       "notas-markdown": {
         title: "Markdown notes",
         description:
-          "Formatting bar, preview, word count, title and colors. Drop an image into the note to embed the thumbnail.",
+          "Formatting bar, preview, word count, title and colors. Drop an image into the note to embed the thumbnail. The expand button opens the note in a large editor.",
       },
       "tarefas-checklists": {
         title: "Tasks and checklists",
@@ -378,7 +378,7 @@ export const enSite: SiteContent = {
       items: {
         nota: {
           name: "Note",
-          description: "Markdown with a formatting bar, preview, word count, title and colors.",
+          description: "Markdown with a formatting bar, preview, word count, title, colors and modal editing.",
         },
         texto: {
           name: "Text",
