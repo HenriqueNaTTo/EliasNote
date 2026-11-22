@@ -5,13 +5,14 @@ import type {
   AccentId,
   DataPathId,
   DocId,
+  DocsView,
   ElementId,
   PlatformId,
   ShortcutId,
   TabId,
 } from "@/landing/i18n/types";
 
-export type { AccentId, DocId, TabId };
+export type { AccentId, DocId, DocsView, TabId };
 
 export const REPO_URL = "https://github.com/HenriqueNaTTo/EliasNote";
 export const RELEASES_URL = `${REPO_URL}/releases/latest`;
@@ -24,12 +25,11 @@ export const LICENSE_URL = `${REPO_URL}/blob/main/LICENSE`;
 export const EXCALIDRAW_URL = "https://excalidraw.com";
 export const APP_VERSION = "0.5.0";
 
-/** Ordem das abas no header e no rodapé. */
+/** Ordem das abas no header e no rodapé. Atualizações vive dentro de Documentação. */
 export const TAB_IDS: readonly TabId[] = [
   "principal",
   "funcionalidades",
   "downloads",
-  "atualizacoes",
   "documentacao",
   "sobre",
   "contato",
@@ -47,19 +47,32 @@ export interface SiteRoute {
   tab: TabId;
   /** Página da documentação aberta, ou `null` para o índice. */
   doc: DocId | null;
+  /** Sub-aba atual de Documentação. */
+  docsView: DocsView;
 }
 
-/** Lê `#documentacao/<página>` sem perder o fallback das abas antigas. */
+/** Rota canônica da sub-aba de atualizações. */
+export const UPDATES_HREF = "#documentacao/atualizacoes";
+
+/** Lê `#documentacao/<página>` sem perder o fallback das rotas antigas. */
 export function parseRoute(hash: string): SiteRoute {
   const raw = hash.replace(/^#\/?/, "").split("?")[0];
   const [tabId, docId] = raw.split(/[/#]/);
 
   if (tabId === "documentacao") {
-    return { tab: "documentacao", doc: isDocId(docId) ? docId : null };
+    if (docId === "atualizacoes" || docId === "updates") {
+      return { tab: "documentacao", doc: null, docsView: "updates" };
+    }
+    return { tab: "documentacao", doc: isDocId(docId) ? docId : null, docsView: "pages" };
+  }
+
+  // Link antigo do header/aviso Beta continua funcionando.
+  if (tabId === "atualizacoes") {
+    return { tab: "documentacao", doc: null, docsView: "updates" };
   }
 
   const tab = TAB_IDS.find((id) => id === tabId);
-  return { tab: tab ?? "principal", doc: null };
+  return { tab: tab ?? "principal", doc: null, docsView: "pages" };
 }
 
 export function docHref(docId?: DocId | null): string {

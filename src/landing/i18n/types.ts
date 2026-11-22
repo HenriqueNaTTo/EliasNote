@@ -33,6 +33,9 @@ export type DataPathId = string;
 
 export type DocId = "funcionalidades" | "atalhos" | "obsidian" | "arquitetura" | "desenvolvimento" | "release";
 
+/** Sub-abas internas de Documentação: as páginas em si ou o histórico de releases. */
+export type DocsView = "pages" | "updates";
+
 export type ReleaseId =
   | "0.2.0"
   | "0.2.1"

@@ -14,6 +14,7 @@ import {
   LayoutGrid,
   Mail,
   Moon,
+  Palette,
   Sun,
 } from "lucide-react";
 import { AppMark } from "@/components/brand/AppMark";
@@ -36,7 +37,6 @@ import { Contact } from "@/landing/sections/Contact";
 import { Downloads } from "@/landing/sections/Downloads";
 import { Features } from "@/landing/sections/Features";
 import { Home as HomeSection } from "@/landing/sections/Home";
-import { Updates } from "@/landing/sections/Updates";
 import {
   ACCENTS,
   APP_VERSION,
@@ -47,6 +47,7 @@ import {
   RELEASES_URL,
   REPO_URL,
   TAB_IDS,
+  UPDATES_HREF,
   docHref,
   parseRoute,
   type AccentId,
@@ -99,6 +100,14 @@ function navClickHandler(tab: TabId, onNavigate: (target: TabId) => void) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
     onNavigate(tab);
+  };
+}
+
+function updatesClickHandler(onNavigateUpdates: () => void) {
+  return (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onNavigateUpdates();
   };
 }
 
@@ -197,7 +206,83 @@ function LanguageMenu() {
   );
 }
 
-function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
+/** Seletor de cor de destaque no mesmo padrão do menu de idioma. */
+function AccentMenu({ accent, onChange }: { accent: AccentId; onChange: (next: AccentId) => void }) {
+  const content = useContent();
+  const current = ACCENTS.find((option) => option.id === accent) ?? ACCENTS[0];
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label={content.nav.accentGroup}
+          className="group inline-flex h-8 shrink-0 items-center gap-1.5 border border-border bg-card/60 px-1.5 text-[11.5px] text-muted-foreground transition-colors hover:border-primary/40 hover:bg-accent/40 hover:text-foreground data-[state=open]:border-primary/50 data-[state=open]:bg-accent/50 data-[state=open]:text-foreground"
+        >
+          <Palette className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span
+            className="h-3 w-3 shrink-0 rounded-full border border-foreground/25"
+            style={{ backgroundColor: current.color }}
+            aria-hidden
+          />
+          <span className="hidden max-w-[6.5rem] truncate font-medium sm:inline">
+            {content.nav.accentNames[accent]}
+          </span>
+          <ChevronDown
+            className="h-3 w-3 shrink-0 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180"
+            aria-hidden
+          />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="min-w-[12.5rem] rounded-none border-border bg-popover p-0 shadow-floating"
+      >
+        <p className="border-b border-border px-2.5 py-1.5 text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          {content.nav.accentGroup}
+        </p>
+        <div className="p-1">
+          {ACCENTS.map((option) => {
+            const active = option.id === accent;
+            return (
+              <DropdownMenuItem
+                key={option.id}
+                onSelect={() => onChange(option.id)}
+                aria-label={`${content.nav.accentPrefix} ${content.nav.accentNames[option.id]}`}
+                className={cn(
+                  "flex cursor-pointer items-center gap-2 rounded-none border-l-2 px-2 py-1.5 text-[12px] transition-colors",
+                  active
+                    ? "border-l-primary bg-primary/10 font-medium text-foreground focus:bg-primary/15"
+                    : "border-l-transparent text-muted-foreground focus:bg-accent/60 focus:text-foreground",
+                )}
+              >
+                <span
+                  className={cn(
+                    "h-4 w-4 shrink-0 rounded-full border",
+                    active ? "border-foreground/40 ring-2 ring-primary/35" : "border-border",
+                  )}
+                  style={{ backgroundColor: option.color }}
+                  aria-hidden
+                />
+                <span className="min-w-0 flex-1 truncate">{content.nav.accentNames[option.id]}</span>
+                {active ? <Check className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden /> : null}
+              </DropdownMenuItem>
+            );
+          })}
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function SiteFooter({
+  onNavigate,
+  onNavigateUpdates,
+}: {
+  onNavigate: (target: TabId) => void;
+  onNavigateUpdates: () => void;
+}) {
   const c = useContent();
   const year = new Date().getFullYear();
   const resources = [
@@ -218,8 +303,8 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
             </span>
             <span className="text-[13px] font-semibold tracking-tight">{c.nav.brand}</span>
             <a
-              href="#atualizacoes"
-              onClick={navClickHandler("atualizacoes", onNavigate)}
+              href={UPDATES_HREF}
+              onClick={updatesClickHandler(onNavigateUpdates)}
               aria-label={`${c.beta.badge} · v${APP_VERSION} — ${c.nav.tabs.atualizacoes}`}
               className="transition-opacity hover:opacity-80"
             >
@@ -281,7 +366,10 @@ function SiteFooter({ onNavigate }: { onNavigate: (target: TabId) => void }) {
   );
 }
 
-function pageTitle(content: SiteContent, tab: TabId, docId: DocId | null): string {
+function pageTitle(content: SiteContent, tab: TabId, docId: DocId | null, docsView: SiteRoute["docsView"]): string {
+  if (docsView === "updates") {
+    return format(content.meta.docTitle, { page: content.nav.tabs.atualizacoes });
+  }
   return docId
     ? format(content.meta.docTitle, { page: content.docs.pages[docId].title })
     : content.meta.titles[tab];
@@ -298,9 +386,20 @@ function setMeta(attribute: "name" | "property", key: string, value: string) {
 }
 
 /** Título, descrição e Open Graph acompanham a aba, a página de docs e o idioma. */
-function syncDocumentMeta(content: SiteContent, tab: TabId, docId: DocId | null, locale: Locale) {
-  const title = pageTitle(content, tab, docId);
-  const description = docId ? content.docs.pages[docId].summary : content.meta.description;
+function syncDocumentMeta(
+  content: SiteContent,
+  tab: TabId,
+  docId: DocId | null,
+  docsView: SiteRoute["docsView"],
+  locale: Locale,
+) {
+  const title = pageTitle(content, tab, docId, docsView);
+  const description =
+    docsView === "updates"
+      ? content.updates.header.description
+      : docId
+        ? content.docs.pages[docId].summary
+        : content.meta.description;
 
   document.title = title;
   setMeta("name", "description", description);
@@ -313,7 +412,7 @@ export function LandingApp() {
   const content = useContent();
   const { locale } = useLocale();
   const [route, setRoute] = useState<SiteRoute>(() => parseRoute(window.location.hash));
-  const { tab: active, doc: docId } = route;
+  const { tab: active, doc: docId, docsView } = route;
   const [theme, setTheme] = useState<ThemeMode>(initialTheme);
   const [accent, setAccent] = useState<AccentId>(initialAccent);
   const [scrolled, setScrolled] = useState(false);
@@ -340,7 +439,7 @@ export function LandingApp() {
       // Volta ao topo antes de montar a nova aba: assim as revelações por scroll
       // começam do zero em vez de já nascerem visíveis na posição anterior.
       scrollToTop();
-      setRoute({ tab, doc: null });
+      setRoute({ tab, doc: null, docsView: "pages" });
       pushHash(`#${tab}`);
     },
     [pushHash, scrollToTop],
@@ -349,11 +448,17 @@ export function LandingApp() {
   const navigateDoc = useCallback(
     (doc: DocId | null) => {
       scrollToTop();
-      setRoute({ tab: "documentacao", doc });
+      setRoute({ tab: "documentacao", doc, docsView: "pages" });
       pushHash(docHref(doc));
     },
     [pushHash, scrollToTop],
   );
+
+  const navigateUpdates = useCallback(() => {
+    scrollToTop();
+    setRoute({ tab: "documentacao", doc: null, docsView: "updates" });
+    pushHash(UPDATES_HREF);
+  }, [pushHash, scrollToTop]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -366,9 +471,9 @@ export function LandingApp() {
   }, [accent]);
 
   useEffect(() => {
-    syncDocumentMeta(c, active, docId, locale);
+    syncDocumentMeta(c, active, docId, docsView, locale);
     scrollToTop();
-  }, [active, c, docId, locale, scrollToTop]);
+  }, [active, c, docId, docsView, locale, scrollToTop]);
 
   useEffect(() => {
     const sync = () => {
@@ -447,8 +552,8 @@ export function LandingApp() {
             </span>
             <p className="min-w-0 flex-1 truncate">{c.beta.message}</p>
             <a
-              href="#atualizacoes"
-              onClick={navClickHandler("atualizacoes", navigate)}
+              href={UPDATES_HREF}
+              onClick={updatesClickHandler(navigateUpdates)}
               className="group hidden shrink-0 items-center gap-1 font-medium underline-offset-2 hover:underline sm:inline-flex"
             >
               {c.beta.link}
@@ -477,8 +582,8 @@ export function LandingApp() {
               </span>
             </a>
             <a
-              href="#atualizacoes"
-              onClick={navClickHandler("atualizacoes", navigate)}
+              href={UPDATES_HREF}
+              onClick={updatesClickHandler(navigateUpdates)}
               aria-label={`${c.beta.badge} · v${APP_VERSION} — ${c.nav.tabs.atualizacoes}`}
               className="hidden shrink-0 transition-opacity hover:opacity-80 md:inline-flex"
             >
@@ -495,33 +600,7 @@ export function LandingApp() {
           </nav>
 
           <div className="ml-auto flex items-center gap-1.5">
-            <div
-              className="hidden items-center gap-1 border border-border bg-card/60 px-1.5 py-1 md:flex"
-              role="group"
-              aria-label={c.nav.accentGroup}
-            >
-              {ACCENTS.map((option) => (
-                <button
-                  key={option.id}
-                  type="button"
-                  aria-label={`${c.nav.accentPrefix} ${c.nav.accentNames[option.id]}`}
-                  aria-pressed={accent === option.id}
-                  title={c.nav.accentNames[option.id]}
-                  onClick={() => changeAccent(option.id)}
-                  className="grid h-6 w-6 place-items-center rounded-full"
-                >
-                  <span
-                    className={cn(
-                      "h-3.5 w-3.5 rounded-full border transition-transform",
-                      accent === option.id
-                        ? "border-foreground/50 ring-2 ring-primary/40"
-                        : "border-transparent hover:scale-110",
-                    )}
-                    style={{ backgroundColor: option.color }}
-                  />
-                </button>
-              ))}
-            </div>
+            <AccentMenu accent={accent} onChange={changeAccent} />
 
             <LanguageMenu />
 
@@ -562,13 +641,19 @@ export function LandingApp() {
         {active === "principal" ? <HomeSection onNavigate={navigate} /> : null}
         {active === "funcionalidades" ? <Features /> : null}
         {active === "downloads" ? <Downloads /> : null}
-        {active === "atualizacoes" ? <Updates /> : null}
-        {active === "documentacao" ? <Docs docId={docId} onNavigateDoc={navigateDoc} /> : null}
+        {active === "documentacao" ? (
+          <Docs
+            docId={docId}
+            view={docsView}
+            onNavigateDoc={navigateDoc}
+            onNavigateUpdates={navigateUpdates}
+          />
+        ) : null}
         {active === "sobre" ? <About /> : null}
         {active === "contato" ? <Contact /> : null}
       </main>
 
-      <SiteFooter onNavigate={navigate} />
+      <SiteFooter onNavigate={navigate} onNavigateUpdates={navigateUpdates} />
 
       <button
         type="button"

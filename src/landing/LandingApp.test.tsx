@@ -55,6 +55,7 @@ function openTab(name: string) {
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
   localStorage.clear();
+  document.documentElement.dataset.accent = "blue";
   // jsdom anuncia en-US; fixa o português para os testes de conteúdo.
   localStorage.setItem(LOCALE_STORAGE_KEY, "pt");
 });
@@ -80,20 +81,33 @@ describe("landing page do EliasNote", () => {
     expect(screen.getByRole("heading", { level: 1, name: /fale direto com o projeto/i })).toBeInTheDocument();
   });
 
-  it("abre a página de atualizações pelo selo beta e lista as releases", () => {
+  it("abre atualizações como sub-aba de documentação pelo selo beta", () => {
     renderSite();
 
     const badge = screen.getAllByRole("link", { name: /Beta · v/ })[0];
     fireEvent.click(badge);
 
-    expect(window.location.hash).toBe("#atualizacoes");
+    expect(window.location.hash).toBe("#documentacao/atualizacoes");
     expect(
       screen.getByRole("heading", { level: 1, name: "Tudo o que mudou, versão por versão." }),
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Atualizações" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "Documentação" })).not.toHaveAttribute("aria-current");
     expect(screen.getByRole("heading", { name: "Modo apresentação" })).toBeInTheDocument();
     expect(screen.getByText("v0.5.0")).toBeInTheDocument();
     expect(screen.getByText("v0.2.0")).toBeInTheDocument();
     expect(screen.getAllByText("Abrir release")).toHaveLength(10);
+  });
+
+  it("troca a cor de destaque pelo dropdown do topo", async () => {
+    const user = userEvent.setup();
+    renderSite();
+
+    await user.click(screen.getByRole("button", { name: "Cor de destaque" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Cor Esmeralda" }));
+
+    expect(document.documentElement.dataset.accent).toBe("emerald");
+    expect(localStorage.getItem("eliasnote-landing-accent")).toBe("emerald");
   });
 
   it("mostra a prévia da funcionalidade ao focar e ao passar o mouse", async () => {
