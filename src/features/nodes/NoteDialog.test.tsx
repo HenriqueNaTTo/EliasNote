@@ -33,19 +33,21 @@ describe("modal de edição de nota", () => {
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Rascunho")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("Conteúdo inicial")).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Conteúdo da nota" })).toBeInTheDocument();
 
     const user = userEvent.setup();
     const title = screen.getByLabelText("Título da nota");
     await user.clear(title);
     await user.type(title, "Novo título");
 
-    const editor = screen.getByPlaceholderText(/Escreva a nota em Markdown/);
+    const editor = screen.getByRole("textbox", { name: "Conteúdo da nota" });
+    expect(editor).toHaveTextContent("Conteúdo inicial");
     await user.type(editor, " adicional");
 
     const stored = useAppStore.getState().boards[test.boardId].nodes[note.id];
     expect(stored.title).toBe("Novo título");
-    expect(stored.content).toContain("Conteúdo inicial adicional");
+    expect(stored.content).toContain("Conteúdo inicial");
+    expect(stored.content).toContain("adicional");
 
     await user.click(screen.getByRole("button", { name: "Fechar editor de nota" }));
 

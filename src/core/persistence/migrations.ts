@@ -4,6 +4,7 @@
  */
 import type { AppSettings, Board, CanvasNode, ChecklistItem, CommentReply, Tab, Workspace } from "@/core/domain/types";
 import { DEFAULT_SETTINGS } from "@/core/domain/constants";
+import { sanitizeSketch } from "@/core/domain/sketch";
 import { uid } from "@/lib/utils";
 import type { SerializedTemplate } from "./types";
 
@@ -52,6 +53,17 @@ export function migrateNode(raw: unknown, boardId: string): CanvasNode | null {
   const node = raw as Record<string, unknown>;
   if (typeof node.id !== "string" || typeof node.type !== "string") return null;
   const timestamp = number(node.createdAt, Date.now());
+  const sketch = node.sketch ? sanitizeSketch(node.sketch) : null;
+  const drawingEngine =
+    node.drawingEngine === "native" || node.drawingEngine === "excalidraw"
+      ? node.drawingEngine
+      : node.type === "drawing"
+        ? sketch
+          ? "native"
+          : node.scene
+            ? "excalidraw"
+            : "native"
+        : undefined;
   return {
     ...(node as Partial<CanvasNode>),
     id: node.id,
@@ -70,6 +82,8 @@ export function migrateNode(raw: unknown, boardId: string): CanvasNode | null {
     locked: Boolean(node.locked),
     items: node.items ? migrateChecklistItems(node.items) : undefined,
     replies: node.replies ? migrateReplies(node.replies) : undefined,
+    sketch: sketch ?? undefined,
+    drawingEngine,
     references: Array.isArray(node.references)
       ? node.references.filter((ref): ref is string => typeof ref === "string")
       : undefined,

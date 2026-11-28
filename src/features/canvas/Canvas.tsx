@@ -158,6 +158,9 @@ export function Canvas({ presentation = false }: { presentation?: boolean }) {
     const element = containerRef.current;
     if (!element) return;
     const onWheel = (event: WheelEvent) => {
+      const target = event.target as HTMLElement | null;
+      // Editores com rolagem própria (ex.: nota) não devem mover o canvas.
+      if (target?.closest("[data-wheel-scroll]")) return;
       if (event.ctrlKey || event.metaKey) event.preventDefault();
       const state = useAppStore.getState();
       const currentBoardId = state.tabs.find((tab) => tab.id === state.activeTabId)?.boardId;
@@ -297,7 +300,7 @@ export function Canvas({ presentation = false }: { presentation?: boolean }) {
         x: Math.round(world.x - dimensions.w / 2),
         y: Math.round(world.y - dimensions.h / 2),
       });
-      if (id && nodeType === "drawing") state.openDrawing(id);
+      if (id && nodeType === "drawing") state.openSketch(id);
       if (id && (nodeType === "text" || nodeType === "code")) state.setEditingNode(id);
       state.setTool("select");
       return;

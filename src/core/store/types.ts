@@ -18,6 +18,7 @@ import type {
   ToolId,
   Workspace,
 } from "@/core/domain/types";
+import type { SketchDocument } from "@/core/domain/sketch";
 import type { VaultImportPlan } from "@/core/import/vaultTypes";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
@@ -33,6 +34,7 @@ export type DialogKind =
   | "import"
   | "obsidian"
   | "drawing"
+  | "sketch"
   | "note"
   | "about"
   | "board-settings";
@@ -121,6 +123,7 @@ export interface NodeSlice {
   activeTool: ToolId;
   editingNodeId: ID | null;
   drawingNodeId: ID | null;
+  sketchNodeId: ID | null;
   noteNodeId: ID | null;
   addNode: (type: NodeType, position: Point, options?: AddNodeOptions) => ID | null;
   addBoardNode: (boardId: ID, position: Point, title?: string) => ID | null;
@@ -141,8 +144,10 @@ export interface NodeSlice {
   setTool: (tool: ToolId) => void;
   setEditingNode: (id: ID | null) => void;
   openDrawing: (nodeId: ID | null) => void;
+  openSketch: (nodeId: ID | null) => void;
   openNote: (nodeId: ID | null) => void;
   updateDrawingScene: (nodeId: ID, scene: DrawingScene, thumbnail?: string | null) => void;
+  updateSketch: (nodeId: ID, sketch: SketchDocument) => void;
   bringToFront: (ids: ID[]) => void;
   sendToBack: (ids: ID[]) => void;
   toggleTask: (id: ID) => void;

@@ -28,7 +28,7 @@
 | Novo checklist | `L` |
 | Nova coluna | `Mod + Shift + K` |
 | Novo quadro | `Mod + Shift + N` |
-| Novo desenho Excalidraw | `D` |
+| Novo desenho | `D` |
 | Novo comentário | `M` |
 | Novo subquadro na árvore | menu do quadro → Novo subquadro |
 
@@ -61,6 +61,31 @@
 | Modelos | `Mod + Shift + T` |
 | Backups | `Mod + Shift + B` |
 | Configurações | `Mod + ,` |
+
+## Editor de desenho nativo
+
+Valem enquanto o editor de desenho está aberto (fora de campos de texto):
+
+| Ação | Atalho |
+| --- | --- |
+| Selecionar | `V` |
+| Mover tela | `H` |
+| Caneta | `P` |
+| Linha | `L` |
+| Seta | `A` |
+| Retângulo | `R` |
+| Elipse | `O` |
+| Losango | `D` |
+| Texto | `T` |
+| Borracha | `E` |
+| Excluir seleção | `Delete` / `Backspace` |
+| Duplicar seleção | `Mod + D` |
+| Desfazer | `Mod + Z` |
+| Refazer | `Mod + Shift + Z` ou `Ctrl + Y` |
+| Enquadrar desenho | `1` |
+| Rolar a tela | roda do mouse |
+| Zoom no ponteiro | `Mod + roda` |
+| Fechar texto / sair da seleção | `Esc` |
 
 ## Formatação de texto
 

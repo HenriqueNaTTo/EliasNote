@@ -19,7 +19,7 @@
 
 | Elemento | Recursos |
 | --- | --- |
-| Nota | Markdown com barra de formatação, prévia, contagem de palavras, título e cores; blocos ``` de código ganham realce automático e o botão de expandir abre a nota em um editor modal |
+| Nota | Markdown com **edição ao vivo** (a marcação só aparece na linha ativa), barra de formatação, título e cores; blocos ``` de código ganham realce automático e o botão de expandir abre a nota em um editor modal |
 | Código | Bloco monoespaçado com realce (GDScript, C#, C/C++, shader GLSL/HLSL, Lua, Python, JS/TS, JSON, YAML, shell, XML), linguagem inferida pela extensão do título, cópia com um clique e edição inline |
 | Texto | Texto livre direto no canvas, sem cartão: duplo clique escreve, cresce com o conteúdo e aceita cores. Formatação por elemento com negrito, itálico, sublinhado, riscado, tamanho da fonte (10–96 px), família tipográfica (sans, serifa, mono) e alinhamento — pela barra flutuante ao selecionar ou pelo inspector |
 | Cartão | Título, descrição, etiqueta e cores |
@@ -31,12 +31,31 @@
 | Quadro | Subquadro real, estatísticas, prévia colorida e abertura em aba |
 | Coluna | Filhos arrastáveis, recolher, redimensionar, menu de criação rápida |
 | Comentário | Autor local, resolução, respostas e painel dedicado |
-| Desenho | Excalidraw completo, miniatura, biblioteca de elementos, exportação |
-| Desenho em nota | Vincule um desenho à nota (botão de caneta no cabeçalho da nota); as miniaturas aparecem dentro do cartão e abrem o editor |
+| Desenho | Editor nativo do app (SVG) por padrão; cenas Excalidraw antigas continuam editáveis no editor original, com exportação |
+| Desenho em nota | Vincule um desenho à nota (botão de caneta no cabeçalho da nota); as miniaturas aparecem dentro do cartão e abrem o editor correspondente |
+
+## Desenho nativo
+
+- Editor em tela cheia aberto por duplo clique, botão do nó ou atalho `D`.
+- Ferramentas: selecionar, mover tela, caneta livre, linha, seta, retângulo, elipse, losango, texto e borracha.
+- Paleta de traço, preenchimento, espessura e traço tracejado; o estilo pode ser aplicado à seleção.
+- Seleção com clique/Shift+clique, arraste para mover, `Delete` para apagar e `Ctrl/Cmd+D` para duplicar; texto aceita múltiplas linhas (`Shift+Enter`).
+- Zoom e pan por roda/`Ctrl/Cmd + roda`, botões de zoom e “enquadrar”.
+- Histórico próprio (`Ctrl/Cmd+Z` e `Ctrl/Cmd+Shift+Z`) e salvamento automático no elemento do quadro.
+- Exportação em PNG, SVG e PDF; a prévia no canvas é vetorial (sem raster).
+- Desenhos Excalidraw antigos e arquivos `.excalidraw` importados continuam no editor Excalidraw; cada desenho guarda qual editor usar.
+
+## Edição de notas
+
+- O markdown é renderizado enquanto você escreve: títulos, listas, tarefas clicáveis, negrito, itálico, riscado, código, links, citações e blocos cercados.
+- Os caracteres de marcação (`###`, `**`, `- [ ]`, `` ` ``, `[texto](url)`) aparecem **somente na linha em que o cursor está**.
+- Barra inferior com negrito, itálico, riscado, sublinhado, sobrescrito, subscrito, código, tarefa, citação, título, lista e link.
+- O conteúdo permanece markdown puro; a leitura continua usando a mesma renderização sanitizada.
 
 ## Excalidraw
 
-- Editor em tela cheia aberto por duplo clique, botão do nó ou atalho `D`.
+- Continua disponível para cenas criadas antes do editor nativo e para arquivos `.excalidraw` importados.
+- Editor em tela cheia aberto pelo desenho marcado como Excalidraw (menu do inspector/cartão).
 - Todas as ferramentas do Excalidraw: seleção, formas, linhas, setas, escrita manual, texto, imagem, borracha, moldura, laser, biblioteca e links.
 - Salvamento automático do cena (elementos, app state serializável e arquivos) com debounce.
 - Miniatura PNG gerada de forma adiada para manter o canvas leve.
@@ -98,6 +117,6 @@ O menu **Arquivo → Cofre do Obsidian** (ou **Importar → Importar cofre do Ob
 
 - Não há autenticação, colaboração, servidor ou sincronização (por design).
 - Links abrem no navegador padrão; o conteúdo do app permanece offline.
-- O editor Excalidraw carrega sob demanda (~4,6 MB comprimido) na primeira abertura.
+- O editor Excalidraw carrega sob demanda (~4,6 MB comprimido) na primeira abertura; o editor nativo não carrega essa biblioteca.
 - A exportação de imagem captura a área enquadrada do canvas; para quadros muito grandes use escala 2x/3x.
 - O histórico de undo/redo é por sessão e não é persistido.

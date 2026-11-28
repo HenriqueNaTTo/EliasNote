@@ -107,7 +107,8 @@ function nodeMarkdown(node: CanvasNode, depth: number): string {
       break;
     }
     case "drawing": {
-      lines.push(`${indent}- **Desenho:** ${title} (${node.scene?.elements.length ?? 0} elementos)`);
+      const total = node.sketch?.elements.length ?? node.scene?.elements.length ?? 0;
+      lines.push(`${indent}- **Desenho:** ${title} (${total} elementos)`);
       break;
     }
     case "comment": {

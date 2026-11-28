@@ -397,27 +397,6 @@ function CanvasSection({ settings, update }: { settings: AppSettings; update: (p
       <SettingsRow title="Sombras dos elementos" description="Profundidade visual nos cartões e notas.">
         <Switch checked={settings.showNodeShadows} onCheckedChange={(showNodeShadows) => update({ showNodeShadows })} />
       </SettingsRow>
-
-      <div>
-        <Label>Modo padrão das notas</Label>
-        <div className="mt-1 grid grid-cols-2 gap-1">
-          {(["write", "preview"] as const).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => update({ defaultNoteMode: mode })}
-              className={cn(
-                "rounded-md border px-2 py-1.5 text-[11px] transition-colors",
-                settings.defaultNoteMode === mode
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border text-muted-foreground hover:bg-accent",
-              )}
-            >
-              {mode === "write" ? "Edição" : "Prévia"}
-            </button>
-          ))}
-        </div>
-      </div>
     </>
   );
 }
@@ -727,8 +706,8 @@ function AboutSection({ totals }: { totals: { boards: number; nodes: number; wor
 
       <p className="text-[11px] leading-relaxed text-muted-foreground">
         Aplicativo desktop de organização visual inspirado em Milanote, com canvas infinito, quadros
-        aninhados e desenho Excalidraw nativo. Funciona 100% offline: sem contas, servidores,
-        colaboração ou sincronização.
+        aninhados, desenho nativo e notas com edição ao vivo. Funciona 100% offline: sem contas,
+        servidores, colaboração ou sincronização.
       </p>
 
       <div className="grid grid-cols-3 gap-2">
@@ -752,7 +731,9 @@ function AboutSection({ totals }: { totals: { boards: number; nodes: number; wor
           Bibliotecas open-source
         </p>
         <ul className="space-y-0.5 text-[10.5px] text-muted-foreground">
-          <li>Excalidraw — MIT (desenhos, formas e escrita manual)</li>
+          <li>Motor de desenho nativo do EliasNote (SVG) — próprio</li>
+          <li>Excalidraw — MIT (cenas antigas e desenho avançado)</li>
+          <li>CodeMirror 6 — MIT (editor de notas com live preview)</li>
           <li>React, TypeScript, Vite, Tailwind CSS — MIT</li>
           <li>Radix UI, Lucide, Zustand, Immer, marked, DOMPurify</li>
           <li>html-to-image, jsPDF — MIT</li>

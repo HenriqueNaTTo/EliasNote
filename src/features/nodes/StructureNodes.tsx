@@ -43,7 +43,7 @@ export function ColumnNode({ node }: NodeProps) {
   const updateNode = useAppStore((state) => state.updateNode);
   const addNode = useAppStore((state) => state.addNode);
   const removeNodes = useAppStore((state) => state.removeNodes);
-  const openDrawing = useAppStore((state) => state.openDrawing);
+  const openSketch = useAppStore((state) => state.openSketch);
 
   const children = useMemo(
     () =>
@@ -55,7 +55,7 @@ export function ColumnNode({ node }: NodeProps) {
 
   const addChild = (type: Parameters<typeof addNode>[0]) => {
     const id = addNode(type, { x: node.x + 12, y: node.y + 46 }, { parentId: node.id });
-    if (id && type === "drawing") openDrawing(id);
+    if (id && type === "drawing") openSketch(id);
   };
 
   return (

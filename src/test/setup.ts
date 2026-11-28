@@ -32,6 +32,18 @@ if (typeof window !== "undefined") {
   if (typeof window.matchMedia !== "function") {
     window.matchMedia = (query: string) => createMediaQueryList(query);
   }
+  if (typeof window.PointerEvent === "undefined") {
+    class PointerEventMock extends MouseEvent {
+      readonly pointerId: number;
+      readonly pointerType: string;
+      constructor(type: string, init: PointerEventInit = {}) {
+        super(type, init);
+        this.pointerId = init.pointerId ?? 0;
+        this.pointerType = init.pointerType ?? "mouse";
+      }
+    }
+    window.PointerEvent = PointerEventMock as unknown as typeof PointerEvent;
+  }
   if (typeof window.requestAnimationFrame !== "function") {
     window.requestAnimationFrame = ((callback: FrameRequestCallback) =>
       setTimeout(() => callback(Date.now()), 0) as unknown as number) as typeof window.requestAnimationFrame;
@@ -56,4 +68,17 @@ if (typeof Element !== "undefined") {
   if (typeof Element.prototype.scrollIntoView !== "function") {
     Element.prototype.scrollIntoView = () => undefined;
   }
+}
+
+// CodeMirror mede o layout com Range; o jsdom não implementa as medidas.
+if (typeof Range !== "undefined") {
+  if (typeof Range.prototype.getClientRects !== "function") {
+    Range.prototype.getClientRects = () => [] as unknown as DOMRectList;
+  }
+  if (typeof Range.prototype.getBoundingClientRect !== "function") {
+    Range.prototype.getBoundingClientRect = () => new DOMRect(0, 0, 0, 0);
+  }
+}
+if (typeof window !== "undefined" && typeof window.getSelection !== "function") {
+  window.getSelection = () => null;
 }

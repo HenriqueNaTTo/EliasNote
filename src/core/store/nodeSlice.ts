@@ -13,6 +13,8 @@ import type {
   EntityRef,
   ID,
 } from "@/core/domain/types";
+import type { SketchDocument } from "@/core/domain/sketch";
+import { createSketch } from "@/core/domain/sketch";
 import { NODE_LABELS, NODE_WIDTHS, defaultSize } from "@/core/domain/constants";
 import {
   childNodesOf,
@@ -49,6 +51,7 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
   activeTool: "select",
   editingNodeId: null,
   drawingNodeId: null,
+  sketchNodeId: null,
   noteNodeId: null,
 
   addNode: (type, position, options: AddNodeOptions = {}) => {
@@ -244,6 +247,10 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
       if (draft.drawingNodeId && toRemove.includes(draft.drawingNodeId)) {
         draft.drawingNodeId = null;
         if (draft.dialog === "drawing") draft.dialog = null;
+      }
+      if (draft.sketchNodeId && toRemove.includes(draft.sketchNodeId)) {
+        draft.sketchNodeId = null;
+        if (draft.dialog === "sketch") draft.dialog = null;
       }
       if (draft.noteNodeId && toRemove.includes(draft.noteNodeId)) {
         draft.noteNodeId = null;
@@ -649,9 +656,36 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
   openDrawing: (nodeId) => {
     set((draft) => {
       draft.drawingNodeId = nodeId;
+      draft.sketchNodeId = null;
       draft.noteNodeId = null;
       draft.dialog = nodeId ? "drawing" : null;
       if (nodeId) {
+        const found = findInDraft(draft, nodeId);
+        if (found) {
+          found.node.drawingEngine = "excalidraw";
+          found.node.updatedAt = Date.now();
+          found.board.updatedAt = Date.now();
+        }
+        draft.selection = [nodeId];
+        draft.editingNodeId = null;
+      }
+    });
+  },
+
+  openSketch: (nodeId) => {
+    set((draft) => {
+      draft.sketchNodeId = nodeId;
+      draft.drawingNodeId = null;
+      draft.noteNodeId = null;
+      draft.dialog = nodeId ? "sketch" : null;
+      if (nodeId) {
+        const found = findInDraft(draft, nodeId);
+        if (found) {
+          found.node.drawingEngine = "native";
+          found.node.sketch = found.node.sketch ?? createSketch();
+          found.node.updatedAt = Date.now();
+          found.board.updatedAt = Date.now();
+        }
         draft.selection = [nodeId];
         draft.editingNodeId = null;
       }
@@ -662,6 +696,7 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
     set((draft) => {
       draft.noteNodeId = nodeId;
       draft.drawingNodeId = null;
+      draft.sketchNodeId = null;
       draft.dialog = nodeId ? "note" : null;
       if (nodeId) {
         draft.selection = [nodeId];
@@ -679,9 +714,25 @@ export const createNodeSlice: AppStoreCreator<NodeSlice> = (set, get) => ({
         thumbnail: thumbnail === undefined ? scene.thumbnail : thumbnail,
         updatedAt: Date.now(),
       };
+      found.node.drawingEngine = "excalidraw";
       found.node.updatedAt = Date.now();
       found.board.updatedAt = Date.now();
     });
+  },
+
+  updateSketch: (nodeId, sketch: SketchDocument) => {
+    get().commit(
+      "Editar desenho",
+      (draft) => {
+        const found = findInDraft(draft, nodeId);
+        if (!found) return;
+        found.node.sketch = { ...sketch, updatedAt: Date.now() };
+        found.node.drawingEngine = "native";
+        found.node.updatedAt = Date.now();
+        found.board.updatedAt = Date.now();
+      },
+      { coalesceKey: `sketch:${nodeId}` },
+    );
   },
 
   bringToFront: (ids) => {

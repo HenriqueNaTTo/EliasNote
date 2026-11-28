@@ -43,7 +43,9 @@ import { toast } from "sonner";
 import { openExternal } from "@/lib/platform";
 import { downloadBlob, saveAttachment } from "@/core/media/attachments";
 import { suggestedFilename } from "@/features/export/boardExport";
+import { duplicateSelection } from "@/features/canvas/duplicateSelection";
 import { sceneToPdfBlob, sceneToPngBlob, sceneToSvgString } from "@/features/drawing/drawingExport";
+import { sketchToPdfBlob, sketchToPngBlob, sketchToSvg } from "@/features/drawing/native/sketchExport";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -293,11 +295,11 @@ function BoardPanel() {
 
 function NodePanel({ node }: { node: CanvasNode }) {
   const updateNode = useAppStore((state) => state.updateNode);
-  const duplicateNodes = useAppStore((state) => state.duplicateNodes);
   const removeNodes = useAppStore((state) => state.removeNodes);
   const bringToFront = useAppStore((state) => state.bringToFront);
   const sendToBack = useAppStore((state) => state.sendToBack);
   const openDrawing = useAppStore((state) => state.openDrawing);
+  const openSketch = useAppStore((state) => state.openSketch);
   const openNote = useAppStore((state) => state.openNote);
   const openBoard = useAppStore((state) => state.openBoard);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -316,11 +318,19 @@ function NodePanel({ node }: { node: CanvasNode }) {
   };
 
   const exportDrawing = async (format: "png" | "svg" | "pdf") => {
-    if (!node.scene) return;
     const name = suggestedFilename(node.title || "desenho", format);
+    const native = node.drawingEngine === "native" || (Boolean(node.sketch) && !node.scene);
+    if (native) {
+      if (!node.sketch) return;
+      if (format === "png") downloadBlob(name, await sketchToPngBlob(node.sketch));
+      else if (format === "pdf") downloadBlob(name, await sketchToPdfBlob(node.sketch));
+      else downloadBlob(name, new Blob([sketchToSvg(node.sketch)], { type: "image/svg+xml" }));
+      return;
+    }
+    if (!node.scene) return;
     if (format === "png") downloadBlob(name, await sceneToPngBlob(node.scene));
     else if (format === "pdf") downloadBlob(name, await sceneToPdfBlob(node.scene));
-    else downloadBlob(suggestedFilename(node.title || "desenho", "svg"), new Blob([await sceneToSvgString(node.scene)], { type: "image/svg+xml" }));
+    else downloadBlob(name, new Blob([await sceneToSvgString(node.scene)], { type: "image/svg+xml" }));
   };
 
   return (
@@ -339,7 +349,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-1">
-        <IconAction label="Duplicar" onClick={() => duplicateNodes([node.id])}>
+        <IconAction label="Duplicar" disabled={node.locked} onClick={() => duplicateSelection([node.id])}>
           <Copy />
         </IconAction>
         <IconAction label="Trazer para frente" onClick={() => bringToFront([node.id])}>
@@ -390,7 +400,7 @@ function NodePanel({ node }: { node: CanvasNode }) {
       <SectionTitle>Cor</SectionTitle>
       <ColorRow value={node.color} onChange={(color) => updateNode(node.id, { color }, { label: "Alterar cor" })} />
 
-      <NodeSpecificPanel node={node} onOpenBoard={openBoard} onOpenDrawing={openDrawing} />
+      <NodeSpecificPanel node={node} onOpenBoard={openBoard} />
 
       {node.type === "image" || node.type === "video" || node.type === "file" ? (
         <>
@@ -416,10 +426,23 @@ function NodePanel({ node }: { node: CanvasNode }) {
 
       {node.type === "drawing" ? (
         <>
-          <SectionTitle>Desenho Excalidraw</SectionTitle>
+          <SectionTitle>Desenho</SectionTitle>
           <div className="flex flex-col gap-1.5">
-            <Button variant="subtle" size="sm" className="justify-start" onClick={() => openDrawing(node.id)}>
-              <PenTool className="h-3.5 w-3.5" /> Abrir editor
+            <Button
+              variant="subtle"
+              size="sm"
+              className="justify-start"
+              onClick={() => (node.sketch ? openSketch(node.id) : openDrawing(node.id))}
+            >
+              <PenTool className="h-3.5 w-3.5" /> {node.sketch ? "Editar no editor nativo" : "Editar no Excalidraw"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="justify-start"
+              onClick={() => (node.sketch ? openDrawing(node.id) : openSketch(node.id))}
+            >
+              <PenTool className="h-3.5 w-3.5" /> {node.sketch ? "Abrir no Excalidraw" : "Abrir no editor nativo"}
             </Button>
             <div className="grid grid-cols-3 gap-1">
               <Button variant="outline" size="xs" onClick={() => void exportDrawing("png")}>
@@ -433,7 +456,8 @@ function NodePanel({ node }: { node: CanvasNode }) {
               </Button>
             </div>
             <p className="text-[10px] text-muted-foreground">
-              {node.scene?.elements.length ?? 0} elementos · atualizado {timeAgo(node.scene?.updatedAt ?? node.updatedAt)}
+              {node.sketch?.elements.length ?? node.scene?.elements.length ?? 0} elementos · atualizado{" "}
+              {timeAgo(node.sketch?.updatedAt ?? node.scene?.updatedAt ?? node.updatedAt)}
             </p>
           </div>
         </>
@@ -458,11 +482,9 @@ function NodePanel({ node }: { node: CanvasNode }) {
 function NodeSpecificPanel({
   node,
   onOpenBoard,
-  onOpenDrawing,
 }: {
   node: CanvasNode;
   onOpenBoard: (id: ID) => void;
-  onOpenDrawing: (id: ID) => void;
 }) {
   const updateNode = useAppStore((state) => state.updateNode);
   const toggleTask = useAppStore((state) => state.toggleTask);
@@ -693,13 +715,7 @@ function NodeSpecificPanel({
         </>
       );
     case "drawing":
-      return (
-        <div className="mt-2">
-          <Button variant="subtle" size="sm" className="w-full justify-start" onClick={() => onOpenDrawing(node.id)}>
-            <PenTool className="h-3.5 w-3.5" /> Abrir editor
-          </Button>
-        </div>
-      );
+      return null;
     case "column":
       return (
         <>
@@ -845,11 +861,13 @@ function IconAction({
   label,
   onClick,
   destructive,
+  disabled,
   children,
 }: {
   label: string;
   onClick: () => void;
   destructive?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -858,6 +876,7 @@ function IconAction({
       size="icon-xs"
       title={label}
       aria-label={label}
+      disabled={disabled}
       onClick={onClick}
       className={cn("text-muted-foreground", destructive && "hover:bg-destructive/10 hover:text-destructive")}
     >
@@ -868,7 +887,6 @@ function IconAction({
 
 function MultiSelectionPanel({ nodes }: { nodes: CanvasNode[] }) {
   const updateNodes = useAppStore((state) => state.updateNodes);
-  const duplicateNodes = useAppStore((state) => state.duplicateNodes);
   const removeNodes = useAppStore((state) => state.removeNodes);
   const bringToFront = useAppStore((state) => state.bringToFront);
   const sendToBack = useAppStore((state) => state.sendToBack);
@@ -974,7 +992,7 @@ function MultiSelectionPanel({ nodes }: { nodes: CanvasNode[] }) {
 
       <SectionTitle>Ações</SectionTitle>
       <div className="flex flex-col gap-1.5">
-        <Button variant="outline" size="sm" className="justify-start" onClick={() => duplicateNodes(ids)}>
+        <Button variant="outline" size="sm" className="justify-start" onClick={() => duplicateSelection(ids)}>
           <Copy className="h-3.5 w-3.5" /> Duplicar seleção
         </Button>
         <Button variant="outline" size="sm" className="justify-start" onClick={() => bringToFront(ids)}>

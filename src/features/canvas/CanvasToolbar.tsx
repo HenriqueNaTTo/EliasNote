@@ -3,6 +3,7 @@ import {
   CheckSquare,
   Code2,
   Columns3,
+  Copy,
   Hand,
   ImagePlus,
   LayoutDashboard,
@@ -28,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import type { ToolId } from "@/core/domain/types";
+import { duplicateSelection } from "./duplicateSelection";
 import { viewportCenter } from "./viewportActions";
 
 const TOOLS: { id: ToolId; label: string; shortcut?: string; icon: typeof StickyNote }[] = [
@@ -40,7 +42,7 @@ const TOOLS: { id: ToolId; label: string; shortcut?: string; icon: typeof Sticky
   { id: "task", label: "Tarefa", shortcut: "T", icon: CheckSquare },
   { id: "checklist", label: "Checklist", shortcut: "L", icon: ListChecks },
   { id: "column", label: "Coluna", shortcut: "⇧K", icon: Columns3 },
-  { id: "drawing", label: "Desenho Excalidraw", shortcut: "D", icon: PenTool },
+  { id: "drawing", label: "Desenho", shortcut: "D", icon: PenTool },
   { id: "comment", label: "Comentário", shortcut: "M", icon: MessageCircle },
   { id: "connector", label: "Conector", shortcut: "R", icon: MoveUpRight },
 ];
@@ -48,6 +50,7 @@ const TOOLS: { id: ToolId; label: string; shortcut?: string; icon: typeof Sticky
 export function CanvasToolbar() {
   const activeTool = useAppStore((state) => state.activeTool);
   const setTool = useAppStore((state) => state.setTool);
+  const selection = useAppStore((state) => state.selection);
   const board = useActiveBoard();
   const undo = useAppStore((state) => state.undo);
   const redo = useAppStore((state) => state.redo);
@@ -95,6 +98,14 @@ export function CanvasToolbar() {
           </ToolbarAction>
           <ToolbarAction label="Refazer" shortcut="Ctrl+Shift+Z" onClick={redo} disabled={!canRedo}>
             <Redo2 className="h-4 w-4" />
+          </ToolbarAction>
+          <ToolbarAction
+            label="Duplicar seleção"
+            shortcut="Ctrl+D"
+            onClick={() => duplicateSelection(selection)}
+            disabled={selection.length === 0}
+          >
+            <Copy className="h-4 w-4" />
           </ToolbarAction>
         </div>
         <span className="mx-0.5 h-6 w-px shrink-0 bg-border" />

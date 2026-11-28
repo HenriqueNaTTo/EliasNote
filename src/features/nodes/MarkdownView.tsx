@@ -1,4 +1,4 @@
-import { useEffect, useRef, type MouseEvent } from "react";
+import { useEffect, useRef, type CSSProperties, type MouseEvent } from "react";
 import { cn } from "@/lib/utils";
 import { useRenderedMarkdown } from "@/lib/markdown";
 import { PLAINTEXT_LANGUAGE, highlightCode, normalizeLanguage } from "@/lib/code";
@@ -10,6 +10,7 @@ import { focusNode } from "@/features/canvas/viewportActions";
 interface MarkdownViewProps {
   source: string;
   className?: string;
+  style?: CSSProperties;
   emptyPlaceholder?: string;
 }
 
@@ -41,7 +42,7 @@ function handleInternalLink(href: string): boolean {
   return true;
 }
 
-export function MarkdownView({ source, className, emptyPlaceholder }: MarkdownViewProps) {
+export function MarkdownView({ source, className, style, emptyPlaceholder }: MarkdownViewProps) {
   const html = useRenderedMarkdown(source);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +93,7 @@ export function MarkdownView({ source, className, emptyPlaceholder }: MarkdownVi
     <div
       ref={containerRef}
       className={cn("markdown", className)}
+      style={style}
       onClick={handleClick}
       dangerouslySetInnerHTML={{ __html: html }}
     />

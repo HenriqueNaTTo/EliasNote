@@ -6,6 +6,7 @@ import { defaultSize } from "@/core/domain/constants";
 import type { NodeType } from "@/core/domain/types";
 import { persistenceService } from "@/core/persistence/persistenceService";
 import { openDialogs } from "@/features/shell/dialogActions";
+import { duplicateSelection } from "@/features/canvas/duplicateSelection";
 import { fitBoardToView, viewportCenter, zoomBy, zoomTo } from "@/features/canvas/viewportActions";
 
 const ALLOWED_WHILE_EDITING = new Set([
@@ -33,7 +34,7 @@ function createNodeAtCenter(type: NodeType): void {
     x: Math.round(center.x - size.w / 2 + stagger),
     y: Math.round(center.y - size.h / 2 + stagger),
   });
-  if (id && type === "drawing") state.openDrawing(id);
+  if (id && type === "drawing") state.openSketch(id);
   if (id && (type === "text" || type === "code")) state.setEditingNode(id);
 }
 
@@ -46,8 +47,10 @@ function openSelected(): void {
   const node = board?.nodes[state.selection[0]];
   if (!node) return;
   if (node.type === "board" && node.childBoardId) state.openBoard(node.childBoardId);
-  else if (node.type === "drawing") state.openDrawing(node.id);
-  else state.setEditingNode(node.id);
+  else if (node.type === "drawing") {
+    if (node.drawingEngine === "excalidraw") state.openDrawing(node.id);
+    else state.openSketch(node.id);
+  } else state.setEditingNode(node.id);
 }
 
 function runAction(actionId: string): void {
@@ -99,7 +102,7 @@ function runAction(actionId: string): void {
       state.redo();
       break;
     case "duplicate":
-      if (state.selection.length > 0) state.duplicateNodes(state.selection);
+      duplicateSelection();
       break;
     case "delete":
       if (state.selectedConnectors.length > 0) {

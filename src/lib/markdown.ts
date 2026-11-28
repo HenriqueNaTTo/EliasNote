@@ -42,6 +42,9 @@ export type MarkdownAction =
   | "bold"
   | "italic"
   | "strike"
+  | "underline"
+  | "sup"
+  | "sub"
   | "code"
   | "heading"
   | "bullet"
@@ -70,6 +73,18 @@ export function applyMarkdownAction(state: TextSelection, action: MarkdownAction
   const after = value.slice(selectionEnd);
 
   const wrap = (prefix: string, suffix = prefix, placeholder = "texto") => {
+    // Clicar de novo no mesmo estilo remove os marcadores em volta da seleção.
+    if (
+      selected &&
+      before.endsWith(prefix) &&
+      after.startsWith(suffix)
+    ) {
+      return {
+        value: `${before.slice(0, -prefix.length)}${selected}${after.slice(suffix.length)}`,
+        selectionStart: selectionStart - prefix.length,
+        selectionEnd: selectionEnd - prefix.length,
+      };
+    }
     const inner = selected || placeholder;
     return {
       value: `${before}${prefix}${inner}${suffix}${after}`,
@@ -114,6 +129,12 @@ export function applyMarkdownAction(state: TextSelection, action: MarkdownAction
       return wrap("_", "_", "itálico");
     case "strike":
       return wrap("~~", "~~", "riscado");
+    case "underline":
+      return wrap("<u>", "</u>", "sublinhado");
+    case "sup":
+      return wrap("<sup>", "</sup>", "2");
+    case "sub":
+      return wrap("<sub>", "</sub>", "2");
     case "code":
       return selected.includes("\n")
         ? wrap("```\n", "\n```", "código")

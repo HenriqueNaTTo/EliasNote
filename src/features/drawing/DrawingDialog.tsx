@@ -345,6 +345,26 @@ export function DrawingDialog() {
     } as unknown as Record<string, unknown>;
   }, [node?.id, libraryItems, isDark, ready]);
 
+  const openNativeEditor = async () => {
+    const current = nodeRef.current;
+    if (!current) return;
+    if (saveTimer.current) {
+      window.clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    if (thumbTimer.current) {
+      window.clearTimeout(thumbTimer.current);
+      thumbTimer.current = null;
+    }
+    if (sceneRef.current) await persist(true);
+    sceneRef.current = null;
+    const trimmed = title.trim();
+    if (trimmed && trimmed !== current.title) {
+      useAppStore.getState().updateNode(current.id, { title: trimmed }, { label: "Renomear desenho" });
+    }
+    useAppStore.getState().openSketch(current.id);
+  };
+
   const exportScene = async (mode: "png" | "svg" | "pdf") => {
     const scene = sceneRef.current ?? (node?.scene ? {
       elements: node.scene.elements,
@@ -424,6 +444,11 @@ export function DrawingDialog() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-72">
+                <DropdownMenuLabel>Editor</DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => void openNativeEditor()}>
+                  <PenTool /> Abrir no editor nativo
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuLabel>Adicionar elementos</DropdownMenuLabel>
                 <DropdownMenuItem onClick={() => void pasteScene()}>
                   <ClipboardPaste /> Colar cena do clipboard

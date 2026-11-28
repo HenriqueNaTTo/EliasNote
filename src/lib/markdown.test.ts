@@ -16,6 +16,13 @@ describe("markdown", () => {
     expect(html).toContain("<img");
   });
 
+  it("mantém sobrescrito, subscrito e sublinhado", () => {
+    const html = renderMarkdown("m<sup>2</sup> e H<sub>2</sub>O com <u>ênfase</u>");
+    expect(html).toContain("<sup>2</sup>");
+    expect(html).toContain("<sub>2</sub>");
+    expect(html).toContain("<u>ênfase</u>");
+  });
+
   it("extrai texto simples e estatísticas", () => {
     const markdown = "## Reunião\n\n- item um\n- **item dois**";
     expect(markdownToPlainText(markdown)).toContain("item dois");
@@ -30,6 +37,26 @@ describe("markdown", () => {
     expect(result.value).toBe("**texto** importante");
     expect(result.selectionStart).toBe(2);
     expect(result.selectionEnd).toBe(7);
+  });
+
+  it("remove o estilo quando a seleção já está formatada", () => {
+    const result = applyMarkdownAction(
+      { value: "um **texto** aqui", selectionStart: 5, selectionEnd: 10 },
+      "bold",
+    );
+    expect(result.value).toBe("um texto aqui");
+    expect(result.selectionStart).toBe(3);
+    expect(result.selectionEnd).toBe(8);
+  });
+
+  it("aplica sublinhado, sobrescrito e subscrito", () => {
+    expect(applyMarkdownAction({ value: "texto", selectionStart: 0, selectionEnd: 5 }, "underline")).toEqual({
+      value: "<u>texto</u>",
+      selectionStart: 3,
+      selectionEnd: 8,
+    });
+    expect(applyMarkdownAction({ value: "x", selectionStart: 0, selectionEnd: 1 }, "sup").value).toBe("<sup>x</sup>");
+    expect(applyMarkdownAction({ value: "x", selectionStart: 0, selectionEnd: 1 }, "sub").value).toBe("<sub>x</sub>");
   });
 
   it("prefixa listas e tarefas", () => {

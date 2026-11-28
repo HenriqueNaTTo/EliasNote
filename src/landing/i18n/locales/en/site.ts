@@ -239,7 +239,12 @@ export const enSite: SiteContent = {
       "notas-markdown": {
         title: "Markdown notes",
         description:
-          "Formatting bar, preview, word count, title and colors. Drop an image into the note to embed the thumbnail. The expand button opens the note in a large editor.",
+          "Markdown renders as you type and markers only appear on the active line. Drop an image into the note to embed the thumbnail; the expand button opens it in a large editor.",
+      },
+      "notas-live-preview": {
+        title: "Live-preview notes",
+        description:
+          "Headings, lists, tasks, bold, links and code blocks render instantly. Markup characters (###, **, - [ ]) only show where the cursor is, like in Obsidian.",
       },
       "tarefas-checklists": {
         title: "Tasks and checklists",
@@ -269,6 +274,11 @@ export const enSite: SiteContent = {
         title: "Native Excalidraw",
         description:
           "Full-screen editor with every tool, autosave, local library and thumbnails on the canvas.",
+      },
+      "desenho-nativo": {
+        title: "App drawing engine",
+        description:
+          "Pen, lines, arrows, shapes and text in the app's own SVG editor — with palette, zoom, undo, dashed strokes, fill and export to PNG, SVG and PDF.",
       },
       "mesclar-cenas": {
         title: "Merge scenes",
@@ -443,11 +453,11 @@ export const enSite: SiteContent = {
     drawing: {
       title: "Drawing without switching apps",
       description:
-        "The Excalidraw editor opens full screen and the scene is saved in the board itself, with a thumbnail on the canvas. The element library is local and can be imported or exported as .excalidrawlib.",
+        "The app's native editor and Excalidraw live in the same board: pen, shapes, arrows and text with autosave and export. Old Excalidraw scenes stay editable with the local library.",
       items: [
-        "Scene merging with binding and image remapping",
+        "An in-house SVG editor, no drawing library",
+        "Excalidraw available for old and advanced scenes",
         "Drawing export as PNG, SVG and PDF",
-        "Drag-and-drop import of .excalidraw files",
       ],
       link: "Learn about Excalidraw",
     },

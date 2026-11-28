@@ -69,6 +69,7 @@ describe("nós do canvas", () => {
       content: "**Importante**",
     });
     useAppStore.getState().hydrate(test.payload);
+    const user = userEvent.setup();
 
     function NoteHarness({ editing }: { editing: boolean }) {
       const node = useAppStore((state) => state.boards[test.boardId].nodes[note.id]);
@@ -88,9 +89,8 @@ describe("nós do canvas", () => {
         <NoteHarness editing />
       </TooltipProvider>,
     );
-    const user = userEvent.setup();
-    const textarea = screen.getByPlaceholderText(/Escreva em Markdown/);
-    await user.type(textarea, " adicional");
+    const editor = screen.getByRole("textbox", { name: "Conteúdo da nota" });
+    await user.type(editor, " adicional");
     expect(harnessFor(note.id, test.boardId)().content).toContain("adicional");
   });
 

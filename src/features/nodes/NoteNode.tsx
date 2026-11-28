@@ -10,6 +10,7 @@ import { cn, stripHtml } from "@/lib/utils";
 import { ImageLightbox } from "./ImageLightbox";
 import { MarkdownEditor } from "./MarkdownEditor";
 import { MarkdownView } from "./MarkdownView";
+import { SketchView } from "@/features/drawing/native/SketchView";
 import { nodeColorClass, stopDrag } from "./nodeUi";
 import type { NodeProps } from "./types";
 
@@ -19,8 +20,9 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
   const updateNode = useAppStore((state) => state.updateNode);
   const addNode = useAppStore((state) => state.addNode);
   const addReference = useAppStore((state) => state.addReference);
-  const openDrawing = useAppStore((state) => state.openDrawing);
+  const openSketch = useAppStore((state) => state.openSketch);
   const openNote = useAppStore((state) => state.openNote);
+  const noteFontSize = useAppStore((state) => state.settings.noteFontSize);
   const board = useAppStore((state) => {
     const tab = state.tabs.find((candidate) => candidate.id === state.activeTabId);
     return tab ? state.boards[tab.boardId] : undefined;
@@ -42,7 +44,7 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
     });
     if (!drawingId) return;
     addReference(node.id, refForNode(drawingId));
-    openDrawing(drawingId);
+    openSketch(drawingId);
   };
 
   const attachFiles = async (files: File[]) => {
@@ -164,12 +166,16 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
             value={content}
             onChange={(value) => updateNode(node.id, { content: value }, { label: "Editar nota" })}
             autoFocus
+            compact
+            ariaLabel="Conteúdo da nota"
+            fontSize={noteFontSize}
             className="min-h-0 flex-1"
             placeholder="Escreva em Markdown… use # título, - lista, - [ ] tarefa"
           />
         ) : (
           <MarkdownView
             source={content}
+            style={{ fontSize: noteFontSize }}
             className="text-[13px] leading-relaxed opacity-95"
             emptyPlaceholder="Duplo clique para escrever…"
           />
@@ -197,18 +203,27 @@ export function NoteNode({ node, editing, selected }: NodeProps) {
 
 function NoteMediaItem({ media }: { media: CanvasNode }) {
   const openDrawing = useAppStore((state) => state.openDrawing);
+  const openSketch = useAppStore((state) => state.openSketch);
 
   if (media.type === "drawing") {
+    const native =
+      media.drawingEngine === "native" ||
+      (Boolean(media.sketch) && media.drawingEngine !== "excalidraw");
+    const open = () => (native ? openSketch(media.id) : openDrawing(media.id));
     return (
       <button
         type="button"
         data-no-drag
         onPointerDown={stopDrag}
-        onClick={() => openDrawing(media.id)}
+        onClick={open}
         className="group/link relative h-24 overflow-hidden rounded-none border border-current/15 bg-white/70 text-left dark:bg-black/25"
         title={`Editar ${media.title || "desenho"}`}
       >
-        {media.scene?.thumbnail ? (
+        {native && media.sketch && media.sketch.elements.length > 0 ? (
+          <span className="block h-full w-full p-1">
+            <SketchView sketch={media.sketch} alt={media.title || "Desenho"} />
+          </span>
+        ) : media.scene?.thumbnail ? (
           <img
             src={media.scene.thumbnail}
             alt={media.title || "Desenho"}

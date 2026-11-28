@@ -25,6 +25,7 @@ import { useAppStore } from "@/core/store";
 import { activeBoard, activeBoardId } from "@/core/store/helpers";
 import { NodeRenderer } from "@/features/nodes/NodeRenderer";
 import { TextFormatBar } from "@/features/nodes/TextFormatBar";
+import { duplicateSelection } from "@/features/canvas/duplicateSelection";
 import { cn, plural } from "@/lib/utils";
 import {
   ContextMenu,
@@ -304,7 +305,8 @@ export const CanvasNodeView = memo(function CanvasNodeView({
       return;
     }
     if (node.type === "drawing") {
-      state.openDrawing(node.id);
+      if (node.drawingEngine === "excalidraw") state.openDrawing(node.id);
+      else state.openSketch(node.id);
       return;
     }
     if (node.type === "column") return;
@@ -427,7 +429,13 @@ export const CanvasNodeView = memo(function CanvasNodeView({
           </ContextMenuItem>
         ) : null}
         {node.type === "drawing" ? (
-          <ContextMenuItem onSelect={() => useAppStore.getState().openDrawing(node.id)}>
+          <ContextMenuItem
+            onSelect={() => {
+              const state = useAppStore.getState();
+              if (node.drawingEngine === "excalidraw") state.openDrawing(node.id);
+              else state.openSketch(node.id);
+            }}
+          >
             <PenTool /> Editar desenho
           </ContextMenuItem>
         ) : null}
@@ -439,7 +447,10 @@ export const CanvasNodeView = memo(function CanvasNodeView({
             <Maximize2 /> Abrir nota em modal
           </ContextMenuItem>
         ) : null}
-        <ContextMenuItem onSelect={() => useAppStore.getState().duplicateNodes(useAppStore.getState().selection)}>
+        <ContextMenuItem
+          disabled={node.locked}
+          onSelect={() => duplicateSelection()}
+        >
           <Copy /> Duplicar
         </ContextMenuItem>
         <ContextMenuItem

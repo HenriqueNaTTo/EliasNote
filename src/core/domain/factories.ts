@@ -1,6 +1,7 @@
 import type { Viewport } from "@/lib/geometry";
 import { uid } from "@/lib/utils";
 import { COLUMN_HEADER_HEIGHT, COLUMN_ITEM_GAP, COLUMN_MIN_HEIGHT, COLUMN_PADDING } from "./constants";
+import { createSketch } from "./sketch";
 import type {
   AppSettings,
   Board,
@@ -89,7 +90,11 @@ export function createNode(boardId: string, seed: NodeSeed): CanvasNode {
       break;
     case "drawing":
       node.title = node.title ?? "Desenho";
-      node.scene = node.scene ?? createEmptyScene();
+      node.drawingEngine = node.drawingEngine ?? (node.scene ? "excalidraw" : "native");
+      if (!node.scene && !node.sketch) {
+        node.sketch = createSketch();
+        node.drawingEngine = "native";
+      }
       break;
     case "comment":
       node.content = node.content ?? "";
@@ -287,7 +292,7 @@ export function createSeedState(_settings: AppSettings): SeedResult {
       "- `Ctrl/Cmd + Z` desfaz alterações",
       "- `Ctrl/Cmd + K` abre a busca global",
       "",
-      "Crie quadros aninhados e desenhos com o Excalidraw em tela cheia.",
+      "Crie quadros aninhados e desenhos no editor nativo em tela cheia.",
     ].join("\n"),
   });
 
@@ -313,7 +318,7 @@ export function createSeedState(_settings: AppSettings): SeedResult {
     items: [
       createChecklistItem("Explorar o canvas", true),
       createChecklistItem("Criar um quadro aninhado"),
-      createChecklistItem("Experimentar o desenho Excalidraw"),
+      createChecklistItem("Experimentar o editor de desenho"),
     ],
   });
 

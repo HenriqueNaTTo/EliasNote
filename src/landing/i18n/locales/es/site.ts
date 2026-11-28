@@ -239,7 +239,12 @@ export const esSite: SiteContent = {
       "notas-markdown": {
         title: "Notas Markdown",
         description:
-          "Barra de formato, vista previa, recuento de palabras, título y colores. Suelta una imagen en la nota para incrustar la miniatura. El botón de expandir abre la nota en un editor grande.",
+          "El markdown se muestra con formato mientras escribes y los marcadores solo aparecen en la línea activa. Suelta una imagen en la nota para incrustar la miniatura; el botón de expandir abre todo en un editor grande.",
+      },
+      "notas-live-preview": {
+        title: "Notas con edición en vivo",
+        description:
+          "Títulos, listas, tareas, negrita, enlaces y bloques de código se renderizan al instante. Los caracteres de marcado (###, **, - [ ]) solo aparecen donde está el cursor, como en Obsidian.",
       },
       "tarefas-checklists": {
         title: "Tareas y listas de verificación",
@@ -270,6 +275,11 @@ export const esSite: SiteContent = {
         title: "Excalidraw nativo",
         description:
           "Editor a pantalla completa con todas las herramientas, guardado automático, biblioteca local y miniaturas en el canvas.",
+      },
+      "desenho-nativo": {
+        title: "Motor de dibujo de la app",
+        description:
+          "Lápiz, líneas, flechas, formas y texto en un editor SVG propio, con paleta, zoom, deshacer, trazo discontinuo, relleno y exportación a PNG, SVG y PDF.",
       },
       "mesclar-cenas": {
         title: "Combinar escenas",
@@ -444,11 +454,11 @@ export const esSite: SiteContent = {
     drawing: {
       title: "Dibujar sin cambiar de app",
       description:
-        "El editor Excalidraw se abre a pantalla completa y la escena queda guardada en el propio tablero, con miniatura en el canvas. La biblioteca de elementos es local y se puede importar o exportar en .excalidrawlib.",
+        "El editor nativo de la app y Excalidraw conviven en el mismo tablero: lápiz, formas, flechas y texto con guardado automático y exportación. Las escenas Excalidraw antiguas siguen editables con la biblioteca local.",
       items: [
-        "Combinación de escenas con remapeo de vínculos e imágenes",
+        "Editor SVG propio, sin biblioteca de dibujo",
+        "Excalidraw disponible para escenas antiguas y avanzadas",
         "Exportación del dibujo en PNG, SVG y PDF",
-        "Importación de archivos .excalidraw por arrastre",
       ],
       link: "Conocer Excalidraw",
     },

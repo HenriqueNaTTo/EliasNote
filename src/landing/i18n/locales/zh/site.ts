@@ -210,7 +210,11 @@ export const zhSite: SiteContent = {
       },
       "notas-markdown": {
         title: "Markdown 笔记",
-        description: "格式工具栏、预览、字数统计、标题和颜色。把图片拖到笔记上即可嵌入缩略图。展开按钮可在大型编辑器中打开笔记。",
+        description: "Markdown 边写边渲染，标记只出现在当前行。把图片拖到笔记上即可嵌入缩略图；展开按钮可在大型编辑器中打开笔记。",
+      },
+      "notas-live-preview": {
+        title: "笔记实时预览",
+        description: "标题、列表、任务、粗体、链接和代码块即时渲染，`###`、`**`、`- [ ]` 等标记只出现在光标所在位置，与 Obsidian 类似。",
       },
       "tarefas-checklists": {
         title: "任务与清单",
@@ -235,6 +239,10 @@ export const zhSite: SiteContent = {
       excalidraw: {
         title: "原生 Excalidraw",
         description: "全屏编辑器，包含所有工具、自动保存、本地元素库和画布缩略图。",
+      },
+      "desenho-nativo": {
+        title: "应用内原生绘图",
+        description: "钢笔、线条、箭头、形状和文字都使用应用自研的 SVG 编辑器，支持调色板、缩放、撤销、虚线、填充以及 PNG、SVG、PDF 导出。",
       },
       "mesclar-cenas": {
         title: "合并场景",
@@ -376,11 +384,11 @@ export const zhSite: SiteContent = {
     drawing: {
       title: "不切换应用就能绘图",
       description:
-        "Excalidraw 编辑器以全屏打开，场景保存在画板本身，并在画布上显示缩略图。元素库保存在本地，可以导入或导出 `.excalidrawlib`。",
+        "应用自带的绘图引擎与 Excalidraw 共存于同一个画板：钢笔、形状、箭头和文字，支持自动保存和导出。旧的 Excalidraw 场景仍可通过本地素材库继续编辑。",
       items: [
-        "合并场景时重映射绑定和图片",
+        "自研 SVG 编辑器，不依赖绘图库",
+        "Excalidraw 可继续用于旧场景和高级场景",
         "把绘图导出为 PNG、SVG 和 PDF",
-        "通过拖放导入 `.excalidraw` 文件",
       ],
       link: "了解 Excalidraw",
     },

@@ -1,7 +1,7 @@
 {
   "name": "eliasnote",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "type": "module",
   "description": "EliasNote - organizacao visual local-first inspirada em Milanote, com canvas infinito e Excalidraw nativo",
   "scripts": {
@@ -24,7 +24,14 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.2",
+    "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.44.2",
     "@excalidraw/excalidraw": "^0.18.0",
+    "@lezer/common": "^1.5.7",
+    "@lezer/highlight": "^1.2.5",
     "@radix-ui/react-checkbox": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.1.1",
     "@radix-ui/react-context-menu": "^2.2.2",

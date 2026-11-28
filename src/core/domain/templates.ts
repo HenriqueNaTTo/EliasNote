@@ -571,6 +571,14 @@ export function boardToTemplatePayload(board: Board, name?: string): TemplatePay
         files: { ...node.scene.files },
       };
     }
+    if (node.sketch) {
+      fields.sketch = {
+        version: node.sketch.version,
+        updatedAt: node.sketch.updatedAt,
+        elements: JSON.parse(JSON.stringify(node.sketch.elements)) as typeof node.sketch.elements,
+      };
+    }
+    if (node.drawingEngine) fields.drawingEngine = node.drawingEngine;
     return fields;
   };
 

@@ -15,6 +15,7 @@ export function NoteDialog() {
   const open = useAppStore((state) => state.dialog === "note");
   const closeDialog = useAppStore((state) => state.closeDialog);
   const updateNode = useAppStore((state) => state.updateNode);
+  const noteFontSize = useAppStore((state) => state.settings.noteFontSize);
   const node = useAppStore((state) => {
     if (!state.noteNodeId) return undefined;
     for (const board of Object.values(state.boards)) {
@@ -36,7 +37,7 @@ export function NoteDialog() {
   return (
     <Dialog open={open} onOpenChange={(value) => (value ? undefined : closeDialog())}>
       <DialogContent
-        className="flex h-[min(92vh,860px)] w-[min(96vw,1000px)] max-w-none flex-col gap-0 overflow-hidden p-0"
+        className="flex h-[min(92vh,880px)] w-[min(96vw,1100px)] max-w-none flex-col gap-0 overflow-hidden p-0"
         hideClose
       >
         <DialogTitle className="sr-only">Editar nota</DialogTitle>
@@ -70,11 +71,13 @@ export function NoteDialog() {
           </Button>
         </header>
 
-        <div className="flex min-h-0 flex-1 flex-col p-3">
+        <div className="flex min-h-0 flex-1 flex-col px-6 py-4">
           <MarkdownEditor
             value={node.content ?? ""}
             onChange={(value) => updateNode(node.id, { content: value }, { label: "Editar nota" })}
             autoFocus
+            ariaLabel="Conteúdo da nota"
+            fontSize={noteFontSize}
             className="h-full"
             placeholder="Escreva a nota em Markdown… use # título, - lista, - [ ] tarefa e **negrito**"
           />

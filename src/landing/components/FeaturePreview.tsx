@@ -1108,6 +1108,8 @@ function sceneFor(feature: FeatureMeta) {
       return <ElementsScene />;
     case "notas-markdown":
       return <NoteScene />;
+    case "notas-live-preview":
+      return <NoteScene />;
     case "tarefas-checklists":
       return <TasksScene />;
     case "midia-local":
@@ -1117,6 +1119,8 @@ function sceneFor(feature: FeatureMeta) {
     case "comentarios":
       return <CommentsScene />;
     case "excalidraw":
+      return <DrawingScene />;
+    case "desenho-nativo":
       return <DrawingScene />;
     case "mesclar-cenas":
       return <MergeScene />;

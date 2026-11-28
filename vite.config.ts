@@ -38,6 +38,7 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes("@excalidraw")) return "excalidraw";
+          if (id.includes("@codemirror") || id.includes("@lezer")) return "editor";
           if (id.includes("node_modules/react") || id.includes("node_modules/scheduler")) return "react";
           if (id.includes("@radix-ui") || id.includes("cmdk") || id.includes("sonner")) return "ui-kit";
           return undefined;

@@ -93,8 +93,15 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
     set((draft) => {
       draft.dialog = dialog;
       if (dialog !== "drawing") draft.drawingNodeId = null;
+      if (dialog !== "sketch") draft.sketchNodeId = null;
       if (dialog !== "note") draft.noteNodeId = null;
-      if (dialog === "search" || dialog === "tasks" || dialog === "drawing" || dialog === "note") {
+      if (
+        dialog === "search" ||
+        dialog === "tasks" ||
+        dialog === "drawing" ||
+        dialog === "sketch" ||
+        dialog === "note"
+      ) {
         draft.editingNodeId = null;
       }
     });
@@ -103,6 +110,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
   closeDialog: () => {
     set((draft) => {
       if (draft.dialog === "drawing") draft.drawingNodeId = null;
+      if (draft.dialog === "sketch") draft.sketchNodeId = null;
       if (draft.dialog === "note") draft.noteNodeId = null;
       draft.dialog = null;
     });
@@ -136,6 +144,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       };
       draft.dialog = null;
       draft.drawingNodeId = null;
+      draft.sketchNodeId = null;
       draft.noteNodeId = null;
       draft.editingNodeId = null;
       draft.selection = [];
@@ -158,6 +167,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       draft.presentation = null;
       draft.dialog = null;
       draft.drawingNodeId = null;
+      draft.sketchNodeId = null;
       draft.noteNodeId = null;
       draft.editingNodeId = null;
       draft.selection = [];
@@ -308,6 +318,7 @@ export const createUiSlice: AppStoreCreator<UiSlice> = (set, get) => ({
       draft.selectedConnectors = [];
       draft.editingNodeId = null;
       draft.drawingNodeId = null;
+      draft.sketchNodeId = null;
       draft.noteNodeId = null;
       draft.dialog = null;
       draft.tagFilters = {};

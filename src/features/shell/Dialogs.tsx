@@ -15,6 +15,10 @@ const DrawingDialog = lazy(() =>
   import("@/features/drawing/DrawingDialog").then((module) => ({ default: module.DrawingDialog })),
 );
 
+const SketchDialog = lazy(() =>
+  import("@/features/drawing/native/SketchDialog").then((module) => ({ default: module.SketchDialog })),
+);
+
 export function Dialogs() {
   const dialog = useAppStore((state) => state.dialog);
   return (
@@ -32,6 +36,11 @@ export function Dialogs() {
       {dialog === "drawing" ? (
         <Suspense fallback={null}>
           <DrawingDialog />
+        </Suspense>
+      ) : null}
+      {dialog === "sketch" ? (
+        <Suspense fallback={null}>
+          <SketchDialog />
         </Suspense>
       ) : null}
     </>

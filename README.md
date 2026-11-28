@@ -1,17 +1,19 @@
 # EliasNote
 
-Aplicativo desktop **local-first** de organização visual inspirado no Milanote, com canvas infinito, quadros aninhados e **Excalidraw nativo** para desenhos editáveis. 100% offline: sem contas, servidores, colaboração ou sincronização.
+Aplicativo desktop **local-first** de organização visual inspirado no Milanote, com canvas infinito, quadros aninhados, **editor de desenho nativo**, **notas com edição ao vivo** e Excalidraw integrado para cenas antigas e avançadas. 100% offline: sem contas, servidores, colaboração ou sincronização.
 
 ![stack](https://img.shields.io/badge/stack-Tauri%202%20%2B%20React%20%2B%20TypeScript%20%2B%20Tailwind-7c5cff)
 
 ## O que está pronto
 
 - **Canvas infinito** com zoom/pan por mouse, trackpad e barra de espaço, culling de elementos visíveis, minimapa, encaixe em grade e seleção múltipla com caixa.
-- **Elementos**: nota Markdown, texto livre com **negrito, itálico, tamanho, fonte e alinhamento**, **bloco de código com realce** (GDScript, C#, shader, JSON, YAML…), cartão, tarefa, checklist com progresso, imagem, vídeo, arquivo, link, quadro aninhado, coluna, comentário local e desenho Excalidraw.
+- **Elementos**: nota Markdown com edição ao vivo, texto livre com **negrito, itálico, tamanho, fonte e alinhamento**, **bloco de código com realce** (GDScript, C#, shader, JSON, YAML…), cartão, tarefa, checklist com progresso, imagem, vídeo, arquivo, link, quadro aninhado, coluna, comentário local e desenho.
 - **Colunas inteligentes**: arraste elementos para dentro, reordene, recolha, redimensione e mova a coluna inteira com os filhos.
 - **Imagens por arraste**: solte arquivos sobre uma nota para anexá-los com miniatura dentro do cartão ou sobre um quadro aninhado para enviá-los ao quadro filho.
 - **Conectores e setas**: curva, reta ou cotovelo; rótulos, cores, tracejado e setas nas pontas.
-- **Excalidraw integrado**: editor em tela cheia com salvamento automático, miniaturas no canvas, biblioteca local, importação `.excalidraw` e exportação PNG/SVG/PDF. O menu **Cena** mescla outra cena (clipboard, arquivo ou outro desenho do workspace) preservando bindings e imagens.
+- **Notas com live preview**: o markdown aparece formatado enquanto você escreve e os marcadores (`###`, `**`, `- [ ]`, links) só surgem na linha em que o cursor está, com barra de formatação no rodapé.
+- **Desenho nativo do app**: caneta, linha, seta, retângulo, elipse, losango, texto e borracha em um editor SVG próprio, com paleta, zoom, undo/redo, autosave, prévia vetorial no canvas e exportação PNG/SVG/PDF.
+- **Excalidraw integrado**: editor em tela cheia para cenas antigas e avançadas, com salvamento automático, biblioteca local, importação `.excalidraw` e mesclagem de cenas preservando bindings e imagens.
 - **Workspaces e abas** com árvore de quadros arrastável, subquadros recursivos, duplicação e ordenação.
 - **Busca global** (Ctrl/Cmd+K) em títulos, notas, tarefas, checklists, links, comentários, etiquetas e quadros.
 - **Painel de tarefas** (Ctrl/Cmd+Shift+P) com prazos, prioridades e tarefas de todos os quadros; conclua ou abra o elemento no canvas.
@@ -99,7 +101,7 @@ src/
   features/
     canvas/           canvas infinito, nós, conectores, minimapa, controles
     nodes/            componentes de cada tipo de elemento
-    drawing/          editor Excalidraw e exportações
+    drawing/          editor de desenho nativo, editor Excalidraw e exportações
     inspector/        painel de propriedades, referências e comentários
     tasks/            painel global de tarefas
     presentation/     modo apresentação e navegação entre quadros
@@ -126,6 +128,6 @@ docs/                 arquitetura, funcionalidades, atalhos e desenvolvimento
 
 ## Licenças e créditos
 
-Código original sob MIT. Bibliotecas de terceiros mantêm suas licenças: Excalidraw (MIT), React, TypeScript, Vite, Tailwind CSS, Radix UI, lucide, Zustand, Immer, marked, DOMPurify, html-to-image, jsPDF, Tauri 2 e rusqlite. Nenhum código ou asset proprietário do Milanote foi utilizado.
+Código original sob MIT. Bibliotecas de terceiros mantêm suas licenças: Excalidraw (MIT), CodeMirror 6 (MIT), React, TypeScript, Vite, Tailwind CSS, Radix UI, lucide, Zustand, Immer, marked, DOMPurify, html-to-image, jsPDF, Tauri 2 e rusqlite. O motor de desenho nativo (SVG) é próprio do projeto. Nenhum código ou asset proprietário do Milanote foi utilizado.
 
 Consulte [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/FEATURES.md](docs/FEATURES.md), [docs/OBSIDIAN.md](docs/OBSIDIAN.md), [docs/SHORTCUTS.md](docs/SHORTCUTS.md), [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) e [docs/RELEASE.md](docs/RELEASE.md).

@@ -1,4 +1,5 @@
 import type { Viewport } from "@/lib/geometry";
+import type { SketchDocument } from "./sketch";
 
 export type ID = string;
 
@@ -122,8 +123,11 @@ export interface CanvasNode {
   // Colunas
   collapsed?: boolean;
 
-  // Desenho Excalidraw
+  // Desenho Excalidraw (legado) e desenho nativo do app
   scene?: DrawingScene;
+  sketch?: SketchDocument;
+  /** Qual editor desenha o elemento; padrão derivado dos dados existentes. */
+  drawingEngine?: "native" | "excalidraw";
 
   // Comentários locais
   author?: string;

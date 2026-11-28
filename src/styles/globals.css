@@ -238,6 +238,143 @@
   @apply mr-1.5 align-middle accent-primary;
 }
 
+/* ---------------------------------------------------------------------------
+   Editor de notas com live preview (CodeMirror): a marcação markdown só
+   aparece na linha ativa; as demais linhas são exibidas já formatadas.
+--------------------------------------------------------------------------- */
+.note-live-editor .cm-editor {
+  height: 100%;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--note-editor-size, 13.5px);
+  line-height: 1.72;
+}
+.note-live-editor .cm-editor.cm-focused {
+  outline: none;
+}
+.note-live-editor .cm-scroller {
+  scrollbar-width: thin;
+  padding-bottom: 0;
+}
+.note-live-editor .cm-content {
+  padding-bottom: 3.4rem;
+}
+.note-live-editor .cm-line {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.note-live-editor .cm-md-strong {
+  font-weight: 700;
+}
+.note-live-editor .cm-md-emphasis {
+  font-style: italic;
+}
+.note-live-editor .cm-md-strike {
+  text-decoration: line-through;
+}
+.note-live-editor .cm-md-underline {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.note-live-editor .cm-md-code {
+  border-radius: 2px;
+  background-color: hsl(var(--muted-foreground) / 0.14);
+  padding: 0 0.25em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+.note-live-editor .cm-md-link {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--primary) / 0.4);
+  text-underline-offset: 2px;
+}
+.note-live-editor .cm-md-sup {
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 0;
+}
+.note-live-editor .cm-md-sub {
+  font-size: 0.72em;
+  vertical-align: sub;
+  line-height: 0;
+}
+.note-live-editor .cm-md-heading {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.note-live-editor .cm-md-h1 {
+  font-size: 1.55em;
+  line-height: 1.35;
+  padding-top: 0.15em;
+  padding-bottom: 0.15em;
+}
+.note-live-editor .cm-md-h2 {
+  font-size: 1.32em;
+  line-height: 1.4;
+}
+.note-live-editor .cm-md-h3 {
+  font-size: 1.16em;
+}
+.note-live-editor .cm-md-h4,
+.note-live-editor .cm-md-h5,
+.note-live-editor .cm-md-h6 {
+  font-size: 1.04em;
+}
+.note-live-editor .cm-md-quote {
+  border-left: 2px solid hsl(var(--primary) / 0.45);
+  padding-left: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+.note-live-editor .cm-md-codeblock {
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+.note-live-editor .cm-md-table {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+}
+.note-live-editor .cm-md-bullet {
+  display: inline-block;
+  width: 1.1em;
+  color: hsl(var(--primary));
+  text-align: center;
+}
+.note-live-editor .cm-md-checkbox {
+  width: 0.95em;
+  height: 0.95em;
+  margin-right: 0.4em;
+  vertical-align: -0.08em;
+  accent-color: hsl(var(--primary));
+  cursor: pointer;
+}
+.note-live-editor .cm-md-hr-widget {
+  display: inline-block;
+  width: 100%;
+  height: 0;
+  border-top: 1px solid hsl(var(--border));
+  vertical-align: middle;
+}
+.note-live-editor .cm-md-hr-widget::after {
+  content: "";
+}
+.note-live-editor .cm-md-task {
+  margin-top: 0.05em;
+}
+.note-live-editor .cm-placeholder {
+  font-style: italic;
+}
+.note-live-editor .cm-scroller::-webkit-scrollbar {
+  width: 8px;
+}
+.note-live-editor .cm-scroller::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background-color: hsl(var(--muted-foreground) / 0.28);
+}
+
 /* Excalidraw host */
 .excalidraw-host {
   height: 100%;

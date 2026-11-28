@@ -26,6 +26,7 @@ export const openDialogs = {
     state.openDialog("settings");
   },
   drawing: (nodeId: string) => useAppStore.getState().openDrawing(nodeId),
+  sketch: (nodeId: string) => useAppStore.getState().openSketch(nodeId),
   close: () => useAppStore.getState().closeDialog(),
 } satisfies Record<string, (...args: never[]) => void>;
 
