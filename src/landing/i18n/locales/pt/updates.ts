@@ -5,7 +5,7 @@ export const ptUpdates: UpdatesContent = {
     eyebrow: "Atualizações",
     title: "Tudo o que mudou, versão por versão.",
     description:
-      "O histórico público do EliasNote: cada recurso, correção e marco de infraestrutura que chegou às releases, da primeira beta às notas em modal.",
+      "O histórico público do EliasNote: cada recurso, correção e marco de infraestrutura que chegou às releases, da primeira beta ao desenho nativo e às notas com live preview.",
   },
   current: "Versão atual",
   allReleases: "Ver todas no GitHub",
@@ -18,6 +18,15 @@ export const ptUpdates: UpdatesContent = {
     infra: "Infraestrutura",
   },
   releases: {
+    "0.7.0": {
+      title: "Desenho nativo e notas com live preview",
+      summary: "Um motor de desenho próprio, edição de notas no estilo Obsidian e duplicação mais clara.",
+      changes: [
+        "Editor de desenho nativo com caneta, formas, setas, texto, zoom, histórico e exportação PNG/SVG/PDF",
+        "Notas com live preview: a marcação só aparece na linha ativa, com barra de formatação inferior",
+        "Duplicar seleção no canvas e dentro do desenho nativo, com feedback e atalhos",
+      ],
+    },
     "0.6.0": {
       title: "Notas em modal e inspector mais limpo",
       summary: "Notas longas agora abrem em um editor amplo, com título e Markdown no mesmo lugar.",

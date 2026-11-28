@@ -10,6 +10,7 @@ export interface ReleaseMeta {
 
 /** Ordem decrescente: a versão mais nova aparece primeiro. */
 export const RELEASES: readonly ReleaseMeta[] = [
+  { id: "0.7.0", date: "2026-11-28", kind: "feature" },
   { id: "0.6.0", date: "2026-11-21", kind: "feature" },
   { id: "0.5.0", date: "2026-11-21", kind: "feature" },
   { id: "0.4.0", date: "2026-11-21", kind: "feature" },

@@ -5,7 +5,7 @@ export const zhUpdates: UpdatesContent = {
     eyebrow: "更新",
     title: "每个版本的全部变化。",
     description:
-      "EliasNote 的公开更新记录：从首个测试版到笔记弹窗编辑，每个功能、修复和基础设施里程碑都在这里。",
+      "EliasNote 的公开更新记录：从首个测试版到原生绘图和实时预览笔记，每个功能、修复和基础设施里程碑都在这里。",
   },
   current: "当前版本",
   allReleases: "在 GitHub 查看全部",
@@ -18,6 +18,15 @@ export const zhUpdates: UpdatesContent = {
     infra: "基础设施",
   },
   releases: {
+    "0.7.0": {
+      title: "原生绘图与实时预览笔记",
+      summary: "自研绘图引擎、Obsidian 风格笔记编辑，以及更清晰的复制体验。",
+      changes: [
+        "原生绘图编辑器，支持钢笔、形状、箭头、文字、缩放、历史记录和 PNG/SVG/PDF 导出",
+        "实时预览笔记：标记只显示在当前行，底部提供格式栏",
+        "在画布和原生绘图内复制选区，带反馈和快捷键",
+      ],
+    },
     "0.6.0": {
       title: "笔记弹窗编辑与更整洁的检查器",
       summary: "长笔记现在会在大型编辑器中打开，标题和 Markdown 集中在一处。",

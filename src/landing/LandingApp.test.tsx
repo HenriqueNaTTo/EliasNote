@@ -6,6 +6,7 @@ import { LocaleProvider } from "./i18n/LocaleContext";
 import { LOCALE_STORAGE_KEY } from "./i18n/locale";
 import { SITE_CONTENT } from "./i18n";
 import { FEATURE_META } from "./data";
+import { RELEASES } from "./releases";
 
 function metaContent(attribute: "name" | "property", key: string): string | null {
   return document.head.querySelector(`meta[${attribute}="${key}"]`)?.getAttribute("content") ?? null;
@@ -101,10 +102,12 @@ describe("landing page do EliasNote", () => {
     expect(screen.queryByRole("button", { name: "Atualizações" })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Notas em modal e inspector mais limpo" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Modo apresentação" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Desenho nativo e notas com live preview" })).toBeInTheDocument();
+    expect(screen.getByText("v0.7.0")).toBeInTheDocument();
     expect(screen.getByText("v0.6.0")).toBeInTheDocument();
     expect(screen.getByText("v0.5.0")).toBeInTheDocument();
     expect(screen.getByText("v0.2.0")).toBeInTheDocument();
-    expect(screen.getAllByText("Abrir release")).toHaveLength(11);
+    expect(screen.getAllByText("Abrir release")).toHaveLength(RELEASES.length);
   });
 
   it("abre atualizações pelo submenu de documentação no topo", async () => {

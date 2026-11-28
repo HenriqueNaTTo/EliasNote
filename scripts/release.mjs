@@ -411,6 +411,14 @@ async function main() {
   step(`Sincronizando a versão ${target}`);
   run("node", ["scripts/set-version.mjs", target]);
 
+  // A versão também alimenta o APP_VERSION do site, que é comparado com a união
+  // ReleaseId em Updates.tsx. Verificar de novo evita publicar uma tag que o CI
+  // reprova por falta da entrada da versão no histórico do site.
+  if (!options.skipChecks) {
+    step("Verificando: typecheck com a versão sincronizada");
+    npm(["run", "typecheck"]);
+  }
+
   step("Commit");
   run("git", ["add", "-A"]);
   run("git", ["commit", "-m", commitMessage]);

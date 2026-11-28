@@ -5,7 +5,7 @@ export const enUpdates: UpdatesContent = {
     eyebrow: "Updates",
     title: "Everything that changed, release by release.",
     description:
-      "The public EliasNote history: every feature, fix and infrastructure milestone that shipped, from the first beta to modal note editing.",
+      "The public EliasNote history: every feature, fix and infrastructure milestone that shipped, from the first beta to native drawing and live-preview notes.",
   },
   current: "Current version",
   allReleases: "View all on GitHub",
@@ -18,6 +18,15 @@ export const enUpdates: UpdatesContent = {
     infra: "Infrastructure",
   },
   releases: {
+    "0.7.0": {
+      title: "Native drawing and live-preview notes",
+      summary: "An in-house drawing engine, Obsidian-style note editing and clearer duplication.",
+      changes: [
+        "Native drawing editor with pen, shapes, arrows, text, zoom, history and PNG/SVG/PDF export",
+        "Live-preview notes: markup only appears on the active line, with a bottom formatting bar",
+        "Duplicate selections on the canvas and inside the native drawing, with feedback and shortcuts",
+      ],
+    },
     "0.6.0": {
       title: "Modal notes and a cleaner inspector",
       summary: "Long notes now open in a large editor, with the title and Markdown in one place.",
